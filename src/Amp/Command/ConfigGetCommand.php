@@ -30,8 +30,14 @@ class ConfigGetCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $rows = array();
     foreach ($this->parameters as $key => $label) {
-      $output->writeln(sprintf("%-15s: %s", $key, $this->getContainer()->getParameter($key)));
+      $rows[] = array($key, $this->getContainer()->getParameter($key), $label);
     }
+
+    $table = $this->getApplication()->getHelperSet()->get('table');
+    $table->setHeaders(array('Key', 'Value', 'Description'));
+    $table->setRows($rows);
+    $table->render($output);
   }
 }
