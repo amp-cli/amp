@@ -1,0 +1,38 @@
+{
+    "name": "totten/amp",
+    "description": "CiviCRM Download/Develop",
+    "homepage": "https://github.com/totten/amp",
+    "license": "AGPL-3.0",
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "http://pear.php.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "pear-pear.php.net/DB": "1.7.14",
+        "symfony/console": "2.3.6",
+        "symfony/config": "2.3.6",
+        "symfony/yaml": "2.3.6",
+        "symfony/dependency-injection": "2.3.6",
+        "symfony/filesystem": "2.3.6"
+    },
+    "autoload": {
+        "psr-0": {
+            "Amp\\": "src/"
+         }
+    },
+    "bin": [
+        "bin/amp"
+    ],
+    "config": {
+        "bin-dir": "bin"
+    },
+    "authors": [
+        {
+            "name": "Tim Otten",
+            "email": "to-git@think.hm"
+        }
+    ]
+}

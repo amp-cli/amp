@@ -1,0 +1,41 @@
+parameters:
+  # apache_dir: '~/.amp/apache.d'
+  # nginx_dir: '~/.amp/nginx.d'
+  mysql_type: 'cli'
+  mysql_dsn: ''
+  #'mysql://root:root@127.0.0.1:3307'
+  #''
+
+services:
+  ## This database connection used for most environments
+  mysql:
+    alias: 'mysql.%mysql_type%'
+
+  mysql.cli:
+    class: Amp\Database\MySQLCLI
+
+  mysql.remote:
+    class: Amp\Database\MySQL
+    calls:
+      - [setDsn, ['%mysql_dsn%']]
+
+  ## This database connection used for ephemeral, performance-oriented test environments
+  mysql.linuxRamDisk:
+    class: Amp\Database\MySQLinuxRAMServer
+    properties:
+      pid: '%project%/app/tmp/mysqld.pid'
+      ramdisk: '%project%/app/tmp/mysqld'
+      name: '%prefix%_%env%'
+
+  httpd.apache:
+    class: Amp\Httpd\VhostTemplate
+    calls:
+      - [setTemplate, ['apache-vhost.php']]
+      - [setDir, ['%app_dir%/apache.d']]
+
+  httpd.nginx:
+    class: Amp\Httpd\VhostTemplate
+    calls:
+      - [setTemplate, ['nginx-vhost.php']]
+      - [setDir, ['%app_dir%/nginx.d']]
+
