@@ -1,10 +1,17 @@
 parameters:
+  # amp_src_dir: (varies; local-dir or phar)
+  # app_dir: '~/.amp'
+  # instances_yml: '~/.amp/instances.yml'
+
+
   # apache_dir: '~/.amp/apache.d'
+  apache_tpl: 'apache-vhost.php'
+
   # nginx_dir: '~/.amp/nginx.d'
+  nginx_tpl: 'nginx-vhost.php'
+
   mysql_type: 'dsn'
   mysql_dsn: ''
-  #'mysql://root:root@127.0.0.1:3307'
-  #''
 
 services:
   ## Data storage for AMP instances
@@ -36,14 +43,14 @@ services:
     class: Amp\Httpd\VhostTemplate
     calls:
       - [setTemplateEngine, ['@template.engine']]
-      - [setTemplate, ['apache-vhost.php']]
+      - [setTemplate, ['%apache_tpl%']]
       - [setDir, ['%apache_dir%']]
 
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
     calls:
       - [setTemplateEngine, ['@template.engine']]
-      - [setTemplate, ['nginx-vhost.php']]
+      - [setTemplate, ['%nginx_tpl%']]
       - [setDir, ['%nginx_dir%']]
 
   template.engine:
