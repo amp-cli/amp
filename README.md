@@ -95,6 +95,10 @@ If you need an additional virtualhost and DB for that application, call
 "create" again with the "--name" argument.  If you want an additional
 virtualhost XOR DB, specify "--no-db" or "--no-url".
 
+Q: How do I build a stand-alone PHAR executable for amp?
+
+A: Install [Box](http://box-project.org/). Then, in the amp source dir, run "php -d phar.readonly=0 `which box` build"
+
 ## Internal Architecture ##
 
 "amp" uses components from Symfony 2 (eg Console, Config, and
