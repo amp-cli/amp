@@ -64,8 +64,11 @@ class Application extends \Symfony\Component\Console\Application {
 
     $container = new ContainerBuilder();
     $container->setParameter('app_dir', $this->appDir);
+    $container->setParameter('amp_src_dir', dirname(__DIR__));
     $container->setParameter('apache_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
+    $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(__DIR__, 'Templates', 'apache-vhost.php')));
     $container->setParameter('nginx_dir', $this->appDir . DIRECTORY_SEPARATOR . 'nginx.d');
+    $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(__DIR__, 'Templates', 'nginx-vhost.php')));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
 
     $locator = new FileLocator($this->configDirectories);
@@ -103,7 +106,9 @@ class Application extends \Symfony\Component\Console\Application {
     $configFile = $this->appDir . DIRECTORY_SEPARATOR . 'services.yml';
     $configParams = array(
       'apache_dir' => 'Directory which stores Apache config files',
+      'apache_tpl' => 'Apache configuration template',
       'nginx_dir' => 'Directory which stores nginx config files',
+      'nginx_tpl' => 'Nginx configuration template',
       'mysql_type' => 'How to connect to MySQL admin (cli, dsn, linuxRamDisk)',
       'mysql_dsn' => 'Administrative connection details (for use with "dsn")',
     );
@@ -113,11 +118,11 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $configFile, $configParams);
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $configFile, $configParams);
     $commands[] = new \Amp\Command\TestCommand($this, NULL,  $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql'));
+    $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ExportCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql'));
-    $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql'));
+    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'));
+    $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'));
     return $commands;
   }
 }

@@ -13,28 +13,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DestroyCommand extends ContainerAwareCommand {
 
   /**
-   * @var InstanceRepository
-   */
-  private $instances;
-
-  /**
-   * @var DatabaseManagementInterface
-   */
-  private $db;
-
-  /**
    * @var Filesystem
    */
   private $fs;
+
+  /**
+   * @var InstanceRepository
+   */
+  private $instances;
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances, DatabaseManagementInterface $db) {
+  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
     $this->instances = $instances;
-    $this->db = $db;
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -61,10 +55,6 @@ class DestroyCommand extends ContainerAwareCommand {
     $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
       throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
-    }
-
-    if ($instance->getDsn()) {
-      $this->db->dropDatabase($instance->getDatasource());
     }
 
     $this->instances->remove($instance->getId());

@@ -1,7 +1,6 @@
 <?php
 namespace Amp\Command;
 
-use Amp\Database\DatabaseManagementInterface;
 use Amp\Instance;
 use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
@@ -18,11 +17,6 @@ class CleanupCommand extends ContainerAwareCommand {
   private $instances;
 
   /**
-   * @var DatabaseManagementInterface
-   */
-  private $db;
-
-  /**
    * @var Filesystem
    */
   private $fs;
@@ -32,9 +26,8 @@ class CleanupCommand extends ContainerAwareCommand {
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances, DatabaseManagementInterface $db) {
+  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
     $this->instances = $instances;
-    $this->db = $db;
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -51,9 +44,6 @@ class CleanupCommand extends ContainerAwareCommand {
     foreach ($this->instances->findAll() as $instance) {
       if ($input->getOption('force') || !file_exists($instance->getRoot())) {
         $output->writeln("Destroy (root={$instance->getRoot()}, name={$instance->getName()}, dsn={$instance->getDsn()})");
-        if ($instance->getDsn()) {
-          $this->db->dropDatabase($instance->getDatasource());
-        }
         $this->instances->remove($instance->getId());
         $count++;
       } else {

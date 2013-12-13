@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Templating\EngineInterface;
 
 class TestCommand extends ContainerAwareCommand {
 
@@ -15,6 +16,11 @@ class TestCommand extends ContainerAwareCommand {
    * @var InstanceRepository
    */
   private $instances;
+
+  /**
+   * @var EngineInterface
+   */
+  private $templateEngine;
 
   /**
    * @param \Amp\Application $app
@@ -25,6 +31,7 @@ class TestCommand extends ContainerAwareCommand {
     $this->fs = new Filesystem();
     $this->instances = $instances;
     parent::__construct($app, $name);
+    $this->templateEngine = $this->getContainer()->get('template.engine');
   }
 
   protected function configure() {
@@ -35,26 +42,45 @@ class TestCommand extends ContainerAwareCommand {
 
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $output->write($this->templateEngine->render('testing.php', array(
+      'apache_dir' => $this->getContainer()->getParameter('apache_dir'),
+      'nginx_dir' => $this->getContainer()->getParameter('nginx_dir'),
+    )));
+
     $root = $this->createCanaryApp();
 
     // Setup test instance
-    $this->doCommand($output, OutputInterface::VERBOSITY_QUIET, 'create', array(
+    $output->writeln("<info>Create test application</info>");
+    $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'create', array(
       '--root' => $root,
       '--force' => 1, // assume previous tests may have failed badly
+      '--url' => 'http://localhost:7979'
     ));
+    $output->writeln("");
 
     // Connect to test instance
+    $output->writeln("<info>Connect to test application</info>");
     $this->instances->load(); // force reload
     $instance = $this->instances->find(Instance::makeId($root, ''));
-    $result = $this->doPost($instance->getUrl() . '/index.php', array(
+    $response = $this->doPost($instance->getUrl() . '/index.php', array(
       'dsn' => $instance->getDsn(),
     ));
-    print_r(array('post result' => $result));
 
-    // Tear down test instance
-    $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'destroy', array(
-      '--root' => $root,
-    ));
+    if ($response == 'OK') {
+      $output->writeln("<info>Connect to test application: OK</info>");
+
+      // Tear down test instance
+      // Skip teardown; this allows us to preserve the port-number
+      // across multiple executions.
+      //$output->writeln("<info>Cleanup test application</info>");
+      //$this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'destroy', array(
+      //  '--root' => $root,
+      //));
+    }
+    else {
+      $output->writeln("<error>Connect to test application: Failed</error>");
+      $output->writeln("Response: $response");
+    }
   }
 
   /**
@@ -62,12 +88,14 @@ class TestCommand extends ContainerAwareCommand {
    * @return string, root path of the canary web app
    */
   protected function createCanaryApp() {
-    $template = $this->fs->toAbsolutePath(__DIR__ . '/../../../web-canary/index.php');
+    $content = $this->templateEngine->render('canary.php', array(
+      'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php')
+    ));
     $root = $this->getContainer()->getParameter('app_dir') . DIRECTORY_SEPARATOR . 'canary';
     if (!$this->fs->exists($root)) {
       $this->fs->mkdir($root);
     }
-    $this->fs->copy($template, $root . DIRECTORY_SEPARATOR . 'index.php', TRUE);
+    $this->fs->dumpFile($root . DIRECTORY_SEPARATOR . 'index.php', $content);
     return $root;
   }
 
@@ -86,11 +114,10 @@ class TestCommand extends ContainerAwareCommand {
 
   protected function doPost($url, $postData) {
     $opts = array(
-      'http' =>
-      array(
+      'http' => array(
         'method' => 'POST',
         'header' => 'Content-type: application/x-www-form-urlencoded',
-        'content' => $postData
+        'content' => http_build_query($postData)
       )
     );
     $context = stream_context_create($opts);

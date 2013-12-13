@@ -23,7 +23,6 @@ class MySQL implements DatabaseManagementInterface {
       $this->adminDatasource = new Datasource(array(
         'civi_dsn' => $dsn,
       ));
-
     }
     else {
       $this->adminDatasource = NULL;

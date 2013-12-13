@@ -1,7 +1,6 @@
 <?php
 namespace Amp\Command;
 
-use Amp\Database\DatabaseManagementInterface;
 use Amp\Instance;
 use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
@@ -18,11 +17,6 @@ class CreateCommand extends ContainerAwareCommand {
   private $instances;
 
   /**
-   * @var DatabaseManagementInterface
-   */
-  private $db;
-
-  /**
    * @var Filesystem
    */
   private $fs;
@@ -32,9 +26,8 @@ class CreateCommand extends ContainerAwareCommand {
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances, DatabaseManagementInterface $db) {
+  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
     $this->instances = $instances;
-    $this->db = $db;
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -45,6 +38,7 @@ class CreateCommand extends ContainerAwareCommand {
       ->setDescription('Create a MySQL+HTTPD instance')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '')
+      ->addOption('no-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
       ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container');
@@ -54,7 +48,8 @@ class CreateCommand extends ContainerAwareCommand {
     $root = $this->fs->toAbsolutePath($input->getOption('root'));
     if (!$this->fs->exists($root)) {
       throw new \Exception("Failed to locate root: " . $root);
-    } else {
+    }
+    else {
       $input->setOption('root', $root);
     }
   }
@@ -73,22 +68,9 @@ class CreateCommand extends ContainerAwareCommand {
 
     if ($input->getOption('url')) {
       $instance->setUrl($input->getOption('url'));
-    } elseif (!$input->getOption('no-url')) {
-      $instance->setUrl('http://localhost:FIXME');
     }
 
-    $datasource = $instance->getDatasource();
-    if ($datasource) {
-      $this->db->dropDatabase($datasource);
-      $this->db->createDatabase($datasource);
-    }
-    else {
-      $datasource = $this->db->createDatasource(basename($instance->getRoot()) . $instance->getName());
-      $this->db->createDatabase($datasource);
-      $instance->setDatasource($datasource);
-    }
-
-    $this->instances->put($instance->getId(), $instance);
+    $this->instances->create($instance, !$input->getOption('no-url'), !$input->getOption('no-db'));
     $this->instances->save();
 
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
