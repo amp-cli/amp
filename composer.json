@@ -1,6 +1,6 @@
 {
     "name": "totten/amp",
-    "description": "CiviCRM Download/Develop",
+    "description": "CLI Interface to *AMP-style stacks",
     "homepage": "https://github.com/totten/amp",
     "license": "AGPL-3.0",
     "require": {
