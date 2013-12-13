@@ -91,7 +91,9 @@ class CreateCommand extends ContainerAwareCommand {
     $this->instances->put($instance->getId(), $instance);
     $this->instances->save();
 
-    $this->export($instance->getRoot(), $instance->getName(), $output);
+    if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
+      $this->export($instance->getRoot(), $instance->getName(), $output);
+    }
   }
 
   protected function export($root, $name, OutputInterface $output) {
