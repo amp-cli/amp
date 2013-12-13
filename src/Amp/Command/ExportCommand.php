@@ -30,7 +30,7 @@ class ExportCommand extends ContainerAwareCommand {
   protected function configure() {
     $this
       ->setName('export')
-      ->setDescription('Export details about an httpd/mysql container for use in bash')
+      ->setDescription('Export details about a MySQL+HTTPD instance for use in bash')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '')
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_');

@@ -56,6 +56,8 @@ class CleanupCommand extends ContainerAwareCommand {
         }
         $this->instances->remove($instance->getId());
         $count++;
+      } else {
+        $output->writeln("Skip (root={$instance->getRoot()}, name={$instance->getName()}, dsn={$instance->getDsn()})");
       }
     }
 

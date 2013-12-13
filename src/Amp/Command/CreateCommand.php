@@ -42,7 +42,7 @@ class CreateCommand extends ContainerAwareCommand {
   protected function configure() {
     $this
       ->setName('create')
-      ->setDescription('Create an httpd/mysql container')
+      ->setDescription('Create a MySQL+HTTPD instance')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '')
       ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
