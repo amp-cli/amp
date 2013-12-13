@@ -41,7 +41,8 @@ class CreateCommand extends ContainerAwareCommand {
       ->addOption('no-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
       ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
-      ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container');
+      ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container')
+      ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -73,16 +74,17 @@ class CreateCommand extends ContainerAwareCommand {
     $this->instances->save();
 
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
-      $this->export($instance->getRoot(), $instance->getName(), $output);
+      $this->export($instance->getRoot(), $instance->getName(), $input->getOption('prefix'), $output);
     }
   }
 
-  protected function export($root, $name, OutputInterface $output) {
+  protected function export($root, $name, $prefix, OutputInterface $output) {
     $command = $this->getApplication()->find('export');
     $arguments = array(
       'command' => 'export',
       '--root' => $root,
       '--name' => $name,
+      '--prefix' => $prefix,
     );
     return $command->run(new \Symfony\Component\Console\Input\ArrayInput($arguments), $output);
   }
