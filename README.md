@@ -97,10 +97,10 @@ Q: I have five web apps installed. How does AMP distinguish them?
 
 A: Each application should have its own directory (eg
 "/home/me/src/my-application-1").  By default, "amp" assumes that each
-directory corresponds to a single virtualhost and a single MySQL database.
-If you need an additional virtualhost and DB for that application, call
+directory corresponds to a single virtual-host and a single MySQL database.
+If you need an additional virtual-host and DB for that application, call
 "create" again with the "--name" argument.  If you want an additional
-virtualhost XOR DB, specify "--no-db" or "--no-url".
+virtual-host XOR DB, specify "--no-db" or "--no-url".
 
 Q: How do I build a stand-alone PHAR executable for amp?
 
@@ -115,16 +115,16 @@ There are three key services defined in the container:
 
  * mysql -- A service for creating and destroying MySQL DB's
    (based on DatabaseManagementInterface)
- * httpd -- A service for creating and destroy HTTP virtualhosts
+ * httpd -- A service for creating and destroying HTTP virtual-hosts
    (based on HttpdInterface)
  * instances -- A repository for CRUD'ing web-app instances (using the
    "mysql" and "httpd" services) which stores metadata in YAML
    (~/.app/instances.yml).
 
 There may be competing implementations of "mysql" and "httpd" -- eg one
-might connect to a remote mysqld while another launches a local mysqld on a
-ramdisk.  These can be chosen at runtime by calling "amp config:set
---mysql_type=XXX" or "amp config:set --httpd_type=XXX"
+implementation might connect to a remote mysqld while another launches a
+local mysqld on a ramdisk.  These can be chosen at runtime by calling "amp
+config:set --mysql_type=XXX" or "amp config:set --httpd_type=XXX"
 
 Parameters and services may be configured in amp's source-tree
 ("app/defaults/services.yml") or in the local home directory
@@ -142,8 +142,8 @@ Parameters and services may be configured in amp's source-tree
  * Add DatabaseManagementInterface based on MySQL CLI
  * For "amp export" and "amp create", add option "--format=shell,json,yml"
  * Guided configuration and testing (eg "amp config -i")
- * Register new virtualhosts in /etc/hosts
- * Automatically restart Apache/nginx after creating or changing virtualhosts
+ * Register new virtual-hosts in /etc/hosts
+ * Automatically restart Apache/nginx after creating or changing virtual-hosts
  * Add support for launching PHP's built-in webserver
  * Add more heuristics/settings to work well in common dev environments
    (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
