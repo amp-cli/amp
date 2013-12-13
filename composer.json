@@ -9,7 +9,8 @@
         "symfony/config": "2.3.6",
         "symfony/yaml": "2.3.6",
         "symfony/dependency-injection": "2.3.6",
-        "symfony/filesystem": "2.3.6"
+        "symfony/filesystem": "2.3.6",
+        "symfony/templating": "2.3.6"
     },
     "autoload": {
         "psr-0": {

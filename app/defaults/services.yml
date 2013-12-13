@@ -33,12 +33,18 @@ services:
   httpd.apache:
     class: Amp\Httpd\VhostTemplate
     calls:
+      - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['apache-vhost.php']]
       - [setDir, ['%app_dir%/apache.d']]
 
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
     calls:
+      - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['nginx-vhost.php']]
       - [setDir, ['%app_dir%/nginx.d']]
 
+  template.engine:
+    class: Symfony\Component\Templating\PhpEngine
+    factory_class: Amp\TemplateEngineFactory
+    factory_method: get
