@@ -112,6 +112,8 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
     $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ExportCommand($this, NULL, $this->getContainer()->get('instances'));
+    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
+    $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
     return $commands;
   }
 }
