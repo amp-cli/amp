@@ -37,14 +37,14 @@ services:
     calls:
       - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['apache-vhost.php']]
-      - [setDir, ['%app_dir%/apache.d']]
+      - [setDir, ['%apache_dir%']]
 
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
     calls:
       - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['nginx-vhost.php']]
-      - [setDir, ['%app_dir%/nginx.d']]
+      - [setDir, ['%nginx_dir%']]
 
   template.engine:
     class: Symfony\Component\Templating\PhpEngine
