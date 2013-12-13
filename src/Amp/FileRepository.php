@@ -84,6 +84,10 @@ abstract class FileRepository {
     $this->instances[$name] = $obj;
   }
 
+  public function remove($name) {
+    unset($this->instances[$name]);
+  }
+
   /**
    * @param string $configFile
    */

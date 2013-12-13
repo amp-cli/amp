@@ -1,7 +1,9 @@
 <?php
 namespace Amp\Command;
 
+use Amp\Instance;
 use Amp\InstanceRepository;
+use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,6 +23,7 @@ class ExportCommand extends ContainerAwareCommand {
    */
   public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
     $this->instances = $instances;
+    $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
 
@@ -28,21 +31,29 @@ class ExportCommand extends ContainerAwareCommand {
     $this
       ->setName('export')
       ->setDescription('Export details about an httpd/mysql container for use in bash')
-      ->addArgument('<name>', InputArgument::OPTIONAL, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')')
+      ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
+      ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '')
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
-    if (!preg_match(\Amp\Instance::NAME_REGEX, $input->getArgument('<name>'))) {
-      throw new \Exception('Malformed <name>');
+    $root = $this->fs->toAbsolutePath($input->getOption('root'));
+    if (!$this->fs->exists($root)) {
+      throw new \Exception("Failed to locate root: " . $root);
+    } else {
+      $input->setOption('root', $root);
     }
+
     if (!preg_match('/^[A-Za-z0-9_]+$/', $input->getOption('prefix'))) {
       throw new \Exception('Malformed prefix');
     }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $instance = $this->instances->find($input->getArgument('<name>'));
+    $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
+    if (!$instance) {
+      throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
+    }
     $prefix = $input->getOption('prefix');
 
     require_once 'DB.php';

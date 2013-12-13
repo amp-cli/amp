@@ -110,4 +110,16 @@ class Instance {
     return $this->url;
   }
 
+  public function getId() {
+    return self::makeId($this->getRoot(), $this->getName());
+  }
+
+  public static function makeId($root, $name) {
+    if (empty($name)) {
+      return $root . '::\'\'';
+    }
+    else {
+      return $root . '::' . $name;
+    }
+  }
 }

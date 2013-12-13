@@ -33,11 +33,11 @@ class ShowCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     $rows = array();
     foreach ($this->instances->findAll() as $instance) {
-      $rows[] = array($instance->getName(),  $instance->getDsn(), $instance->getRoot(), $instance->getUrl());
+      $rows[] = array($instance->getRoot(), $instance->getName(), $instance->getDsn(), $instance->getUrl());
     }
 
     $table = $this->getApplication()->getHelperSet()->get('table');
-    $table->setHeaders(array('Name', 'DSN', 'Root', 'URL'));
+    $table->setHeaders(array('Root', 'Name', 'DSN', 'URL'));
     $table->setRows($rows);
     $table->render($output);
   }

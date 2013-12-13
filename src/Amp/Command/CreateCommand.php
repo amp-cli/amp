@@ -2,12 +2,13 @@
 namespace Amp\Command;
 
 use Amp\Database\DatabaseManagementInterface;
+use Amp\Instance;
 use Amp\InstanceRepository;
+use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 class CreateCommand extends ContainerAwareCommand {
 
@@ -42,49 +43,29 @@ class CreateCommand extends ContainerAwareCommand {
     $this
       ->setName('create')
       ->setDescription('Create an httpd/mysql container')
-      ->addArgument('<name>', InputArgument::REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')')
-      ->addOption('root', NULL, InputOption::VALUE_REQUIRED, 'The local path to the document root')
-      ->addOption('no-root', NULL, InputOption::VALUE_NONE, 'Skip web-root')
-      ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'The preferred web URL for this service')
+      ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
+      ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '')
+      ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
+      ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
-    if (!preg_match(\Amp\Instance::NAME_REGEX, $input->getArgument('<name>'))) {
-      throw new \Exception('Malformed <name>');
-    }
-
-    $root = $this->toAbsolutePath($input->getOption('root'));
-    if ($input->getOption('root')) {
-      if (!$this->fs->exists($root)) {
-        throw new \Exception("Failed to locate root: " . $root);
-      }
-    }
-    elseif ($input->getOption('no-root')) {
-      // ok
-    }
-    else {
-      throw new \Exception("Missing option: --root=<path> or --no-root");
+    $root = $this->fs->toAbsolutePath($input->getOption('root'));
+    if (!$this->fs->exists($root)) {
+      throw new \Exception("Failed to locate root: " . $root);
+    } else {
+      $input->setOption('root', $root);
     }
   }
 
-  /**
-   * @param string $path
-   * @return string updated $path
-   */
-  protected function toAbsolutePath($path) {
-    if ($this->fs->isAbsolutePath($path)) {
-      return $path;
-    }
-    else {
-      return getcwd() . DIRECTORY_SEPARATOR . $path;
-    }
-  }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $instance = $this->instances->find($input->getArgument('<name>'));
+    $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if ($instance === NULL) {
-      $instance = new \Amp\Instance($input->getArgument('<name>'));
+      $instance = new Instance();
+      $instance->setRoot($input->getOption('root'));
+      $instance->setName($input->getOption('name'));
     }
     elseif (!$input->getOption('force')) {
       throw new \Exception("Cannot create instance. Use -f to existing overwrite.");
@@ -92,31 +73,33 @@ class CreateCommand extends ContainerAwareCommand {
 
     if ($input->getOption('url')) {
       $instance->setUrl($input->getOption('url'));
+    } elseif (!$input->getOption('no-url')) {
+      $instance->setUrl('http://localhost:FIXME');
     }
-
-    $instance->setRoot($this->toAbsolutePath($input->getOption('root')));
 
     $datasource = $instance->getDatasource();
     if ($datasource) {
       $this->db->dropDatabase($datasource);
       $this->db->createDatabase($datasource);
-    } else {
-      $datasource = $this->db->createDatasource($instance->getName());
+    }
+    else {
+      $datasource = $this->db->createDatasource(basename($instance->getRoot()) . $instance->getName());
       $this->db->createDatabase($datasource);
       $instance->setDatasource($datasource);
     }
 
-    $this->instances->put($instance->getName(), $instance);
+    $this->instances->put($instance->getId(), $instance);
     $this->instances->save();
 
-    $this->export($input->getArgument('<name>'), $output);
+    $this->export($instance->getRoot(), $instance->getName(), $output);
   }
 
-  protected function export($name, OutputInterface $output) {
+  protected function export($root, $name, OutputInterface $output) {
     $command = $this->getApplication()->find('export');
     $arguments = array(
       'command' => 'export',
-      '<name>' => $name,
+      '--root' => $root,
+      '--name' => $name,
     );
     return $command->run(new \Symfony\Component\Console\Input\ArrayInput($arguments), $output);
   }
