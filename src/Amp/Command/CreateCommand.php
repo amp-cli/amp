@@ -37,7 +37,7 @@ class CreateCommand extends ContainerAwareCommand {
       ->setName('create')
       ->setDescription('Create a MySQL+HTTPD instance')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
-      ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '')
+      ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service', '')
       ->addOption('no-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
       ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')

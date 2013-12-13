@@ -3,7 +3,6 @@ namespace Amp;
 use Amp\Database\Datasource;
 
 class Instance {
-  const NAME_REGEX = '/^[a-zA-Z0-9_\-:\/]{1,16}$/';
 
   /**
    * @var Datasource|NULL database credentials for the service

@@ -38,7 +38,7 @@ class DestroyCommand extends ContainerAwareCommand {
       ->setName('destroy')
       ->setDescription('Destroy a MySQL+HTTPD instance')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
-      ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')', '');
+      ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service', '');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
