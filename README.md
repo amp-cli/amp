@@ -1,4 +1,4 @@
-## About ##
+## About "amp" ##
 
 "amp" is a tool to facilitate development of PHP web applications. The
 general goal is that one may download the code for a PHP web application and
