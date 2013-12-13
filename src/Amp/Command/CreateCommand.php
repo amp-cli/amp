@@ -62,7 +62,7 @@ class CreateCommand extends ContainerAwareCommand {
       $instance->setName($input->getOption('name'));
     }
     elseif (!$input->getOption('force')) {
-      throw new \Exception("Cannot create instance. Use -f to existing overwrite.");
+      throw new \Exception("Cannot create instance. Use -f to overwrite existing instance.");
     }
 
     if ($input->getOption('url')) {

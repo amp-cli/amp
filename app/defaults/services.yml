@@ -3,7 +3,6 @@ parameters:
   # app_dir: '~/.amp'
   # instances_yml: '~/.amp/instances.yml'
 
-
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'
 
