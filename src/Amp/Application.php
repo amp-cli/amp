@@ -117,7 +117,7 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $configParams);
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $configFile, $configParams);
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $configFile, $configParams);
-    $commands[] = new \Amp\Command\TestCommand($this, NULL,  $this->getContainer()->get('instances'));
+    $commands[] = new \Amp\Command\TestCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ExportCommand($this, NULL, $this->getContainer()->get('instances'));
