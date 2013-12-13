@@ -1,7 +1,7 @@
 parameters:
   # apache_dir: '~/.amp/apache.d'
   # nginx_dir: '~/.amp/nginx.d'
-  mysql_type: 'cli'
+  mysql_type: 'dsn'
   mysql_dsn: ''
   #'mysql://root:root@127.0.0.1:3307'
   #''
@@ -14,13 +14,10 @@ services:
       - [setFile, ['%instances_yml%']]
 
   ## This database connection used for most environments
-  mysql:
-    alias: '%mysql_type%'
-
   mysql.cli:
     class: Amp\Database\MySQLCLI
 
-  mysql.remote:
+  mysql.dsn:
     class: Amp\Database\MySQL
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]

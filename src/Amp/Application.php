@@ -79,6 +79,8 @@ class Application extends \Symfony\Component\Console\Application {
       }
     }
 
+    $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
+
     return $container;
   }
 
@@ -109,11 +111,11 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $configParams);
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $configFile, $configParams);
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $configFile, $configParams);
-    $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
+    $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql'));
     $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ExportCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
-    $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
+    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql'));
+    $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql'));
     return $commands;
   }
 }
