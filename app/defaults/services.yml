@@ -7,9 +7,15 @@ parameters:
   #''
 
 services:
+  ## Data storage for AMP instances
+  instances:
+    class: Amp\InstanceRepository
+    calls:
+      - [setFile, ['%instances_yml%']]
+
   ## This database connection used for most environments
   mysql:
-    alias: 'mysql.%mysql_type%'
+    alias: '%mysql_type%'
 
   mysql.cli:
     class: Amp\Database\MySQLCLI
@@ -17,7 +23,7 @@ services:
   mysql.remote:
     class: Amp\Database\MySQL
     calls:
-      - [setDsn, ['%mysql_dsn%']]
+      - [setAdminDsn, ['%mysql_dsn%']]
 
   ## This database connection used for ephemeral, performance-oriented test environments
   mysql.linuxRamDisk:

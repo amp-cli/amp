@@ -65,6 +65,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container = new ContainerBuilder();
     $container->setParameter('apache_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
     $container->setParameter('nginx_dir', $this->appDir . DIRECTORY_SEPARATOR . 'nginx.d');
+    $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
 
     $locator = new FileLocator($this->configDirectories);
     $loaderResolver = new LoaderResolver(array(
@@ -108,6 +109,9 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $configParams);
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $configFile, $configParams);
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $configFile, $configParams);
+    $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'), $this->getContainer()->get('mysql.remote')); // FIXME
+    $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));
+    $commands[] = new \Amp\Command\ExportCommand($this, NULL, $this->getContainer()->get('instances'));
     return $commands;
   }
 }

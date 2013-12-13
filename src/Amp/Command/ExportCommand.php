@@ -1,0 +1,67 @@
+<?php
+namespace Amp\Command;
+
+use Amp\InstanceRepository;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class ExportCommand extends ContainerAwareCommand {
+
+  /**
+   * @var InstanceRepository
+   */
+  private $instances;
+
+  /**
+   * @param \Amp\Application $app
+   * @param string|null $name
+   * @param array $parameters list of configuration parameters to accept ($key => $label)
+   */
+  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
+    $this->instances = $instances;
+    parent::__construct($app, $name);
+  }
+
+  protected function configure() {
+    $this
+      ->setName('export')
+      ->setDescription('Export details about an httpd/mysql container for use in bash')
+      ->addArgument('<name>', InputArgument::OPTIONAL, 'Brief technical identifier for the service (' . \Amp\Instance::NAME_REGEX . ')')
+      ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_');
+  }
+
+  protected function initialize(InputInterface $input, OutputInterface $output) {
+    if (!preg_match(\Amp\Instance::NAME_REGEX, $input->getArgument('<name>'))) {
+      throw new \Exception('Malformed <name>');
+    }
+    if (!preg_match('/^[A-Za-z0-9_]+$/', $input->getOption('prefix'))) {
+      throw new \Exception('Malformed prefix');
+    }
+  }
+
+  protected function execute(InputInterface $input, OutputInterface $output) {
+    $instance = $this->instances->find($input->getArgument('<name>'));
+    $prefix = $input->getOption('prefix');
+
+    require_once 'DB.php';
+    $db = new \DB();
+    $dsnParts = $db->parseDSN($instance->getDsn());
+
+    $envVars = array(
+      "{$prefix}URL" => $instance->getUrl(),
+      "{$prefix}ROOT" => $instance->getRoot(),
+      "{$prefix}DB_DSN" => $instance->getDsn(),
+      "{$prefix}DB_USER" => $dsnParts['username'],
+      "{$prefix}DB_PASS" => $dsnParts['password'],
+      "{$prefix}DB_HOST" => $dsnParts['hostspec'],
+      "{$prefix}DB_PORT" => $dsnParts['port'],
+      "{$prefix}DB_NAME" => $dsnParts['database'],
+    );
+    foreach ($envVars as $var => $value) {
+      $output->writeln($var . '=' . escapeshellarg($value));
+    }
+    // $output->writeln('export ' . implode(' ', array_keys($envVars)));
+  }
+}
