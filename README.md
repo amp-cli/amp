@@ -1,4 +1,4 @@
-== About ==
+## About ##
 
 "amp" is a tool to facilitate development of PHP web applications. The
 general goal is that one may download the code for a PHP web application and
@@ -31,9 +31,9 @@ Final thoughts:
  * "amp" IS AN INTERFACE to the *AMP stack -- it aims to help application developers
    write their own install scripts.
 
-== Example ==
+## Example ##
 
-For example, the "my-application" may require a few setup steps:
+For example, the "my-application" (from above) may require a few setup steps:
 
  * Create a virtual host pointing to the "my-application/web" directory
  * Create a database
@@ -41,11 +41,11 @@ For example, the "my-application" may require a few setup steps:
  * Create a config file ("conf/my-application.ini") so that PHP can
    connect to the database
 
-As the author of "my-application" above, one might include a
-script "bin/install.sh"
+As the author of "my-application", one might include a script "bin/install.sh"
 
 ```
 #!/bin/bash
+set -e
 eval $(amp create --root="$PWD/web" "$@")
 cat $PWD/sql/install.sql | mysql -u$AMP_DB_USER -p$AMP_DB_PASS $AMP_DB_NAME
 cat > $PWD/conf/my-application.ini <<MYCONFIG
@@ -57,7 +57,7 @@ hostname=${AMP_DB_HOST}
 MYCONFIG
 ```
 
-== FAQ ==
+## FAQ ##
 
 Q: How do I configure "amp" to work on my system?
 
@@ -95,27 +95,10 @@ If you need an additional virtualhost and DB for that application, call
 "create" again with the "--name" argument.  If you want an additional
 virtualhost XOR DB, specify "--no-db" or "--no-url".
 
-== Planned Features ==
-
- * Add DatabaseManagementInterface for launching mysqld (in ramdisk)
- * Add HttpdInterface for nginx
- * Set permissions for web-writable files (ACL and/or chmod)
- * Callback support
-
-== Wishlist / Patch-Welcomes ==
-
- * Add DatabaseManagementInterface based on MySQL CLI
- * For "amp export", add option "--format=shell|json|yml"
- * Guided configuration and testing (eg "amp config -i")
- * Updates to /etc/hosts
- * Add support for launching PHP's built-in webserver
- * Heuristics to recognize common dev environments
-   (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
-
-== Internal Architecture ==
+## Internal Architecture ##
 
 "amp" uses components from Symfony 2 (eg Console, Config, and
-Dependency-Injection)
+Dependency-Injection).
 
 There are three key services defined in the container:
 
@@ -135,3 +118,21 @@ ramdisk.  These can be chosen at runtime by calling "amp config:set
 Parameters and services may be configured in amp's source-tree
 ("app/defaults/services.yml") or in the local home directory
 ("~/.amp/services.yml").
+
+## Planned Features ##
+
+ * Add DatabaseManagementInterface for launching mysqld (in ramdisk)
+ * Add HttpdInterface for nginx
+ * Set permissions for web-writable files (ACL and/or chmod)
+ * Callback support
+
+## Wishlist / Patch-Welcomes ##
+
+ * Add DatabaseManagementInterface based on MySQL CLI
+ * For "amp export" and "amp create", add option "--format=shell,json,yml"
+ * Guided configuration and testing (eg "amp config -i")
+ * Register new virtualhosts in /etc/hosts
+ * Automatically restart Apache/nginx after creating or changing virtualhosts
+ * Add support for launching PHP's built-in webserver
+ * Add more heuristics/settings to work well in common dev environments
+   (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
