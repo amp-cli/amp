@@ -58,9 +58,7 @@ class Datasource {
   }
 
   function loadFromCiviDSN($civi_dsn) {
-    require_once("DB.php");
-    $db = new \DB();
-    $parsed_dsn = $db->parseDSN($civi_dsn);
+    $parsed_dsn = \DB\DSN::parseDSN($civi_dsn);
     foreach (static::$cividsn_to_settings_name as $key => $value) {
       if (array_key_exists($key, $parsed_dsn)) {
         $this->$value = $parsed_dsn[$key];

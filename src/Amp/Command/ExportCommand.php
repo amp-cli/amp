@@ -55,10 +55,7 @@ class ExportCommand extends ContainerAwareCommand {
       throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
     }
     $prefix = $input->getOption('prefix');
-
-    require_once 'DB.php';
-    $db = new \DB();
-    $dsnParts = $db->parseDSN($instance->getDsn());
+    $dsnParts = \DB\DSN::parseDSN($instance->getDsn());
 
     $envVars = array(
       "{$prefix}URL" => $instance->getUrl(),
