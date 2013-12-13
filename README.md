@@ -27,10 +27,17 @@ Final thoughts:
 
  * "amp" IS NOT a complete stack with bundled binaries (for PHP, MySQL, etc).
  * "amp" IS NOT a cluster-management tool for remote servers.
- * "amp" IS NOT (by itself) a fully automated installer for every web app.
+ * "amp" IS NOT a one-click installer.
+ * "amp" IS NOT a system-administration suite.
  * "amp" IS AN INTERFACE to the *AMP stack -- it aims to help application developers
    write their own install scripts.
-
+ * "amp" aims to be PORTABLE -- to work with common PHP development environments
+   such as Debian/Ubuntu, MAMP, XAMPP, or MacPorts.
+ * "amp" is designed for DEVELOPMENT AND TESTING. If you need to automatically install
+   copies of applications from source-code in a variety of environments (for
+   integration-tests, demos, bug-fixing, training, collaboration, etc), then "amp"
+   can help.
+ 
 ## Example ##
 
 For example, the "my-application" (from above) may require a few setup steps:
