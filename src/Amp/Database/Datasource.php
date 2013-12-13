@@ -81,6 +81,23 @@ class Datasource {
     return new \PDO($this->toPDODSN(), $this->username, $this->password);
   }
 
+  /**
+   * @return bool
+   */
+  function isValid() {
+    try {
+      $dbh = $this->createPDO();
+      foreach ($dbh->query('SELECT 99 as value') as $row) {
+        if ($row['value'] == 99) {
+          return TRUE;
+        }
+      }
+      $dbh = NULL;
+    } catch (\PDOException $e) {
+    }
+    return FALSE;
+  }
+
   function toCiviDSN() {
     $civi_dsn = "mysql://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
