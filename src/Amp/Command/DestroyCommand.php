@@ -54,7 +54,7 @@ class DestroyCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
-      throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
+      return;
     }
 
     $this->instances->remove($instance->getId());
