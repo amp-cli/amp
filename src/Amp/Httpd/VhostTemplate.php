@@ -39,6 +39,7 @@ class VhostTemplate implements HttpdInterface {
     }
     $parameters['root'] = $root;
     $parameters['url'] = $url;
+    $parameters['include_vhost_file'] = '';
     $content = $this->getTemplateEngine()->render($this->getTemplate(), $parameters);
     $this->fs->dumpFile($this->createFilePath($root, $url), $content);
   }
