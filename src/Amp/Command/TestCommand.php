@@ -42,15 +42,15 @@ class TestCommand extends ContainerAwareCommand {
 
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    // Display help text
     $output->write($this->templateEngine->render('testing.php', array(
       'apache_dir' => $this->getContainer()->getParameter('apache_dir'),
       'nginx_dir' => $this->getContainer()->getParameter('nginx_dir'),
     )));
 
-    $root = $this->createCanaryApp();
-
     // Setup test instance
     $output->writeln("<info>Create test application</info>");
+    $root = $this->createCanaryCodebase();
     $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'create', array(
       '--root' => $root,
       '--force' => 1, // assume previous tests may have failed badly
@@ -87,7 +87,7 @@ class TestCommand extends ContainerAwareCommand {
    * @param string $template path of the example canary script
    * @return string, root path of the canary web app
    */
-  protected function createCanaryApp() {
+  protected function createCanaryCodebase() {
     $content = $this->templateEngine->render('canary.php', array(
       'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php')
     ));
