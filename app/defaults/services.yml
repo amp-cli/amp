@@ -4,6 +4,8 @@ parameters:
   # instances_yml: '~/.amp/instances.yml'
   # config_yml: '%app_dir%/services.yml'
 
+  httpd_type: 'apache'
+
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'
 
@@ -21,7 +23,7 @@ services:
       - [setFileMode, [0600]]
       - [setFile, ['%instances_yml%']]
       - [setDb, ['@mysql']]
-      - [setHttpd, ['@httpd.apache']]
+      - [setHttpd, ['@httpd']]
 
   ## This database connection used for most environments
   mysql.cli:

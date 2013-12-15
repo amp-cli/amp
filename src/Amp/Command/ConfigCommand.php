@@ -41,9 +41,32 @@ class ConfigCommand extends ContainerAwareCommand {
     $this->config->setParameter('mysql_type', 'dsn'); // temporary limitation
     $this->askMysqlDsn()->execute($input, $output, $dialog);
 
-    //$output->writeln("");
-    //$output->writeln("<info>Configure HTTPD</info>");
-    //$this->askHttpdType()->execute($input, $output, $dialog);
+    $output->writeln("");
+    $output->writeln("<info>Configure HTTPD</info>");
+    $this->askHttpdType()->execute($input, $output, $dialog);
+    switch ($this->config->getParameter('httpd_type')) {
+      case 'apache':
+        $configPath = $this->getContainer()->getParameter('apache_dir');
+        $output->writeln("");
+        $output->writeln("<comment>Note</comment>: Please ensure that httpd.conf or apache.conf includes this directive:");
+        $output->writeln("");
+        $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
+        $output->writeln("");
+        $output->writeln("You will need to restart Apache after adding the directive -- and again");
+        $output->writeln("after creating any new sites.");
+        break;
+      case 'nginx':
+        $configPath = $this->getContainer()->getParameter('nginx_dir');
+        $output->writeln("");
+        $output->writeln("<comment>Note</comment>: Please ensure that nginx.conf includes this directive:");
+        $output->writeln("");
+        $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
+        $output->writeln("");
+        $output->writeln("You will need to restart nginx after adding the directive -- and again");
+        $output->writeln("after creating any new sites.");
+        break;
+      default:
+    }
 
     $this->config->save();
   }
@@ -72,7 +95,10 @@ class ConfigCommand extends ContainerAwareCommand {
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         return $dialog->select($output,
           "",
-          array('apache' => 'Apache 2', 'nginx' => 'nginx'),
+          array(
+            'apache' => 'Apache 2',
+            'nginx' => 'nginx'
+          ),
           $default
         );
       }

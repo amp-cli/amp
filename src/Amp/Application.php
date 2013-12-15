@@ -85,6 +85,7 @@ class Application extends \Symfony\Component\Console\Application {
     }
 
     $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
+    $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
 
     return $container;
   }
