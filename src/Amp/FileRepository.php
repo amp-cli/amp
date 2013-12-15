@@ -22,7 +22,7 @@ abstract class FileRepository {
   /**
    * @var null|int $fileMode
    */
-  private $fileMode = 0600;
+  private $fileMode = 0640;
 
   /**
    * @var FileSystem

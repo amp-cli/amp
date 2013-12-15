@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigRepository {
@@ -24,8 +25,18 @@ class ConfigRepository {
    */
   var $file;
 
-  public function __construct($file) {
-    $this->file = $file;
+  /**
+   * @var null|int $fileMode
+   */
+  private $fileMode = 0640;
+
+  /**
+   * @var FileSystem
+   */
+  private $fs = NULL;
+
+  public function __construct() {
+    $this->fs = new Filesystem();
 
     // FIXME externalize
     $this->descriptions = array(
@@ -75,7 +86,7 @@ class ConfigRepository {
 
   public function save() {
     $this->load();
-    file_put_contents($this->getFile(), Yaml::dump($this->data));
+    $this->fs->dumpFile($this->getFile(), Yaml::dump($this->data), $this->getFileMode());
   }
 
   /**
@@ -90,6 +101,20 @@ class ConfigRepository {
    */
   public function getFile() {
     return $this->file;
+  }
+
+  /**
+   * @param int|null $fileMode
+   */
+  public function setFileMode($fileMode) {
+    $this->fileMode = $fileMode;
+  }
+
+  /**
+   * @return int|null
+   */
+  public function getFileMode() {
+    return $this->fileMode;
   }
 
   /**

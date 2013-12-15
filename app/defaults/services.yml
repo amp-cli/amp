@@ -18,6 +18,7 @@ services:
   instances:
     class: Amp\InstanceRepository
     calls:
+      - [setFileMode, [0600]]
       - [setFile, ['%instances_yml%']]
       - [setDb, ['@mysql']]
       - [setHttpd, ['@httpd.apache']]
@@ -55,7 +56,9 @@ services:
 
   config.repository:
     class: Amp\ConfigRepository
-    arguments: ['%config_yml%']
+    calls:
+      - [setFileMode, [0600]]
+      - [setFile, ['%config_yml%']]
 
   template.engine:
     class: Symfony\Component\Templating\PhpEngine
