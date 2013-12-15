@@ -34,23 +34,38 @@ class ConfigCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output) {
     $dialog = $this->getHelperSet()->get('dialog');
 
-    $output->writeln("<info>Welcome! amp will help setup your PHP applications.</info>");
+    $output->writeln("<info>"
+        . "Welcome! amp will help setup your PHP applications by creating\n"
+        . "databases and virtual-hosts. amp is intended for use during\n"
+        . "development and testing."
+        . "</info>"
+    );
+    $output->writeln("");
 
     $output->writeln("");
-    $output->writeln("<info>Configure MySQL</info>");
+    $output->writeln("<info>=============================[ Configure MySQL ]=============================</info>");
     $this->config->setParameter('mysql_type', 'dsn'); // temporary limitation
     $this->askMysqlDsn()->execute($input, $output, $dialog);
 
     $output->writeln("");
-    $output->writeln("<info>Configure HTTPD</info>");
+    $output->writeln("<info>=============================[ Configure HTTPD ]=============================</info>");
     $this->askHttpdType()->execute($input, $output, $dialog);
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
         $configPath = $this->getContainer()->getParameter('apache_dir');
         $output->writeln("");
-        $output->writeln("<comment>Note</comment>: Please ensure that httpd.conf or apache.conf includes this directive:");
+        $output->writeln("<comment>Note</comment>: Please ensure that httpd.conf or apache2.conf includes this directive:");
         $output->writeln("");
         $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
+        $configFiles = $this->findApacheConfigFiles();
+        if ($configFiles) {
+          $output->writeln("");
+          $output->writeln("The location of httpd.conf varies, but it may be:");
+          $output->writeln("");
+          foreach ($configFiles as $configFile) {
+            $output->writeln("  <comment>$configFile</comment>");
+          }
+        }
         $output->writeln("");
         $output->writeln("You will need to restart Apache after adding the directive -- and again");
         $output->writeln("after creating any new sites.");
@@ -61,12 +76,28 @@ class ConfigCommand extends ContainerAwareCommand {
         $output->writeln("<comment>Note</comment>: Please ensure that nginx.conf includes this directive:");
         $output->writeln("");
         $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
+        $configFiles = $this->findNginxConfigFiles();
+        if ($configFiles) {
+          $output->writeln("");
+          $output->writeln("The location of nginx.conf varies, but it may be:");
+          $output->writeln("");
+          foreach ($configFiles as $configFile) {
+            $output->writeln("  <comment>$configFile</comment>");
+          }
+        }
         $output->writeln("");
         $output->writeln("You will need to restart nginx after adding the directive -- and again");
         $output->writeln("after creating any new sites.");
         break;
       default:
     }
+
+    $output->writeln("");
+    $output->writeln("<info>===================================[ Test ]==================================</info>");
+    $output->writeln("");
+    $output->writeln("To ensure that amp is correctly configured, you may create a test site by running:");
+    $output->writeln("");
+    $output->writeln("  <comment>amp test</comment>");
 
     $this->config->save();
   }
@@ -129,4 +160,40 @@ class ConfigCommand extends ContainerAwareCommand {
     $prompt = new \Amp\ConfigPrompt($this->getContainer(), $this->config, $parameter);
     return $prompt;
   }
+
+  protected function findApacheConfigFiles() {
+    $candidates = array();
+    $candidates[] = '/etc/apache2/apache2.conf'; // Debian
+    $candidates[] = '/etc/apache2/conf.d'; // Debian
+    $candidates[] = '/etc/apache2/httpd.conf'; // OS X
+    $candidates[] = '/etc/httpd/conf/httpd.conf'; // RedHat (Googled, untested)
+    $candidates[] = '/opt/local/apache2/conf/httpd.conf'; // MacPorts (Googled, untested)
+    $candidates[] = '/Applications/MAMP/conf/apache/httpd.conf'; // MAMP
+    $candidates[] = '/Applications/XAMPP/etc/httpd.conf'; // XAMPP OS X (Googled, untested)
+    $candidates[] = '/usr/local/etc/apache2x/httpd.conf'; // FreeBSD (Googled, untested)
+    $candidates[] = '/usr/local/etc/apache22/httpd.conf'; // FreeBSD (Googled, untested)
+
+    $matches = array();
+    foreach ($candidates as $candidate) {
+      if (file_exists($candidate)) {
+        $matches[] = $candidate;
+      }
+    }
+    return $matches;
+  }
+  protected function findNginxConfigFiles() {
+    $candidates = array();
+    $candidates[] = '/etc/nginx/nginx.conf'; // Debian, RedHat
+    $candidates[] = '/opt/local/etc/nginx/nginx.conf'; // MacPorts (Googled, untested)
+    $candidates[] = '/usr/local/etc/nginx/nginx.conf '; // FreeBSD (Googled, untested)
+
+    $matches = array();
+    foreach ($candidates as $candidate) {
+      if (file_exists($candidate)) {
+        $matches[] = $candidate;
+      }
+    }
+    return $matches;
+  }
+
 }
