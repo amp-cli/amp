@@ -1,32 +1,26 @@
 <?php
 namespace Amp\Command;
 
+use Amp\ConfigRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 class ConfigSetCommand extends ContainerAwareCommand {
 
   /**
-   * @var string
+   * @var ConfigRepository
    */
-  private $configFile;
-
-  /**
-   * @var array ($key => $label)
-   */
-  private $parameters;
+  private $config;
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
+   * @param ConfigRepository $config
    */
-  public function __construct(\Amp\Application $app, $name = NULL, $configFile = NULL, $parameters = NULL) {
-    $this->configFile = $configFile;
-    $this->parameters = $parameters;
+  public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
+    $this->config = $config;
     parent::__construct($app, $name);
   }
 
@@ -35,33 +29,19 @@ class ConfigSetCommand extends ContainerAwareCommand {
     $this
       ->setName('config:set')
       ->setDescription('Set configuration value');
-    foreach ($this->parameters as $key => $label) {
-      $this->addOption($key, NULL, InputOption::VALUE_REQUIRED, $label);
+    foreach ($this->config->getParameters() as $key) {
+      $this->addOption($key, NULL, InputOption::VALUE_REQUIRED, $this->config->getDescription($key));
     }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    if (file_exists($this->configFile)) {
-      $config = Yaml::parse(file_get_contents($this->configFile));
-    }
-    else {
-      $config = $this->createDefaultConfig();
-    }
-
-    foreach ($this->parameters as $key => $label) {
+    foreach ($this->config->getParameters() as $key) {
       if ($input->getOption($key) !== NULL) {
-        $config['parameters'][$key] = $input->getOption($key);
+        $this->config->setParameter($key, $input->getOption($key));
         $this->getContainer()->setParameter($key, $input->getOption($key));
       }
     }
-
-    file_put_contents($this->configFile, Yaml::dump($config));
+    $this->config->save();
   }
 
-  protected function createDefaultConfig() {
-    return array(
-      'parameters' => array(),
-      'services' => array(),
-    );
-  }
 }

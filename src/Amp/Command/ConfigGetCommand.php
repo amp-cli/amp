@@ -1,6 +1,7 @@
 <?php
 namespace Amp\Command;
 
+use Amp\ConfigRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -9,17 +10,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ConfigGetCommand extends ContainerAwareCommand {
 
   /**
-   * @var array ($key => $label)
+   * @var ConfigRepository
    */
-  private $parameters;
+  private $config;
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
+   * @param ConfigRepository $config
    */
-  public function __construct(\Amp\Application $app, $name = NULL, $parameters = NULL) {
-    $this->parameters = $parameters;
+  public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
+    $this->config = $config;
     parent::__construct($app, $name);
   }
 
@@ -31,8 +32,8 @@ class ConfigGetCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     $rows = array();
-    foreach ($this->parameters as $key => $label) {
-      $rows[] = array($key, $this->getContainer()->getParameter($key), $label);
+    foreach ($this->config->getParameters() as $key) {
+      $rows[] = array($key, $this->getContainer()->getParameter($key), $this->config->getDescription($key));
     }
 
     $table = $this->getApplication()->getHelperSet()->get('table');

@@ -70,6 +70,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setParameter('nginx_dir', $this->appDir . DIRECTORY_SEPARATOR . 'nginx.d');
     $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(__DIR__, 'Templates', 'nginx-vhost.php')));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
+    $container->setParameter('config_yml', $this->appDir . DIRECTORY_SEPARATOR . 'services.yml');
 
     $locator = new FileLocator($this->configDirectories);
     $loaderResolver = new LoaderResolver(array(
@@ -103,20 +104,10 @@ class Application extends \Symfony\Component\Console\Application {
    * @return array of Symfony Command objects
    */
   public function createCommands() {
-    $configFile = $this->appDir . DIRECTORY_SEPARATOR . 'services.yml';
-    $configParams = array(
-      'apache_dir' => 'Directory which stores Apache config files',
-      'apache_tpl' => 'Apache configuration template',
-      'nginx_dir' => 'Directory which stores nginx config files',
-      'nginx_tpl' => 'Nginx configuration template',
-      'mysql_type' => 'How to connect to MySQL admin (cli, dsn, linuxRamDisk)',
-      'mysql_dsn' => 'Administrative connection details (for use with "dsn")',
-    );
-
     $commands = array();
-    $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $configParams);
-    $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $configFile, $configParams);
-    $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $configFile, $configParams);
+    $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $this->getContainer()->get('config.repository'));
+    $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $this->getContainer()->get('config.repository'));
+    $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\TestCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));

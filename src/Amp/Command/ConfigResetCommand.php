@@ -1,74 +1,53 @@
 <?php
 namespace Amp\Command;
 
+use Amp\ConfigRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Yaml\Yaml;
 
 class ConfigResetCommand extends ContainerAwareCommand {
 
   /**
-   * @var string
+   * @var ConfigRepository
    */
-  private $configFile;
-
-  /**
-   * @var array ($key => $label)
-   */
-  private $parameters;
+  private $config;
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
+   * @param ConfigRepository $config
    */
-  public function __construct(\Amp\Application $app, $name = NULL, $configFile = NULL, $parameters = NULL) {
-    $this->configFile = $configFile;
-    $this->parameters = $parameters;
+  public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
+    $this->config = $config;
     parent::__construct($app, $name);
   }
-
 
   protected function configure() {
     $this
       ->setName('config:reset')
       ->setDescription('Reset a configuration value')
       ->addOption('all', 'a', InputOption::VALUE_NONE, 'Reset all listed parameters');
-    foreach ($this->parameters as $key => $label) {
-      $this->addOption($key, NULL, InputOption::VALUE_NONE, $label);
+    foreach ($this->config->getParameters() as $key) {
+      $this->addOption($key, NULL, InputOption::VALUE_NONE, $this->config->getDescription($key));
     }
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    if (file_exists($this->configFile)) {
-      $config = Yaml::parse(file_get_contents($this->configFile));
-    }
-    else {
-      $config = $this->createDefaultConfig();
-    }
-
     $found = FALSE;
-    foreach ($this->parameters as $key => $label) {
+    foreach ($this->config->getParameters() as $key) {
       if ($input->getOption($key) || $input->getOption('all')) {
-        unset($config['parameters'][$key]);
+        $this->config->unsetParameter($key);
         $found = TRUE;
       }
     }
 
     if ($found) {
-      file_put_contents($this->configFile, Yaml::dump($config));
-    } else {
+      $this->config->save();
+    }
+    else {
       $output->writeln('<error>No properties specified</error>');
     }
-
-  }
-
-  protected function createDefaultConfig() {
-    return array(
-      'parameters' => array(),
-      'services' => array(),
-    );
   }
 }

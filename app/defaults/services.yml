@@ -2,6 +2,7 @@ parameters:
   # amp_src_dir: (varies; local-dir or phar)
   # app_dir: '~/.amp'
   # instances_yml: '~/.amp/instances.yml'
+  # config_yml: '%app_dir%/services.yml'
 
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'
@@ -51,6 +52,10 @@ services:
       - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['%nginx_tpl%']]
       - [setDir, ['%nginx_dir%']]
+
+  config.repository:
+    class: Amp\ConfigRepository
+    arguments: ['%config_yml%']
 
   template.engine:
     class: Symfony\Component\Templating\PhpEngine
