@@ -23,6 +23,12 @@ class TestCommand extends ContainerAwareCommand {
   private $templateEngine;
 
   /**
+   * @var string a random value that should be returned by canary
+   * if it runs successfully
+   */
+  private $expectedResponse;
+
+  /**
    * @param \Amp\Application $app
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
@@ -30,6 +36,7 @@ class TestCommand extends ContainerAwareCommand {
   public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
     $this->fs = new Filesystem();
     $this->instances = $instances;
+    $this->expectedResponse = 'response-code-' . \Amp\Util\String::createRandom(10);
     parent::__construct($app, $name);
     $this->templateEngine = $this->getContainer()->get('template.engine');
   }
@@ -43,10 +50,10 @@ class TestCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     // Display help text
-    $output->write($this->templateEngine->render('testing.php', array(
-      'apache_dir' => $this->getContainer()->getParameter('apache_dir'),
-      'nginx_dir' => $this->getContainer()->getParameter('nginx_dir'),
-    )));
+    //$output->write($this->templateEngine->render('testing.php', array(
+    //  'apache_dir' => $this->getContainer()->getParameter('apache_dir'),
+    //  'nginx_dir' => $this->getContainer()->getParameter('nginx_dir'),
+    //)));
 
     // Setup test instance
     $output->writeln("<info>Create test application</info>");
@@ -60,14 +67,16 @@ class TestCommand extends ContainerAwareCommand {
 
     // Connect to test instance
     $output->writeln("<info>Connect to test application</info>");
+    $output->writeln("<comment>Expect response: \"{$this->expectedResponse}\"</comment>");
+
     $this->instances->load(); // force reload
     $instance = $this->instances->find(Instance::makeId($root, ''));
     $response = $this->doPost($instance->getUrl() . '/index.php', array(
       'dsn' => $instance->getDsn(),
     ));
 
-    if ($response == 'OK') {
-      $output->writeln("<info>Connect to test application: OK</info>");
+    if ($response == $this->expectedResponse) {
+      $output->writeln("<info>Received expected response</info>");
 
       // Tear down test instance
       // Skip teardown; this allows us to preserve the port-number
@@ -78,8 +87,8 @@ class TestCommand extends ContainerAwareCommand {
       //));
     }
     else {
-      $output->writeln("<error>Connect to test application: Failed</error>");
-      $output->writeln("Response: $response");
+      $output->writeln("<error>Received incorrect response: \"$response\"</error>");
+      $output->writeln("<comment>Tip: Try running \"amp setup\" and/or restarting the webserver.</comment>");
     }
   }
 
@@ -89,7 +98,8 @@ class TestCommand extends ContainerAwareCommand {
    */
   protected function createCanaryCodebase() {
     $content = $this->templateEngine->render('canary.php', array(
-      'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php')
+      'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php'),
+      'expectedResponse' => $this->expectedResponse,
     ));
     $root = $this->getContainer()->getParameter('app_dir') . DIRECTORY_SEPARATOR . 'canary';
     if (!$this->fs->exists($root)) {

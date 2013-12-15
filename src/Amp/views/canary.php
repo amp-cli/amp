@@ -23,7 +23,7 @@ try {
   $dbh = $datasource->createPDO();
   foreach ($dbh->query('SELECT 99 as value') as $row) {
     if ($row['value'] == 99) {
-      echo "OK";
+      echo "<?= $expectedResponse ?>";
     } else {
       echo "Error: Bad query result";
     }
