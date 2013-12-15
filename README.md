@@ -68,11 +68,7 @@ MYCONFIG
 
 Q: How do I configure "amp" to work on my system?
 
-A1: Run "amp config:set --mysql_dsn=mysql://username:password@hostname"
-(and optionally add a port)
-
-A2: For Apache, add directive "Include /home/myuser/.amp/apache.d/*.conf".
-For nginx, add directive "Include /home/myuser/.amp/nginx.d/*.conf"
+A: Run "amp config"
 
 Q: How do I know if "amp" is working?
 
