@@ -1,67 +1,90 @@
-## About "amp" ##
+## About "amp": Vision ##
 
-"amp" is a tool to facilitate development of PHP web applications. The
-general goal is that one may download the code for a PHP web application and
-then call "amp" to provision a local database and local website.  For
-example:
+"amp" is a tool to facilitate development of PHP web applications. The goal is
+to complement "composer" (and similar tools) by adding a (mostly) automated
+step to setup the database and webserver for newly downloaded code. For example,
+a developer checking out a project might say:
 
 ```
-me@localhost:~/src$ git clone http://git.example.com/my-application
+me@localhost:~/src$ composer create-project example/my-application --dev
 me@localhost:~/src$ cd my-application
-me@localhost:~/src/my-application$ amp create --url=http://localhost:8003
-AMP_URL='http://localhost:8003'
-AMP_ROOT='/homes/me/src/my-application'
-AMP_DB_DSN='mysql://myapplicat_vfs6h:iY93i1DQX2MgCux0@localhost:/myapplicat_vfs6h?new_link=true'
-AMP_DB_USER='myapplicat_vfs6h'
-AMP_DB_PASS='ib93i1DQXcMgCtx0'
-AMP_DB_HOST='localhost'
-AMP_DB_PORT=''
-AMP_DB_NAME='myapplicat_vfs6h'
+me@localhost:~/src/my-application$ ./bin/amp create --url=http://localhost:8003
+URL: http://localhost:8003
+Admin User: admin
+Admin Password zFWx9D22
 ```
 
-The "amp create" command will connect to your local mysqld and httpd (Apache
-or nginx), setup a new database and virtual-host (named "localhost:8003"),
-then output details.
+The "my-application" package depends on the "amp" package (using "require-dev" or
+"suggest").  The "amp create" step creates a new database in the local mysqld and
+a new virutal-host in the local httpd; then it writes out necessary credentials
+(eg the mysql username and password) to a config file.
 
-Final thoughts:
+Additional thoughts:
 
  * "amp" IS NOT a complete stack with bundled binaries (for PHP, MySQL, etc).
  * "amp" IS NOT a cluster-management tool for remote servers.
  * "amp" IS NOT a one-click installer.
  * "amp" IS NOT a system-administration suite.
- * "amp" IS AN INTERFACE to the *AMP stack -- it aims to help application developers
-   write their own install scripts.
+ * "amp" is primarily AN INTERFACE to the local *AMP stack -- it aims to help
+   application developers write their own install scripts.
  * "amp" aims to be PORTABLE -- to work with common PHP development environments
    such as Debian/Ubuntu, MAMP, XAMPP, or MacPorts.
  * "amp" is designed for DEVELOPMENT AND TESTING. If you need to automatically install
    copies of applications from source-code in a variety of environments (for
-   integration-tests, demos, bug-fixing, training, collaboration, etc), then "amp"
-   can help.
- 
-## Example ##
+   integration-tests, test-fixtures, demos, bug-fixing, training, collaboration, etc),
+   then "amp" can help.
 
-For example, the "my-application" (from above) may require a few setup steps:
+## About "amp": Current Example ##
 
- * Create a virtual host pointing to the "my-application/web" directory
- * Create a database
- * Fill the database with some default tables (using "sql/install.sql")
- * Create a config file ("conf/my-application.ini") so that PHP can
-   connect to the database
+At time of writing, "amp" is in-development and doesn't fully meet its vision.
+In the third line, the developer shouldn't call "amp create" directly; rather,
+the author of "my-application" should include an "install.sh" script, and
+the downstream developer can run it:
 
-As the author of "my-application", one might include a script "bin/install.sh"
+```
+me@localhost:~/src$ composer create-project example/my-application --dev
+me@localhost:~/src$ cd my-application
+me@localhost:~/src/my-application$ ./bin/amp config
+me@localhost:~/src/my-application$ ./bin/install.sh
+Login to the application:
+ * URL: ${AMP_URL}
+ * Username: admin
+ * Password: default
+```
+
+The "amp config" command determines how to connect to MySQL and httpd.
+It may scan the local system for common configurations (Ubuntu vs
+MAMP vs MacPorts; Apache vs nginx), prompt the user for information, and
+retain the info (in ~/.amp) for future use.
+
+The "install.sh" is mostly specific to the application, but it builds
+on "amp" to address the tedious bit about setting up mysqld and httpd.
+For example, one might say:
 
 ```
 #!/bin/bash
 set -e
-eval $(amp create --root="$PWD/web" "$@")
-cat $PWD/sql/install.sql | mysql -u$AMP_DB_USER -p$AMP_DB_PASS $AMP_DB_NAME
-cat > $PWD/conf/my-application.ini <<MYCONFIG
+APPDIR=`pwd`
+
+## Create a new database and virtual-host
+eval $(amp create --root="$APPDIR/web")
+
+## Load DB
+cat $APPDIR/sql/install.sql | mysql -u$AMP_DB_USER -p$AMP_DB_PASS $AMP_DB_NAME
+
+## Create config file
+cat > $APPDIR/conf/my-application.ini <<MYCONFIG
 [mysql]
 username=${AMP_DB_USER}
 password=${AMP_DB_PASS}
 database=${AMP_DB_NAME}
 hostname=${AMP_DB_HOST}
 MYCONFIG
+
+echo "Login to the application:"
+echo " * URL: ${AMP_URL}"
+echo " * Username: admin"
+echo " * Password: default"
 ```
 
 ## FAQ ##
@@ -76,8 +99,8 @@ A: Run "amp test"
 
 Q: How does "amp" assign a virtual hostname and port?
 
-A: You can specify one by passing the "--url" option. If omitted, it will
-use "localhost" and assign an alternative port.
+A: You can specify one by passing the "--url" option to "create. If omitted,
+it will use "localhost" and assign an alternative port.
 
 Q: How does "amp" name databases and database users?
 
