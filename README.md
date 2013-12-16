@@ -34,7 +34,7 @@ Additional thoughts:
    integration-tests, test-fixtures, demos, bug-fixing, training, collaboration, etc),
    then "amp" can help.
 
-## About "amp": Current Example ##
+## About "amp": Pre-Alpha Example ##
 
 At time of writing, "amp" is in-development and doesn't fully meet its vision.
 In the third line, the developer shouldn't call "amp create" directly; rather,
@@ -88,6 +88,10 @@ echo " * Password: default"
 ```
 
 ## FAQ ##
+
+Q: Is "amp" stable?
+
+A: No. "amp" is pre-alpha. Interfaces and workflows are likely to change.
 
 Q: How do I configure "amp" to work on my system?
 
