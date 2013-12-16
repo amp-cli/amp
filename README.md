@@ -103,7 +103,7 @@ A: Run "amp test"
 
 Q: How does "amp" assign a virtual hostname and port?
 
-A: You can specify one by passing the "--url" option to "create. If omitted,
+A: You can specify one by passing the "--url" option to "create". If omitted,
 it will use "localhost" and assign an alternative port.
 
 Q: How does "amp" name databases and database users?
@@ -151,14 +151,22 @@ config:set --mysql_type=XXX" or "amp config:set --httpd_type=XXX"
 
 Parameters and services may be configured in amp's source-tree
 ("app/defaults/services.yml") or in the local home directory
-("~/.amp/services.yml").
+("~/.amp/services.yml"). Configuration options entered through
+the CLI ("amp config", "amp config:set", etc) are stored in
+the local home directory ("~/.amp/services.yml").
 
 ## Planned Features ##
 
  * Add DatabaseManagementInterface for launching mysqld (in ramdisk)
  * Add HttpdInterface for nginx
+ * Add HttpdInterface for PHP's built-in web-server
  * Set permissions for web-writable files (ACL and/or chmod)
- * Callback support
+ * Callback support (eg "amp create" calls a script bundled with my-application)
+ * Load per-application config values (my-application/.amp.yml); eg:
+   * Specify any callback(s)
+   * Specify the Apache vhost template
+   * Specify the nginx vhost template
+   * Specify the PHP router script (for php 5.4's built-in web-server)
 
 ## Wishlist / Patch-Welcomes ##
 
@@ -167,6 +175,5 @@ Parameters and services may be configured in amp's source-tree
  * Guided configuration and testing (eg "amp config -i")
  * Register new virtual-hosts in /etc/hosts
  * Automatically restart Apache/nginx after creating or changing virtual-hosts
- * Add support for launching PHP's built-in webserver
  * Add more heuristics/settings to work well in common dev environments
    (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
