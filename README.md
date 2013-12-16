@@ -89,9 +89,9 @@ echo " * Password: default"
 
 ## FAQ ##
 
-Q: Is "amp" stable?
+Q: Is "amp" stable? Should I rely on it right now?
 
-A: No. "amp" is pre-alpha. Interfaces and workflows are likely to change.
+A: Probably not. "amp" is pre-alpha. Interfaces and workflows are likely to change.
 
 Q: How do I configure "amp" to work on my system?
 
