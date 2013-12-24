@@ -28,7 +28,7 @@ class Application extends \Symfony\Component\Console\Application {
    * @return
    */
   public static function main($binDir) {
-    $appDir = $_ENV['HOME'] . DIRECTORY_SEPARATOR . '.amp';
+    $appDir = getenv('HOME') . DIRECTORY_SEPARATOR . '.amp';
     $configDirectories = array(
       dirname($binDir) . '/app/defaults',
       $appDir,
