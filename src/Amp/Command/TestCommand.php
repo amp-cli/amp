@@ -88,7 +88,7 @@ class TestCommand extends ContainerAwareCommand {
     }
     else {
       $output->writeln("<error>Received incorrect response: \"$response\"</error>");
-      $output->writeln("<comment>Tip: Try running \"amp setup\" and/or restarting the webserver.</comment>");
+      $output->writeln("<comment>Tip: Try running \"amp config\" and/or restarting the webserver.</comment>");
     }
   }
 

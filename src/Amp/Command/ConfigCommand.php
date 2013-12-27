@@ -54,7 +54,7 @@ class ConfigCommand extends ContainerAwareCommand {
       case 'apache':
         $configPath = $this->getContainer()->getParameter('apache_dir');
         $output->writeln("");
-        $output->writeln("<comment>Note</comment>: Please ensure that httpd.conf or apache2.conf includes this directive:");
+        $output->writeln("<comment>Note</comment>: Please add this line to the httpd.conf or apache2.conf:");
         $output->writeln("");
         $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
         $configFiles = $this->findApacheConfigFiles();
@@ -98,6 +98,7 @@ class ConfigCommand extends ContainerAwareCommand {
     $output->writeln("To ensure that amp is correctly configured, you may create a test site by running:");
     $output->writeln("");
     $output->writeln("  <comment>amp test</comment>");
+    // FIXME: auto-detect "amp" vs "./bin/amp" vs "./amp"
 
     $this->config->save();
   }
@@ -108,7 +109,7 @@ class ConfigCommand extends ContainerAwareCommand {
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         $value = $dialog->askAndValidate(
           $output,
-          "> ",
+          "Enter mysql_dsn> ",
           function ($dsn) {
             return static::validateDsn($dsn);
           },
@@ -125,7 +126,7 @@ class ConfigCommand extends ContainerAwareCommand {
       ->setAsk(
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         return $dialog->select($output,
-          "",
+          "Enter httpd_type",
           array(
             'apache' => 'Apache 2',
             'nginx' => 'nginx'
