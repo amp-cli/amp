@@ -37,15 +37,47 @@ class ConfigCommand extends ContainerAwareCommand {
     $output->writeln("<info>"
         . "Welcome! amp will help setup your PHP applications by creating\n"
         . "databases and virtual-hosts. amp is intended for use during\n"
-        . "development and testing."
+        . "development and testing.\n"
+        . "\n"
+        . "Please fill in a few configuration options so that we can properly\n"
+        . "install the PHP application."
         . "</info>"
     );
-    $output->writeln("");
 
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure MySQL ]=============================</info>");
     $this->config->setParameter('mysql_type', 'dsn'); // temporary limitation
     $this->askMysqlDsn()->execute($input, $output, $dialog);
+
+    $output->writeln("");
+    $output->writeln("<info>=======================[ Configure File Permissions ]========================</info>");
+    $output->writeln("");
+    $currentUser = \Amp\Util\User::getCurrentUser();
+    $output->writeln("<info>"
+        . "It appears that you are currently working as user \"{$currentUser}\".\n"
+        . "\n"
+        . "If the web server executes PHP requests as the same user, then no special\n"
+        . "permissions are required.\n"
+        . "\n"
+        . "If the web server executes PHP requests as a different user (such as\n"
+        . "\"www-data\" or \"apache\"), then special permissions will be required\n"
+        . "for any web-writable data directories."
+        . "</info>"
+    );
+    $this->askPermType()->execute($input, $output, $dialog);
+    switch ($this->config->getParameter("perm_type")) {
+      case 'linuxAcl':
+      case 'osxAcl':
+        $this->askPermUser()->execute($input, $output, $dialog);
+        break;
+
+      case 'custom':
+        $this->askPermCommand()->execute($input, $output, $dialog);
+        break;
+
+      default:
+        break;
+    }
 
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure HTTPD ]=============================</info>");
@@ -54,7 +86,7 @@ class ConfigCommand extends ContainerAwareCommand {
       case 'apache':
         $configPath = $this->getContainer()->getParameter('apache_dir');
         $output->writeln("");
-        $output->writeln("<comment>Note</comment>: Please ensure that httpd.conf or apache2.conf includes this directive:");
+        $output->writeln("<comment>Note</comment>: Please add this line to the httpd.conf or apache2.conf:");
         $output->writeln("");
         $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
         $configFiles = $this->findApacheConfigFiles();
@@ -98,6 +130,7 @@ class ConfigCommand extends ContainerAwareCommand {
     $output->writeln("To ensure that amp is correctly configured, you may create a test site by running:");
     $output->writeln("");
     $output->writeln("  <comment>amp test</comment>");
+    // FIXME: auto-detect "amp" vs "./bin/amp" vs "./amp"
 
     $this->config->save();
   }
@@ -108,9 +141,76 @@ class ConfigCommand extends ContainerAwareCommand {
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         $value = $dialog->askAndValidate(
           $output,
-          "> ",
+          "Enter mysql_dsn> ",
           function ($dsn) {
             return static::validateDsn($dsn);
+          },
+          FALSE,
+          $default
+        );
+        return (empty($value)) ? FALSE : $value;
+      }
+    );
+  }
+
+  protected function askPermType() {
+    return $this->createPrompt('perm_type')
+      ->setAsk(
+      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+        $options = array(
+          'none' => '"none": Do not set any special permissions for the web user',
+          'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777]',
+          'linuxAcl' => '"linuxAcl": Set tight, inheritable permissions with Linux ACLs [setfacl]',
+          'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a]',
+          'custom' => '"custom": Set permissions with a custom command',
+        );
+        $optionKeys = array_keys($options);
+
+        $defaultPos = array_search($default, $optionKeys);
+        if ($defaultPos === FALSE) {
+          $defaultPos = '0';
+        }
+        $selectedNum = $dialog->select($output,
+          "Enter perm_type",
+          array_values($options),
+          $defaultPos
+        );
+        return $optionKeys[$selectedNum];
+      }
+    );
+  }
+
+  protected function askPermUser() {
+    return $this->createPrompt('perm_user')
+      ->setAsk(
+      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+        $value = $dialog->askAndValidate(
+          $output,
+          "Enter perm_user> ",
+          function ($user) {
+            return \Amp\Util\User::validateUser($user);
+          },
+          FALSE,
+          $default
+        );
+        return (empty($value)) ? FALSE : $value;
+      }
+    );
+  }
+
+  protected function askPermCommand() {
+    return $this->createPrompt('perm_custom_command')
+      ->setAsk(
+      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+        $value = $dialog->askAndValidate(
+          $output,
+          "Enter perm_custom_command> ",
+          function ($command) use ($output) {
+            $testDir = $this->getContainer()->getParameter('app_dir') . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . \Amp\Util\String::createRandom(16);
+            $output->writeln("<info>Executing against test directory ($testDir)</info>");
+            $result = \Amp\Permission\External::validateDirCommand($testDir, $command);
+            $output->writeln("<info>OK (Executed without error)</info>");
+            return $result;
           },
           FALSE,
           $default
@@ -125,7 +225,7 @@ class ConfigCommand extends ContainerAwareCommand {
       ->setAsk(
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         return $dialog->select($output,
-          "",
+          "Enter httpd_type",
           array(
             'apache' => 'Apache 2',
             'nginx' => 'nginx'
@@ -181,6 +281,7 @@ class ConfigCommand extends ContainerAwareCommand {
     }
     return $matches;
   }
+
   protected function findNginxConfigFiles() {
     $candidates = array();
     $candidates[] = '/etc/nginx/nginx.conf'; // Debian, RedHat

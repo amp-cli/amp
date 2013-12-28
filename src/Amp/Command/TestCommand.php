@@ -57,7 +57,7 @@ class TestCommand extends ContainerAwareCommand {
 
     // Setup test instance
     $output->writeln("<info>Create test application</info>");
-    $root = $this->createCanaryCodebase();
+    list ($root, $dataDir) = $this->createCanaryFiles($output);
     $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'create', array(
       '--root' => $root,
       '--force' => 1, // assume previous tests may have failed badly
@@ -88,7 +88,11 @@ class TestCommand extends ContainerAwareCommand {
     }
     else {
       $output->writeln("<error>Received incorrect response: \"$response\"</error>");
-      $output->writeln("<comment>Tip: Try running \"amp setup\" and/or restarting the webserver.</comment>");
+      $output->writeln("<comment>Tip: Try running \"amp config\" and/or restarting the webserver.</comment>");
+    }
+
+    if (!rmdir($dataDir)) {
+      $output->writeln("<error>Failed to clean up data directory: $dataDir</error>");
     }
   }
 
@@ -96,17 +100,29 @@ class TestCommand extends ContainerAwareCommand {
    * @param string $template path of the example canary script
    * @return string, root path of the canary web app
    */
-  protected function createCanaryCodebase() {
-    $content = $this->templateEngine->render('canary.php', array(
-      'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php'),
-      'expectedResponse' => $this->expectedResponse,
-    ));
+  protected function createCanaryFiles(OutputInterface $output) {
+    // Create empty web dir
     $root = $this->getContainer()->getParameter('app_dir') . DIRECTORY_SEPARATOR . 'canary';
     if (!$this->fs->exists($root)) {
       $this->fs->mkdir($root);
     }
+
+    // Create empty data dir
+    $dataDirCode = \Amp\Util\String::createRandom(32);
+    $dataDir = $root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $dataDirCode;
+    $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'datadir', array(
+      'path' => array($dataDir),
+    ));
+
+    // Create PHP code
+    $content = $this->templateEngine->render('canary.php', array(
+      'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php'),
+      'expectedResponse' => $this->expectedResponse,
+      'dataDir' => $dataDir,
+    ));
     $this->fs->dumpFile($root . DIRECTORY_SEPARATOR . 'index.php', $content);
-    return $root;
+
+    return array($root, $dataDir);
   }
 
   protected function doCommand(OutputInterface $output, $verbosity, $command, $args) {

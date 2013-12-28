@@ -86,6 +86,7 @@ class Application extends \Symfony\Component\Console\Application {
 
     $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
+    $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));
 
     return $container;
   }
@@ -110,6 +111,7 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $this->getContainer()->get('config.repository'));
+    $commands[] = new \Amp\Command\DatadirCommand($this, NULL, $this->getContainer()->get('perm'));
     $commands[] = new \Amp\Command\TestCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));

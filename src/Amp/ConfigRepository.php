@@ -40,19 +40,37 @@ class ConfigRepository {
 
     // FIXME externalize
     $this->descriptions = array(
-      'httpd_type' => 'Type of webserver',
+      'httpd_type' => 'Type of webserver [apache,nginx]',
       'apache_dir' => 'Directory which stores Apache config files',
       'apache_tpl' => 'Apache configuration template',
       'nginx_dir' => 'Directory which stores nginx config files',
       'nginx_tpl' => 'Nginx configuration template',
-      'mysql_type' => 'How to connect to MySQL admin (cli, dsn, linuxRamDisk)',
+      'mysql_type' => 'How to connect to MySQL admin [cli,dsn,linuxRamDisk]',
       'mysql_dsn' => 'Administrative credentials for MySQL',
+      'perm_type' => 'How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]',
+      'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
+      'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
     );
 
     // FIXME externalize
     $this->examples = array(
-      'mysql_dsn' => 'mysql://user:pass@hostname'
+      'mysql_dsn' => 'mysql://user:pass@hostname',
+      'perm_user' => 'www-data',
+      'perm_custom_command' => 'chmod 1777 {DIR}',
     );
+
+    $webUsers = \Amp\Util\User::filterValidUsers(array(
+      'www-data',
+      'www',
+      '_www',
+      'apache',
+      'apache2',
+      'nginx',
+      'httpd'
+    ));
+    if ($webUsers) {
+      $this->examples['perm_user'] = implode(', ', $webUsers);
+    }
   }
 
   protected function load() {

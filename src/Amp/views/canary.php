@@ -14,6 +14,8 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
   exit('Connection must originate on localhost');
 }
 
+// ---------- Test database ----------
+
 require_once "<?php echo $autoloader ?>";
 $datasource = new \Amp\Database\Datasource(array(
   'civi_dsn' => $_POST['dsn']
@@ -23,13 +25,30 @@ try {
   $dbh = $datasource->createPDO();
   foreach ($dbh->query('SELECT 99 as value') as $row) {
     if ($row['value'] == 99) {
-      echo "<?= $expectedResponse ?>";
+      // ok
     } else {
-      echo "Error: Bad query result";
+      echo "Error: Bad query result <br/>";
+      die();
     }
   }
   $dbh = NULL;
 } catch (PDOException $e) {
-  print "Error: " . $e->getMessage() . "<br/>";
+  echo "Error: " . $e->getMessage() . "<br/>";
   die();
 }
+
+// ---------- Test file permissions ----------
+
+$dataFile = '<?php echo addslashes($dataDir) ?>/example.txt';
+if (FALSE === file_put_contents($dataFile, "data")) {
+  echo "Error: Failed to write $dataFile";
+  die();
+}
+if (FALSE === unlink($dataFile)) {
+  echo "Error: Failed to remove $dataFile";
+  die();
+}
+
+// ---------- OK ----------
+
+echo "<?= $expectedResponse ?>";
