@@ -76,12 +76,19 @@ class ConfigPrompt {
     $default = $this->getContainer()->getParameter($this->parameter);
 
     $output->writeln("");
-    $output->writeln("<comment>Parameter</comment>: {$this->parameter}");
+    $output->writeln("<comment>Option</comment>: {$this->parameter}");
     if ($this->description) {
       $output->writeln("<comment>Description</comment>: {$this->description}");
     }
     if ($this->example) {
-      $output->writeln("<comment>Example</comment>: {$this->example}");
+      if (is_array($this->example)) {
+        $output->writeln("<comment>Examples</comment>:");
+        foreach ($this->example as $example) {
+          $output->writeln(" * $example");
+        }
+      } else {
+        $output->writeln("<comment>Example</comment>: {$this->example}");
+      }
     }
     $output->writeln("<comment>Default</comment>: {$default}");
 
