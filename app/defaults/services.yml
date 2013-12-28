@@ -15,6 +15,10 @@ parameters:
   mysql_type: 'dsn'
   mysql_dsn: ''
 
+  perm_type: 'worldWritable'
+  perm_user: ''
+  perm_custom_command: ''
+
 services:
   ## Data storage for AMP instances
   instances:
@@ -61,6 +65,33 @@ services:
     calls:
       - [setFileMode, [0600]]
       - [setFile, ['%config_yml%']]
+
+  perm.none:
+    class: Amp\Permission\External
+    calls:
+      - [setDirCommand, ['write', '']]
+
+  perm.worldWritable:
+    class: Amp\Permission\External
+    calls:
+      - [setDirCommand, ['write', 'chmod 1777 {DIR}']]
+
+  perm.linuxAcl:
+    class: Amp\Permission\External
+    calls:
+      - [setDirCommand, ['write', 'setfacl -m u:%perm_user%:rwx -m d:u:%perm_user%:rwx {DIR}']]
+
+  perm.osxAcl:
+    class: Amp\Permission\External
+    calls:
+      - [setDirCommand, ['write', '/bin/chmod +a "%perm_user% allow delete,write,append,file_inherit,directory_inherit" {DIR}']]
+      # "/bin/chmod" -- some people install GNU coreutils, but we need to use stock chmod
+      # [setDirCommand, ['write', 'chmod -R +a "%perm_user% allow delete,write,append,file_inherit,directory_inherit" {DIR}']]
+
+  perm.custom:
+    class: Amp\Permission\External
+    calls:
+      - [setDirCommand, ['write', '%perm_custom_command%']]
 
   template.engine:
     class: Symfony\Component\Templating\PhpEngine
