@@ -68,6 +68,7 @@ APPDIR=`pwd`
 
 ## Create a new database and virtual-host
 eval $(amp create --root="$APPDIR/web")
+amp datadir "$APPDIR/log" "$APPDIR/cache"
 
 ## Load DB
 cat $APPDIR/sql/install.sql | mysql -u$AMP_DB_USER -p$AMP_DB_PASS $AMP_DB_NAME
@@ -134,33 +135,47 @@ A: Install [Box](http://box-project.org/). Then, in the amp source dir, run "php
 "amp" uses components from Symfony 2 (eg Console, Config, and
 Dependency-Injection).
 
-There are three key services defined in the container:
+There are a few key services defined in the container:
 
  * mysql -- A service for creating and destroying MySQL DB's
    (based on DatabaseManagementInterface)
  * httpd -- A service for creating and destroying HTTP virtual-hosts
    (based on HttpdInterface)
+ * perm -- A service for setting file permissions on data directories
+   (based on PermissionInterface)
  * instances -- A repository for CRUD'ing web-app instances (using the
    "mysql" and "httpd" services) which stores metadata in YAML
    (~/.app/instances.yml).
 
-There may be competing implementations of "mysql" and "httpd" -- eg one
-implementation might connect to a remote mysqld while another launches a
-local mysqld on a ramdisk.  These can be chosen at runtime by calling "amp
-config:set --mysql_type=XXX" or "amp config:set --httpd_type=XXX"
+There may be competing implementations of "mysql", "httpd", and "perm" -- eg
+one implementation might connect to a remote mysqld while another launches a
+local mysqld on a ramdisk.  These can be chosen at runtime by calling
+commands like:
+
+```
+## Set options interactively
+amp config
+
+## Set options individually
+amp config:set --httpd_type=XXX
+amp config:set --mysql_type=XXX
+amp config:set --perm_type=XXX
+
+## Set options en masse
+amp config:set --httpd_type=XXX --mysql_type=XXX --perm_type=XXX
+```
 
 Parameters and services may be configured in amp's source-tree
 ("app/defaults/services.yml") or in the local home directory
-("~/.amp/services.yml"). Configuration options entered through
-the CLI ("amp config", "amp config:set", etc) are stored in
-the local home directory ("~/.amp/services.yml").
+("~/.amp/services.yml"). Parameters entered through the CLI
+("amp config", "amp config:set", etc) are stored in the local
+home directory ("~/.amp/services.yml").
 
 ## Planned Features ##
 
  * Add DatabaseManagementInterface for launching mysqld (in ramdisk)
  * Add HttpdInterface for nginx
  * Add HttpdInterface for PHP's built-in web-server
- * Set permissions for web-writable files (ACL and/or chmod)
  * Callback support (eg "amp create" calls a script bundled with my-application)
  * Load per-application config values (my-application/.amp.yml); eg:
    * Specify any callback(s)
