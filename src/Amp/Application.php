@@ -57,11 +57,6 @@ class Application extends \Symfony\Component\Console\Application {
       throw new \Exception(__CLASS__ . ': Missing required properties (appDir, configDirectories)');
     }
 
-    if (!is_dir($this->appDir)) {
-      $fs = new Filesystem();
-      $fs->mkdir($this->appDir);
-    }
-
     $container = new ContainerBuilder();
     $container->setParameter('app_dir', $this->appDir);
     $container->setParameter('amp_src_dir', dirname(__DIR__));
@@ -71,6 +66,13 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(__DIR__, 'Templates', 'nginx-vhost.php')));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
     $container->setParameter('config_yml', $this->appDir . DIRECTORY_SEPARATOR . 'services.yml');
+
+    $fs = new Filesystem();
+    $fs->mkdir(array(
+      $this->appDir,
+      $container->getParameter('apache_dir'),
+      $container->getParameter('nginx_dir'),
+    ));
 
     $locator = new FileLocator($this->configDirectories);
     $loaderResolver = new LoaderResolver(array(
