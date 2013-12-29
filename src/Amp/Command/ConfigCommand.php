@@ -143,7 +143,7 @@ class ConfigCommand extends ContainerAwareCommand {
           $output,
           "Enter mysql_dsn> ",
           function ($dsn) {
-            return static::validateDsn($dsn);
+            return ConfigCommand::validateDsn($dsn);
           },
           FALSE,
           $default
@@ -241,7 +241,7 @@ class ConfigCommand extends ContainerAwareCommand {
    * @return mixed $dsn (if valid)
    * @throws \RuntimeException (if $dsn is malformed or fails to connect)
    */
-  protected static function validateDsn($dsn) {
+  public static function validateDsn($dsn) {
     if (empty($dsn)) {
       throw new \RuntimeException("Value is required");
     }
