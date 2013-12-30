@@ -116,13 +116,27 @@ class TestCommand extends ContainerAwareCommand {
 
     // Create PHP code
     $content = $this->templateEngine->render('canary.php', array(
-      'autoloader' => $this->fs->toAbsolutePath(__DIR__ . '/../../../vendor/autoload.php'),
+      'autoloader' => $this->fs->toAbsolutePath($this->findAutoloader()),
       'expectedResponse' => $this->expectedResponse,
       'dataDir' => $dataDir,
     ));
     $this->fs->dumpFile($root . DIRECTORY_SEPARATOR . 'index.php', $content);
 
     return array($root, $dataDir);
+  }
+
+  protected function findAutoloader() {
+    $autoloaders = array(
+      dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+      dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'autoload.php'
+    );
+    foreach ($autoloaders as $autoloader) {
+      if (file_exists($autoloader)) {
+        return $autoloader;
+        break;
+      }
+    }
+    throw new \RuntimeException("Failed to find autoloader");
   }
 
   protected function doCommand(OutputInterface $output, $verbosity, $command, $args) {
