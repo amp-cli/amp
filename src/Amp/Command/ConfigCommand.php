@@ -206,7 +206,9 @@ class ConfigCommand extends ContainerAwareCommand {
           $output,
           "Enter perm_custom_command> ",
           function ($command) use ($output) {
-            $testDir = $this->getContainer()->getParameter('app_dir') . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . \Amp\Util\String::createRandom(16);
+            $testDir = $this->getContainer()->getParameter('app_dir')
+              . DIRECTORY_SEPARATOR . 'tmp'
+              . DIRECTORY_SEPARATOR . \Amp\Util\String::createRandom(16);
             $output->writeln("<info>Executing against test directory ($testDir)</info>");
             $result = \Amp\Permission\External::validateDirCommand($testDir, $command);
             $output->writeln("<info>OK (Executed without error)</info>");

@@ -86,7 +86,8 @@ class ConfigPrompt {
         foreach ($this->example as $example) {
           $output->writeln(" * $example");
         }
-      } else {
+      }
+      else {
         $output->writeln("<comment>Example</comment>: {$this->example}");
       }
     }

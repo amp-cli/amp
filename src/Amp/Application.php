@@ -8,7 +8,6 @@ use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\Loader\DelegatingLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\DependencyInjection\Scope;
 use Symfony\Component\Filesystem\Filesystem;
 
 class Application extends \Symfony\Component\Console\Application {
@@ -61,9 +60,17 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setParameter('app_dir', $this->appDir);
     $container->setParameter('amp_src_dir', dirname(__DIR__));
     $container->setParameter('apache_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
-    $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(__DIR__, 'Templates', 'apache-vhost.php')));
+    $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(
+      __DIR__,
+      'Templates',
+      'apache-vhost.php'
+    )));
     $container->setParameter('nginx_dir', $this->appDir . DIRECTORY_SEPARATOR . 'nginx.d');
-    $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(__DIR__, 'Templates', 'nginx-vhost.php')));
+    $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(
+      __DIR__,
+      'Templates',
+      'nginx-vhost.php'
+    )));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
     $container->setParameter('config_yml', $this->appDir . DIRECTORY_SEPARATOR . 'services.yml');
 
