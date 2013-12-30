@@ -16,9 +16,9 @@ class ConfigRepository {
   var $descriptions;
 
   /**
-   * @var array
+   * @var array (string $parameter => callable $callback)
    */
-  var $examples;
+  var $exampleCallbacks;
 
   /**
    * @var string
@@ -53,24 +53,55 @@ class ConfigRepository {
     );
 
     // FIXME externalize
-    $this->examples = array(
-      'mysql_dsn' => 'mysql://user:pass@hostname',
-      'perm_user' => 'www-data',
-      'perm_custom_command' => 'chmod 1777 {DIR}',
+    // Each callback returns a scalar or array of examples
+    $this->exampleCallbacks = array(
+      'mysql_dsn' => function () {
+        $checker = new \Amp\Util\PortChecker();
+        // Some folks report problems using "localhost"
+        $dsns = $checker->filterUrls(array(
+          'mysql://user:pass@127.0.0.1:3306', // Standard port
+          'mysql://user:pass@127.0.0.1:3307',
+          'mysql://user:pass@127.0.0.1:8889', // MAMP port
+          'mysql://user:pass@localhost:3306', // Standard port
+          'mysql://user:pass@localhost:3307',
+          'mysql://user:pass@localhost:8889', // MAMP port
+        ));
+        if (empty($dsns)) {
+          return 'mysql://user:pass@hostname:3306';
+        }
+        else {
+          return $dsns;
+        }
+      },
+      'perm_user' => function () {
+        $webUsers = \Amp\Util\User::filterValidUsers(array(
+          'www-data',
+          'www',
+          '_www',
+          'apache',
+          'apache2',
+          'nginx',
+          'httpd'
+        ));
+        if (empty($webUsers)) {
+          return 'www-data';
+        }
+        else {
+          return implode(', ', $webUsers);
+        }
+      },
+      'perm_custom_command' => function () {
+        $examples = array();
+        $examples[] = 'chmod 1777 {DIR}';
+        if (preg_match('/Linux/', php_uname()) && FALSE !== \Amp\Util\Process::findExecutable('setfacl')) {
+          $examples[] = 'setfacl -m u:www-data:rwx -m d:u:www-data:rwx {DIR}';
+        }
+        if (preg_match('/Darwin/', php_uname())) {
+          $examples[] = '/bin/chmod +a "www allow delete,write,append,file_inherit,directory_inherit" {DIR}';
+        }
+        return count($examples) > 1 ? $examples : $examples[0];
+      },
     );
-
-    $webUsers = \Amp\Util\User::filterValidUsers(array(
-      'www-data',
-      'www',
-      '_www',
-      'apache',
-      'apache2',
-      'nginx',
-      'httpd'
-    ));
-    if ($webUsers) {
-      $this->examples['perm_user'] = implode(', ', $webUsers);
-    }
   }
 
   protected function load() {
@@ -153,7 +184,12 @@ class ConfigRepository {
    * @return string|NULL
    */
   public function getExample($parameter) {
-    return isset($this->examples[$parameter]) ? $this->examples[$parameter] : NULL;
+    if (isset($this->exampleCallbacks[$parameter])) {
+      return call_user_func($this->exampleCallbacks[$parameter]);
+    }
+    else {
+      return NULL;
+    }
   }
 
 }
