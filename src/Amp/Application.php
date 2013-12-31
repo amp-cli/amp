@@ -35,6 +35,7 @@ class Application extends \Symfony\Component\Console\Application {
     );
 
     $application = new Application('amp', '@package_version@', $appDir, $configDirectories);
+    $application->setCatchExceptions(FALSE);
     $application->run();
   }
 
