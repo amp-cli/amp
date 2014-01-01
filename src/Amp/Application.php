@@ -74,6 +74,7 @@ class Application extends \Symfony\Component\Console\Application {
     )));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
     $container->setParameter('config_yml', $this->appDir . DIRECTORY_SEPARATOR . 'services.yml');
+    $container->setParameter('ram_disk_dir', $this->appDir . DIRECTORY_SEPARATOR . 'ram_disk');
 
     $fs = new Filesystem();
     $fs->mkdir(array(

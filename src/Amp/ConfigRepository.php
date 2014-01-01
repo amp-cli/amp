@@ -45,11 +45,12 @@ class ConfigRepository {
       'apache_tpl' => 'Apache configuration template',
       'nginx_dir' => 'Directory which stores nginx config files',
       'nginx_tpl' => 'Nginx configuration template',
-      'mysql_type' => 'How to connect to MySQL admin [cli,dsn,linuxRamDisk]',
+      'mysql_type' => 'How to connect to MySQL admin [cli,dsn,ram_disk]',
       'mysql_dsn' => 'Administrative credentials for MySQL',
       'perm_type' => 'How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]',
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
+      'ram_disk_dir' => 'Directory to create a a RAM disk',
     );
 
     // FIXME externalize

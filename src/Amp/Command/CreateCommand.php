@@ -58,8 +58,8 @@ class CreateCommand extends ContainerAwareCommand {
 
   protected function execute(InputInterface $input, OutputInterface $output) {
     $container = $this->getContainer();
-    $mysql_dsn = $container->getParameter('mysql_dsn');
-    if ($mysql_dsn == "") {
+    $mysql_type = $container->getParameter('mysql_type');
+    if ($mysql_type == "") {
       $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'config', array());
       $this->getApplication()->loadContainer();
       $this->instances = $this->getContainer()->get('instances');

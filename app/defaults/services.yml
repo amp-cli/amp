@@ -15,6 +15,9 @@ parameters:
   mysql_type: 'dsn'
   mysql_dsn: ''
 
+  # mysql_ram_disk_dir: '~/.amp/ram_disk'
+  mysql_ram_server_port: 3307
+
   perm_type: 'worldWritable'
   perm_user: ''
   perm_custom_command: ''
@@ -39,12 +42,11 @@ services:
       - [setAdminDsn, ['%mysql_dsn%']]
 
   ## This database connection used for ephemeral, performance-oriented test environments
-  mysql.linuxRamDisk:
-    class: Amp\Database\MySQLinuxRAMServer
-    properties:
-      pid: '%project%/app/tmp/mysqld.pid'
-      ramdisk: '%project%/app/tmp/mysqld'
-      name: '%prefix%_%env%'
+  mysql.ram_disk:
+    class: Amp\Database\MySQLRAMServer
+    calls:
+      - [setRAMDiskPath, ['%ram_disk_dir%']]
+      - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
 
   httpd.apache:
     class: Amp\Httpd\VhostTemplate
