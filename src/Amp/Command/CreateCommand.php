@@ -93,8 +93,10 @@ class CreateCommand extends ContainerAwareCommand {
       '--root' => $root,
       '--name' => $name,
       '--prefix' => $prefix,
-      '--output-file' => $output_file_path,
     );
+    if ($output_file_path != '') {
+      $arguments['--output-file'] = $output_file_path;
+    }
     return $command->run(new \Symfony\Component\Console\Input\ArrayInput($arguments), $output);
   }
 
