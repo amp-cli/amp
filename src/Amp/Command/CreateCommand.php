@@ -42,7 +42,8 @@ class CreateCommand extends ContainerAwareCommand {
       ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container')
-      ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_');
+      ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
+      ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Output environment variables to file instead of stdout');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -56,6 +57,13 @@ class CreateCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $container = $this->getContainer();
+    $mysql_dsn = $container->getParameter('mysql_dsn');
+    if ($mysql_dsn == "") {
+      $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'config', array());
+      $this->getApplication()->loadContainer();
+      $this->instances = $this->getContainer()->get('instances');
+    }
     $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if ($instance === NULL) {
       $instance = new Instance();
@@ -74,17 +82,18 @@ class CreateCommand extends ContainerAwareCommand {
     $this->instances->save();
 
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
-      $this->export($instance->getRoot(), $instance->getName(), $input->getOption('prefix'), $output);
+      $this->export($instance->getRoot(), $instance->getName(), $input->getOption('prefix'), $input->getOption('output-file'), $output);
     }
   }
 
-  protected function export($root, $name, $prefix, OutputInterface $output) {
+  protected function export($root, $name, $prefix, $output_file_path, OutputInterface $output) {
     $command = $this->getApplication()->find('export');
     $arguments = array(
       'command' => 'export',
       '--root' => $root,
       '--name' => $name,
       '--prefix' => $prefix,
+      '--output-file' => $output_file_path,
     );
     return $command->run(new \Symfony\Component\Console\Input\ArrayInput($arguments), $output);
   }

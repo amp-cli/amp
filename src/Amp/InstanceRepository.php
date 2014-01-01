@@ -35,7 +35,7 @@ class InstanceRepository extends FileRepository {
 
     if ($useWeb) {
       if (!$instance->getUrl()) {
-        $instance->setUrl('http://localhost:FIXME');
+        $instance->setUrl('http://localhost:7979');
       }
 
       $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());

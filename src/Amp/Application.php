@@ -48,11 +48,11 @@ class Application extends \Symfony\Component\Console\Application {
     parent::__construct($name, $version);
     $this->appDir = $appDir;
     $this->configDirectories = $configDirectories;
-    $this->container = $this->createContainer();
+    $this->loadContainer();
     $this->addCommands($this->createCommands());
   }
 
-  public function createContainer() {
+  public function loadContainer() {
     if (empty($this->appDir) || empty($this->configDirectories)) {
       throw new \Exception(__CLASS__ . ': Missing required properties (appDir, configDirectories)');
     }
@@ -97,8 +97,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
     $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));
-
-    return $container;
+    $this->container = $container;
   }
 
   /**
