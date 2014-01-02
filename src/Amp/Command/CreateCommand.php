@@ -38,8 +38,8 @@ class CreateCommand extends ContainerAwareCommand {
       ->setDescription('Create a MySQL+HTTPD instance')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service', '')
-      ->addOption('no-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
-      ->addOption('no-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
+      ->addOption('skip-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
+      ->addOption('skip-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container')
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
@@ -78,7 +78,7 @@ class CreateCommand extends ContainerAwareCommand {
       $instance->setUrl($input->getOption('url'));
     }
 
-    $this->instances->create($instance, !$input->getOption('no-url'), !$input->getOption('no-db'));
+    $this->instances->create($instance, !$input->getOption('skip-url'), !$input->getOption('skip-db'));
     $this->instances->save();
 
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
