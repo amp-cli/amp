@@ -73,6 +73,7 @@ class ExportCommand extends ContainerAwareCommand {
       "{$prefix}DB_HOST" => $dsnParts['hostspec'],
       "{$prefix}DB_PORT" => $dsnParts['port'],
       "{$prefix}DB_NAME" => $dsnParts['database'],
+      "{$prefix}DB_ARGS" => $instance->getDatasource() ? $instance->getDatasource()->toMySQLArguments() : '',
     );
     foreach ($envVars as $var => $value) {
       $output->writeln($var . '=' . escapeshellarg($value));
