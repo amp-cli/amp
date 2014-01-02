@@ -19,9 +19,9 @@ NameVirtualHost *:<?php echo $port ?>
 
     ServerName <?php echo $host ?>
 
-    ErrorLog "logs/<?php echo $host ?>-<?php echo $port ?>.error_log"
+    ErrorLog "${APACHE_LOG_DIR}/<?php echo $host ?>-<?php echo $port ?>.error_log"
 
-    CustomLog "logs/<?php echo $host ?>-<?php echo $port ?>.access_log" common
+    CustomLog "${APACHE_LOG_DIR}/<?php echo $host ?>-<?php echo $port ?>.access_log" common
 
     <Directory "<?php echo $root ?>">
         Options All

@@ -6,7 +6,7 @@ class MySQL implements DatabaseManagementInterface {
   /**
    * @var Datasource
    */
-  private $adminDatasource = NULL;
+  protected $adminDatasource = NULL;
 
   /**
    * @return bool

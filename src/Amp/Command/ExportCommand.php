@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class ExportCommand extends ContainerAwareCommand {
 
@@ -33,7 +34,8 @@ class ExportCommand extends ContainerAwareCommand {
       ->setDescription('Export details about a MySQL+HTTPD instance for use in bash')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service', '')
-      ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_');
+      ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
+      ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Output to file instead of stdout');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -56,6 +58,11 @@ class ExportCommand extends ContainerAwareCommand {
     }
     $prefix = $input->getOption('prefix');
     $dsnParts = \DB\DSN::parseDSN($instance->getDsn());
+    $output_file_path = $input->getOption('output-file');
+    if ($output_file_path != '') {
+      $output_file = fopen($output_file_path, "w");
+      $output = new StreamOutput($output_file);
+    }
 
     $envVars = array(
       "{$prefix}URL" => $instance->getUrl(),

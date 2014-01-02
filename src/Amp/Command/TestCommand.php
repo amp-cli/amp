@@ -139,19 +139,6 @@ class TestCommand extends ContainerAwareCommand {
     throw new \RuntimeException("Failed to find autoloader");
   }
 
-  protected function doCommand(OutputInterface $output, $verbosity, $command, $args) {
-    $oldVerbosity = $output->getVerbosity();
-    $output->setVerbosity($verbosity);
-
-    $c = $this->getApplication()->find($command);
-    $input = new \Symfony\Component\Console\Input\ArrayInput(
-      array_merge(array('command' => $c), $args)
-    );
-    $c->run($input, $output);
-
-    $output->setVerbosity($oldVerbosity);
-  }
-
   protected function doPost($url, $postData) {
     $opts = array(
       'http' => array(

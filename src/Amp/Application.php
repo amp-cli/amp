@@ -28,13 +28,14 @@ class Application extends \Symfony\Component\Console\Application {
    * @return
    */
   public static function main($binDir) {
-    $appDir = $_ENV['HOME'] . DIRECTORY_SEPARATOR . '.amp';
+    $appDir = getenv('HOME') . DIRECTORY_SEPARATOR . '.amp';
     $configDirectories = array(
       dirname($binDir) . '/app/defaults',
       $appDir,
     );
 
     $application = new Application('amp', '@package_version@', $appDir, $configDirectories);
+    $application->setCatchExceptions(FALSE);
     $application->run();
   }
 
@@ -47,11 +48,11 @@ class Application extends \Symfony\Component\Console\Application {
     parent::__construct($name, $version);
     $this->appDir = $appDir;
     $this->configDirectories = $configDirectories;
-    $this->container = $this->createContainer();
+    $this->loadContainer();
     $this->addCommands($this->createCommands());
   }
 
-  public function createContainer() {
+  public function loadContainer() {
     if (empty($this->appDir) || empty($this->configDirectories)) {
       throw new \Exception(__CLASS__ . ': Missing required properties (appDir, configDirectories)');
     }
@@ -73,6 +74,7 @@ class Application extends \Symfony\Component\Console\Application {
     )));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
     $container->setParameter('config_yml', $this->appDir . DIRECTORY_SEPARATOR . 'services.yml');
+    $container->setParameter('ram_disk_dir', $this->appDir . DIRECTORY_SEPARATOR . 'ram_disk');
 
     $fs = new Filesystem();
     $fs->mkdir(array(
@@ -96,8 +98,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
     $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));
-
-    return $container;
+    $this->container = $container;
   }
 
   /**

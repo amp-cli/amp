@@ -78,7 +78,9 @@ class Datasource {
    * @return PDO
    */
   function createPDO() {
-    return new \PDO($this->toPDODSN(), $this->username, $this->password);
+    $pdo = new \PDO($this->toPDODSN(), $this->username, $this->password);
+    $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+    return $pdo;
   }
 
   /**
