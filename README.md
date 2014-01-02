@@ -124,7 +124,7 @@ A: Each application should have its own directory (eg
 directory corresponds to a single virtual-host and a single MySQL database.
 If you need an additional virtual-host and DB for that application, call
 "create" again with the "--name" argument.  If you want an additional
-virtual-host XOR DB, specify "--no-db" or "--no-url".
+virtual-host XOR DB, specify "--skip-db" or "--skip-url".
 
 Q: How do I build a stand-alone PHAR executable for amp?
 
