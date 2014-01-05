@@ -37,6 +37,9 @@ class VhostTemplate implements HttpdInterface {
     if (!$parameters || !isset($parameters['host'])) {
       throw new \Exception("Failed to parse URL: " . $url);
     }
+    if (empty($parameters['port'])) {
+      $parameters['port'] = 80;
+    }
     $parameters['root'] = $root;
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';
@@ -60,6 +63,9 @@ class VhostTemplate implements HttpdInterface {
    */
   public function createFilePath($root, $url) {
     $parameters = parse_url($url);
+    if (empty($parameters['port'])) {
+      $parameters['port'] = 80;
+    }
     return $this->getDir() . DIRECTORY_SEPARATOR . $parameters['host'] . '_' . $parameters['port'] . '.conf';
   }
 

@@ -8,9 +8,13 @@
  */
 ?>
 
+<?php if ($port != 80) { ?>
+
 Listen <?php echo $port ?>
 
 NameVirtualHost *:<?php echo $port ?>
+
+<?php } ?>
 
 <VirtualHost *:<?php echo $port ?>>
     ServerAdmin webmaster@<?php echo $host ?>
