@@ -1,0 +1,12 @@
+[client]
+user=admin2a
+password=secret2a
+
+[mysqladmin]
+user=admin2b
+password=secret2b
+
+[mysql]
+; this is scanned but will be deduped
+user=admin2a
+password=secret2a

@@ -30,6 +30,20 @@ class MySQL implements DatabaseManagementInterface {
   }
 
   /**
+   * @param \Amp\Database\Datasource $adminDatasource
+   */
+  public function setAdminDatasource($adminDatasource) {
+    $this->adminDatasource = $adminDatasource;
+  }
+
+  /**
+   * @return \Amp\Database\Datasource
+   */
+  public function getAdminDatasource() {
+    return $this->adminDatasource;
+  }
+
+  /**
    * Create a datasource representing a new user and database
    *
    * @param string $hint an advisory string; ideally included in $db/$user

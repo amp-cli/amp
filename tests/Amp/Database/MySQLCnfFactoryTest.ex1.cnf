@@ -1,0 +1,5 @@
+[mysql]
+user=admin1
+password=secret1
+host=hostname1.com
+port=12345

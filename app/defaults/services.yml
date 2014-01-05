@@ -33,9 +33,16 @@ services:
       - [setHttpd, ['@httpd']]
 
   ## This database connection used for most environments
-  mysql.cli:
-    class: Amp\Database\MySQLCLI
+  # mysql.cli:
+  #  class: Amp\Database\MySQLCLI
 
+  ## This infers the DSN based on ~/.my.cnf
+  mysql.mycnf:
+    class: Amp\Database\MySQL
+    factory_class: Amp\Database\MySQLCnfFactory
+    factory_method: get
+
+  ## This connects to a user-supplied DSN
   mysql.dsn:
     class: Amp\Database\MySQL
     calls:
