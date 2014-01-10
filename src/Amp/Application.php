@@ -60,6 +60,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container = new ContainerBuilder();
     $container->setParameter('app_dir', $this->appDir);
     $container->setParameter('amp_src_dir', dirname(__DIR__));
+    $container->setParameter('log_dir', $this->appDir . DIRECTORY_SEPARATOR . 'log');
     $container->setParameter('apache_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
     $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(
       __DIR__,
@@ -79,6 +80,7 @@ class Application extends \Symfony\Component\Console\Application {
     $fs = new Filesystem();
     $fs->mkdir(array(
       $this->appDir,
+      $container->getParameter('log_dir'),
       $container->getParameter('apache_dir'),
       $container->getParameter('nginx_dir'),
     ));

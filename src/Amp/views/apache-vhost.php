@@ -23,16 +23,8 @@ NameVirtualHost *:<?php echo $port ?>
 
     ServerName <?php echo $host ?>
 
-    <IfDefine APACHE_LOG_DIR>
-      ## eg Ubuntu
-      ErrorLog "${APACHE_LOG_DIR}/<?php echo $host ?>-<?php echo $port ?>.error_log"
-      CustomLog "${APACHE_LOG_DIR}/<?php echo $host ?>-<?php echo $port ?>.access_log" common
-    </IfDefine>
-    <IfDefine !APACHE_LOG_DIR>
-      ## eg MAMP
-      ErrorLog "logs/<?php echo $host ?>-<?php echo $port ?>.error_log"
-      CustomLog "logs/<?php echo $host ?>-<?php echo $port ?>.access_log" common
-    </IfDefine>
+    ErrorLog "<?php echo $log_dir ?>/<?php echo $host ?>-<?php echo $port ?>.error_log"
+    CustomLog "<?php echo $log_dir ?>/<?php echo $host ?>-<?php echo $port ?>.access_log" common
 
     <Directory "<?php echo $root ?>">
         Options All
