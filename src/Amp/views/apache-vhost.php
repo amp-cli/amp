@@ -23,8 +23,8 @@ NameVirtualHost *:<?php echo $port ?>
 
     ServerName <?php echo $host ?>
 
-    ErrorLog "<?php echo $log_dir ?>/<?php echo $host ?>-<?php echo $port ?>.error_log"
-    CustomLog "<?php echo $log_dir ?>/<?php echo $host ?>-<?php echo $port ?>.access_log" common
+    ErrorLog "<?php echo $log_dir ?>/error_log"
+    CustomLog "<?php echo $log_dir ?>/access_log" common
 
     <Directory "<?php echo $root ?>">
         Options All

@@ -44,26 +44,28 @@ class VhostTemplate implements HttpdInterface {
    * @param string $url preferred public URL
    */
   public function createVhost($root, $url) {
-    $parameters = parse_url($url);
-    if (!$parameters || !isset($parameters['host'])) {
-      throw new \Exception("Failed to parse URL: " . $url);
-    }
-    if (empty($parameters['port'])) {
-      $parameters['port'] = 80;
-    }
+    $logDir = $this->createLogPath($root, $url);
+    $this->setupLogDirs(array($this->getLogDir(), $logDir));
+
+    $parameters = $this->parseUrl($url);
     $parameters['root'] = $root;
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';
-    $parameters['log_dir'] = $this->getLogDir();
+    $parameters['log_dir'] = $logDir;
     $content = $this->getTemplateEngine()->render($this->getTemplate(), $parameters);
     $this->fs->dumpFile($this->createFilePath($root, $url), $content);
-
-    $this->setupLogDir();
   }
 
-  public function setupLogDir() {
-    $this->fs->mkdir($this->getLogDir());
-    $this->getPerm()->applyDirPermission(PermissionInterface::WEB_WRITE, $this->getLogDir());
+  public function setupLogDirs($dirs) {
+    foreach ($dirs as $dir) {
+      $this->fs->mkdir($dir);
+      $this->getPerm()->applyDirPermission(PermissionInterface::WEB_WRITE, $dir);
+    }
+  }
+
+  public function createLogPath($root, $url) {
+    $parameters = $this->parseUrl($url);
+    return $this->getLogDir() . DIRECTORY_SEPARATOR . $parameters['host'] . '-' . $parameters['port'];
   }
 
   /**
@@ -72,6 +74,7 @@ class VhostTemplate implements HttpdInterface {
    */
   public function dropVhost($root, $url) {
     $this->fs->remove($this->createFilePath($root, $url));
+    $this->fs->remove($this->createLogPath($root, $url));
   }
 
   /**
@@ -86,6 +89,18 @@ class VhostTemplate implements HttpdInterface {
       $parameters['port'] = 80;
     }
     return $this->getDir() . DIRECTORY_SEPARATOR . $parameters['host'] . '_' . $parameters['port'] . '.conf';
+  }
+
+  public function parseUrl($url) {
+    $parameters = parse_url($url);
+    if (!$parameters || !isset($parameters['host'])) {
+      throw new \Exception("Failed to parse URL: " . $url);
+    }
+    if (empty($parameters['port'])) {
+      $parameters['port'] = 80;
+      return $parameters;
+    }
+    return $parameters;
   }
 
   /**
