@@ -3,6 +3,7 @@ parameters:
   # app_dir: '~/.amp'
   # instances_yml: '~/.amp/instances.yml'
   # config_yml: '%app_dir%/services.yml'
+  # log_dir: '%app_dir%/log'
 
   httpd_type: 'apache'
 
@@ -61,6 +62,8 @@ services:
       - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['%apache_tpl%']]
       - [setDir, ['%apache_dir%']]
+      - [setLogDir, ['%log_dir%']]
+      - [setPerm, ['@perm']]
 
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
@@ -68,6 +71,8 @@ services:
       - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['%nginx_tpl%']]
       - [setDir, ['%nginx_dir%']]
+      - [setLogDir, ['%log_dir%']]
+      - [setPerm, ['@perm']]
 
   config.repository:
     class: Amp\ConfigRepository

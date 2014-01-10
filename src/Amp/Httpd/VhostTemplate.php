@@ -1,6 +1,7 @@
 <?php
 namespace Amp\Httpd;
 use Amp\Util\Filesystem;
+use Amp\Permission\PermissionInterface;
 use Symfony\Component\Templating\EngineInterface;
 
 class VhostTemplate implements HttpdInterface {
@@ -13,6 +14,16 @@ class VhostTemplate implements HttpdInterface {
    * @var Filesystem
    */
   private $fs;
+
+  /**
+   * @var string absolute path to a log directory
+   */
+  private $logDir;
+
+  /**
+   * @var PermissionInterface
+   */
+  private $perm;
 
   /**
    * @var string, name of the template file
@@ -43,8 +54,16 @@ class VhostTemplate implements HttpdInterface {
     $parameters['root'] = $root;
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';
+    $parameters['log_dir'] = $this->getLogDir();
     $content = $this->getTemplateEngine()->render($this->getTemplate(), $parameters);
     $this->fs->dumpFile($this->createFilePath($root, $url), $content);
+
+    $this->setupLogDir();
+  }
+
+  public function setupLogDir() {
+    $this->fs->mkdir($this->getLogDir());
+    $this->getPerm()->applyDirPermission(PermissionInterface::WEB_WRITE, $this->getLogDir());
   }
 
   /**
@@ -81,6 +100,34 @@ class VhostTemplate implements HttpdInterface {
    */
   public function getDir() {
     return $this->dir;
+  }
+
+  /**
+   * @param string $logDir
+   */
+  public function setLogDir($logDir) {
+    $this->logDir = $logDir;
+  }
+
+  /**
+   * @return string
+   */
+  public function getLogDir() {
+    return $this->logDir;
+  }
+
+  /**
+   * @param \Amp\Permission\PermissionInterface $perm
+   */
+  public function setPerm($perm) {
+    $this->perm = $perm;
+  }
+
+  /**
+   * @return \Amp\Permission\PermissionInterface
+   */
+  public function getPerm() {
+    return $this->perm;
   }
 
   /**
