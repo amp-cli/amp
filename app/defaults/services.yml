@@ -56,6 +56,9 @@ services:
       - [setRAMDiskPath, ['%ram_disk_dir%']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
 
+  httpd.none:
+    class: Amp\Httpd\None
+
   httpd.apache:
     class: Amp\Httpd\VhostTemplate
     calls:
