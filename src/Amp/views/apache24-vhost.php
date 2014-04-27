@@ -7,7 +7,6 @@
  * @var string $include_vhost_file - the local path to a related config file
  */
 
-error_log("This file ran");
 ?>
 
 <?php if ($port != 80) { ?>
