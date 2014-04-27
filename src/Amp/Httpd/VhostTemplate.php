@@ -51,6 +51,7 @@ class VhostTemplate implements HttpdInterface {
     if (empty($parameters['port'])) {
       $parameters['port'] = 80;
     }
+    error_log("Template: ". $this->getTemplate());
     $parameters['root'] = $root;
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';

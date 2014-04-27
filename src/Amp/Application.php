@@ -62,10 +62,16 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setParameter('amp_src_dir', dirname(__DIR__));
     $container->setParameter('log_dir', $this->appDir . DIRECTORY_SEPARATOR . 'log');
     $container->setParameter('apache_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
+    $container->setParameter('apache24_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
     $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(
       __DIR__,
       'Templates',
       'apache-vhost.php'
+    )));
+    $container->setParameter('apache24_tpl', implode(DIRECTORY_SEPARATOR, array(
+      __DIR__,
+      'Templates',
+      'apache24-vhost.php'
     )));
     $container->setParameter('nginx_dir', $this->appDir . DIRECTORY_SEPARATOR . 'nginx.d');
     $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(
@@ -82,6 +88,7 @@ class Application extends \Symfony\Component\Console\Application {
       $this->appDir,
       $container->getParameter('log_dir'),
       $container->getParameter('apache_dir'),
+      $container->getParameter('apache24_dir'),
       $container->getParameter('nginx_dir'),
     ));
 

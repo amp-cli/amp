@@ -84,6 +84,7 @@ class ConfigCommand extends ContainerAwareCommand {
     $this->askHttpdType()->execute($input, $output, $dialog);
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
+      case 'apache24':
         $configPath = $this->getContainer()->getParameter('apache_dir');
         $output->writeln("");
         $output->writeln("<comment>Note</comment>: Please add this line to the httpd.conf or apache2.conf:");
@@ -229,7 +230,8 @@ class ConfigCommand extends ContainerAwareCommand {
         return $dialog->select($output,
           "Enter httpd_type",
           array(
-            'apache' => 'Apache 2',
+            'apache' => 'Apache 2.3 or earlier',
+            'apache24' => 'Apache 2.4 or later',
             'nginx' => 'nginx'
           ),
           $default

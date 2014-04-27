@@ -10,6 +10,9 @@ parameters:
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'
 
+# apache_dir: '~/.amp/apache.d'
+  apache24_tpl: 'apache24-vhost.php'
+
   # nginx_dir: '~/.amp/nginx.d'
   nginx_tpl: 'nginx-vhost.php'
 
@@ -64,6 +67,15 @@ services:
     calls:
       - [setTemplateEngine, ['@template.engine']]
       - [setTemplate, ['%apache_tpl%']]
+      - [setDir, ['%apache_dir%']]
+      - [setLogDir, ['%log_dir%']]
+      - [setPerm, ['@perm']]
+
+  httpd.apache24:
+    class: Amp\Httpd\VhostTemplate
+    calls:
+      - [setTemplateEngine, ['@template.engine']]
+      - [setTemplate, ['%apache24_tpl%']]
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
