@@ -6,11 +6,11 @@
  * @var int $port - the port to listen for
  * @var string $include_vhost_file - the local path to a related config file
  */
+
 ?>
 
 <?php if ($port != 80) { ?>
 Listen <?php echo $port ?>
-NameVirtualHost *:<?php echo $port ?>
 <?php } ?>
 
 <VirtualHost *:<?php echo $port ?>>
