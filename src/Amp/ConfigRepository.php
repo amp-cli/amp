@@ -43,7 +43,7 @@ class ConfigRepository {
       'httpd_type' => 'Type of webserver [none,apache,nginx]',
       'log_dir' => 'Directory which stores log files',
       'apache_dir' => 'Directory which stores Apache config files',
-      'apache24_dir' => 'Directory which stores Apache config files',
+      //'apache24_dir' => 'Directory which stores Apache config files',
       'apache_tpl' => 'Apache configuration template',
       'apache24_tpl' => 'Apache 2.4 or greater configuration template',
       'nginx_dir' => 'Directory which stores nginx config files',
