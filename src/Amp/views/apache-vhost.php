@@ -9,8 +9,11 @@
 ?>
 
 <?php if ($port != 80) { ?>
+
 Listen <?php echo $port ?>
+
 NameVirtualHost *:<?php echo $port ?>
+
 <?php } ?>
 
 <VirtualHost *:<?php echo $port ?>>
@@ -28,9 +31,6 @@ NameVirtualHost *:<?php echo $port ?>
         AllowOverride All
         Order allow,deny
         Allow from all
-        <IfModule mod_authz_host.c>
-            Require all granted
-        </IfModule>
     </Directory>
 
     <?php if (!empty($include_vhost_file)) { ?>
