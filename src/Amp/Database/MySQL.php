@@ -1,5 +1,6 @@
 <?php
 namespace Amp\Database;
+use Amp\Database\DatabaseManagementInterface;
 use Amp\Database\Datasource;
 
 class MySQL implements DatabaseManagementInterface {
@@ -69,16 +70,27 @@ class MySQL implements DatabaseManagementInterface {
    * Create a database and grant access to a (new) user
    *
    * @param Datasource $datasource
+   * @param string $perm PERM_SUPER, PERM_ADMIN
    */
-  public function createDatabase(Datasource $datasource) {
+  public function createDatabase(Datasource $datasource, $perm = DatabaseManagementInterface::PERM_ADMIN) {
     $db = $datasource->getDatabase();
     $user = $datasource->getUsername();
     $pass = $datasource->getPassword();
 
     $dbh = $this->adminDatasource->createPDO();
     $dbh->exec("CREATE DATABASE `$db`");
-    $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'localhost' IDENTIFIED BY '$pass'");
-    $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'%' IDENTIFIED BY '$pass'");
+    switch ($perm) {
+      case DatabaseManagementInterface::PERM_SUPER:
+        $dbh->exec("GRANT ALL ON *.* to '$user'@'localhost' IDENTIFIED BY '$pass' WITH GRANT OPTION");
+        $dbh->exec("GRANT ALL ON *.* to '$user'@'%' IDENTIFIED BY '$pass' WITH GRANT OPTION");
+        break;
+      case DatabaseManagementInterface::PERM_ADMIN:
+        $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'localhost' IDENTIFIED BY '$pass'");
+        $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'%' IDENTIFIED BY '$pass'");
+        break;
+      default:
+        throw new \Exception("Unrecognized permission level");
+    }
   }
 
   /**

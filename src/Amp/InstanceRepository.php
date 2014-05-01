@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+use Amp\Database\DatabaseManagementInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class InstanceRepository extends FileRepository {
@@ -22,15 +23,16 @@ class InstanceRepository extends FileRepository {
    * @param Instance $instance
    * @param bool $useWeb
    * @param bool $useDB
+   * @param string $perm PERM_SUPER, PERM_ADMIN
    */
-  public function create($instance, $useWeb = TRUE, $useDB = TRUE) {
+  public function create($instance, $useWeb = TRUE, $useDB = TRUE, $perm = DatabaseManagementInterface::PERM_ADMIN) {
     if ($useDB) {
       if (!$instance->getDatasource()) {
         $instance->setDatasource($this->db->createDatasource(basename($instance->getRoot()) . $instance->getName()));
       }
 
       $this->db->dropDatabase($instance->getDatasource());
-      $this->db->createDatabase($instance->getDatasource());
+      $this->db->createDatabase($instance->getDatasource(), $perm);
     }
 
     if ($useWeb) {

@@ -1,6 +1,7 @@
 <?php
 namespace Amp\Command;
 
+use Amp\Database\DatabaseManagementInterface;
 use Amp\Instance;
 use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
@@ -42,6 +43,7 @@ class CreateCommand extends ContainerAwareCommand {
       ->addOption('skip-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container')
+      ->addOption('perm', NULL, InputOption::VALUE_REQUIRED, 'Permission level of the MySQL User ("admin","super")', "admin")
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
       ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Output environment variables to file instead of stdout');
   }
@@ -78,7 +80,7 @@ class CreateCommand extends ContainerAwareCommand {
       $instance->setUrl($input->getOption('url'));
     }
 
-    $this->instances->create($instance, !$input->getOption('skip-url'), !$input->getOption('skip-db'));
+    $this->instances->create($instance, !$input->getOption('skip-url'), !$input->getOption('skip-db'), $input->getOption('perm'));
     $this->instances->save();
 
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
