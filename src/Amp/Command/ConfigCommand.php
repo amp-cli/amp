@@ -46,6 +46,17 @@ class ConfigCommand extends ContainerAwareCommand {
 
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure MySQL ]=============================</info>");
+    $output->writeln("");
+    $output->writeln("<info>"
+        ."Amp creates a unique MySQL user for each generated instance.\n"
+        ."To accomplish this amp needs GRANT-level privileges. It is\n"
+        ."recommended that you supply the root/administrator credentials\n"
+        ."for this task. If you wish to create a new user for amp to use\n"
+        ."please assign it appropriate privileges eg:\n\n"
+        ."<fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>"
+        ."</info>"
+    );
+
     $this->config->setParameter('mysql_type', 'dsn'); // temporary limitation
     $this->askMysqlDsn()->execute($input, $output, $dialog);
 
