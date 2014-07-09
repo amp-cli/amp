@@ -31,9 +31,20 @@ abstract class FileRepository {
 
   private $instances = NULL;
 
-  public function __construct($file = NULL, $decoder = NULL, $encoder = NULL) {
+  /**
+   * @var PidLock|NULL the currently-held lock (or NULL if none is held)
+   */
+  private $lock;
+
+  /**
+   * @var int|NULL seconds to wait for a lock; if NULL, then don't use locking
+   */
+  private $lockWait;
+
+  public function __construct($file = NULL, $decoder = NULL, $encoder = NULL, $lockWait = NULL) {
     $this->fs = new Filesystem();
     $this->setFile($file);
+    $this->lockWait = $lockWait;
   }
 
   /**
@@ -51,6 +62,7 @@ abstract class FileRepository {
     if ($this->file === NULL) {
       throw new \Exception(__CLASS__ . ": Missing required property (configFile)");
     }
+    $this->lock();
     if ($this->fs->exists($this->file)) {
       $items = $this->decodeDocument(file_get_contents($this->file));
       $this->instances = array();
@@ -63,7 +75,22 @@ abstract class FileRepository {
     }
   }
 
+  /**
+   * Acquire a read-write lock on this file
+   *
+   * @throws \RuntimeException
+   */
+  public function lock() {
+    if ($this->lockWait && !$this->lock) {
+      $this->lock = new PidLock($this->getFile());
+      if (!$this->lock->acquire($this->lockWait)) {
+        throw new \RuntimeException("Failed to acquire lock for [{$this->getFile()}]");
+      }
+    }
+  }
+
   public function save() {
+    $this->lock();
     $items = array();
     foreach ($this->instances as $key => $instance) {
       $items[$key] = $this->encodeItem($instance);
@@ -114,6 +141,20 @@ abstract class FileRepository {
    */
   public function getFileMode() {
     return $this->fileMode;
+  }
+
+  /**
+   * @param int|NULL $lockWait
+   */
+  public function setLockWait($lockWait) {
+    $this->lockWait = $lockWait;
+  }
+
+  /**
+   * @return int|NULL
+   */
+  public function getLockWait() {
+    return $this->lockWait;
   }
 
   /**

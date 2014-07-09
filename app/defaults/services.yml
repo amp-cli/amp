@@ -35,6 +35,7 @@ services:
       - [setFile, ['%instances_yml%']]
       - [setDb, ['@mysql']]
       - [setHttpd, ['@httpd']]
+      - [setLockWait, [5]]
 
   ## This database connection used for most environments
   # mysql.cli:
