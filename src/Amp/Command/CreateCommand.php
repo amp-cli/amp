@@ -59,6 +59,8 @@ class CreateCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $this->instances->lock();
+
     $container = $this->getContainer();
     $mysql_type = $container->getParameter('mysql_type');
     if ($mysql_type == "") {

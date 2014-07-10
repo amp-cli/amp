@@ -62,7 +62,6 @@ abstract class FileRepository {
     if ($this->file === NULL) {
       throw new \Exception(__CLASS__ . ": Missing required property (configFile)");
     }
-    $this->lock();
     if ($this->fs->exists($this->file)) {
       $items = $this->decodeDocument(file_get_contents($this->file));
       $this->instances = array();
@@ -76,7 +75,7 @@ abstract class FileRepository {
   }
 
   /**
-   * Acquire a read-write lock on this file
+   * Acquire a lock on this file
    *
    * @throws \RuntimeException
    */
@@ -90,12 +89,23 @@ abstract class FileRepository {
   }
 
   public function save() {
-    $this->lock();
     $items = array();
     foreach ($this->instances as $key => $instance) {
       $items[$key] = $this->encodeItem($instance);
     }
     $this->fs->dumpFile($this->getFile(), $this->encodeDocument($items), $this->getFileMode());
+  }
+
+  /**
+   * Release a lock on this file
+   *
+   * @throws \RuntimeException
+   */
+  public function unlock() {
+    if ($this->lockWait && !$this->lock) {
+      $this->lock->release();
+      unset($this->lock);
+    }
   }
 
   /**
