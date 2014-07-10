@@ -40,6 +40,7 @@ class CleanupCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $this->instances->lock();
     $count = 0;
     foreach ($this->instances->findAll() as $instance) {
       if ($input->getOption('force') || !file_exists($instance->getRoot())) {

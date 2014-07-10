@@ -49,6 +49,8 @@ class TestCommand extends ContainerAwareCommand {
 
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $this->instances->lock();
+
     // Display help text
     //$output->write($this->templateEngine->render('testing.php', array(
     //  'apache_dir' => $this->getContainer()->getParameter('apache_dir'),
