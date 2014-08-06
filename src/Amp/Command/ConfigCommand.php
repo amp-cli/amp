@@ -170,11 +170,11 @@ class ConfigCommand extends ContainerAwareCommand {
       ->setAsk(
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         $options = array(
-          'none' => '"none": Do not set any special permissions for the web user',
-          'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777]',
-          'linuxAcl' => '"linuxAcl": Set tight, inheritable permissions with Linux ACLs [setfacl]',
-          'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a]',
+          'none' => "\"none\": Do not set any special permissions for the web user",
+          'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)",
+          'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
           'custom' => '"custom": Set permissions with a custom command',
+          'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
         );
         $optionKeys = array_keys($options);
 
