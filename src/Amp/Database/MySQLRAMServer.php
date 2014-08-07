@@ -23,6 +23,10 @@ class MySQLRAMServer extends MySQL {
    */
   public $app_armor;
 
+  /**
+   * @var array list of SQL files to load into the new database
+   */
+  public $default_data_files;
 
   public function buildMySQLDBaseCommand() {
     $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path}";
@@ -43,7 +47,12 @@ class MySQLRAMServer extends MySQL {
     $this->buildMySQLDBaseCommand();
     if (!$this->isRunning()) {
       $this->runCommand("echo \"use mysql;\" > {$this->tmp_path}/install_mysql.sql");
-      $this->runCommand("cat /usr/share/mysql/mysql_system_tables.sql /usr/share/mysql/mysql_system_tables_data.sql >> {$this->tmp_path}/install_mysql.sql");
+      if ($this->getDefaultDataFiles()) {
+        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', $this->getDefaultDataFiles())) . " >> {$this->tmp_path}/install_mysql.sql");
+      }
+      else {
+        throw new \Exception("Error finding default data files");
+      }
       $this->runCommand("{$this->mysqld_base_command} --log-warnings=0 --bootstrap --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K < {$this->tmp_path}/install_mysql.sql");
       $this->runCommand("{$this->mysqld_base_command} > {$this->tmp_path}/mysql-drupal-test.log 2>&1 &");
       $i = 0;
@@ -124,5 +133,19 @@ class MySQLRAMServer extends MySQL {
    */
   public function setAppArmor($app_armor) {
     $this->app_armor = $app_armor;
+  }
+
+  /**
+   * @param array $default_data_files list of SQL files to load into the new database
+   */
+  public function setDefaultDataFiles($default_data_files) {
+    $this->default_data_files = $default_data_files;
+  }
+
+  /**
+   * @return array list of SQL files to load into the new database
+   */
+  public function getDefaultDataFiles() {
+    return $this->default_data_files;
   }
 }

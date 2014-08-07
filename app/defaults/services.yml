@@ -74,6 +74,8 @@ services:
       - [setRamDisk, ['@ramdisk.linux']]
       - [setAppArmor, ['@app_armor.mysql_ram_disk']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
+      - [setDefaultDataFiles, [['/usr/share/mysql/mysql_system_tables.sql', '/usr/share/mysql/mysql_system_tables_data.sql']]]
+      ## FIXME: do not hardcode Debian/Ubuntu paths
 
   ramdisk.osx:
     class: Amp\RamDisk\OsxRamDisk
@@ -88,6 +90,8 @@ services:
     calls:
       - [setRamDisk, ['@ramdisk.osx']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
+      - [setDefaultDataFiles, [['/Applications/MAMP/Library/share/mysql_system_tables.sql', '/Applications/MAMP/Library/share/mysql_system_tables_data.sql']]]
+      ## FIXME: do not hardcode MAMP paths
 
   httpd.none:
     class: Amp\Httpd\None
