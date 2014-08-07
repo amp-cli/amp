@@ -14,7 +14,11 @@ class MySQLRAMServer extends MySQL {
   public $mysql_admin_user = 'root';
   public $mysql_admin_password = 'root';
   public $port;
-  public $ram_disk_path;
+
+  /**
+   * @var \Amp\RamDisk\RamDiskInterface
+   */
+  public $ram_disk;
 
   public function appArmorConfigured() {
     $this->buildAppArmorLines();
@@ -40,8 +44,8 @@ class MySQLRAMServer extends MySQL {
   public function buildAppArmorLines() {
     if ($this->app_armor_lines == NULL) {
       $this->app_armor_lines = array(
-        "{$this->ram_disk_path}/ r,\n",
-        "{$this->ram_disk_path}/** rwk,\n",
+        "{$this->ram_disk->getPath()}/ r,\n",
+        "{$this->ram_disk->getPath()}/** rwk,\n",
       );
     }
   }
@@ -67,8 +71,10 @@ class MySQLRAMServer extends MySQL {
 
 
   public function createDatasource($hint) {
-    if (!$this->ramDiskIsMounted()) {
-      $this->mountRAMDisk();
+    if (!$this->ram_disk->isMounted()) {
+      $this->ram_disk->mount();
+      Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
+      Path::mkdir_p_if_not_exists($this->tmp_path);
     }
     if (!$this->appArmorConfigured()) {
       $this->configureAppArmor();
@@ -103,7 +109,7 @@ class MySQLRAMServer extends MySQL {
       if ($i == 9) {
         throw $last_exception;
       }
-    } 
+    }
     $pass = \Amp\Util\String::createRandom(16);
     $user = \Amp\Util\String::createHintedRandom($hint, 16, 5, 'abcdefghijklmnopqrstuvwxyz0123456789');
 
@@ -122,25 +128,6 @@ class MySQLRAMServer extends MySQL {
   public function isRunning() {
     $port_checker = new \Amp\Util\PortChecker();
     return $port_checker->checkHostPort('localhost', $this->port);
-  } 
-
-  public function mountRAMDisk() {
-    $this->runCommand("sudo mount -t tmpfs -o size=500m tmpfs {$this->ram_disk_path}");
-    $uid = getmyuid();
-    $gid = getmygid();
-    $this->runCommand("sudo chown $uid:$gid {$this->ram_disk_path}");
-    $this->runCommand("chmod 0755 {$this->ram_disk_path}");
-    Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
-    Path::mkdir_p_if_not_exists($this->tmp_path);
-  }
-
-  public function ramDiskIsMounted() {
-    $result = $this->runCommand("stat -f -c '%T' {$this->ram_disk_path}");
-    if (trim($result[0]) != 'tmpfs') {
-      return FALSE;
-    } else {
-      return TRUE;
-    }
   }
 
   public function runCommand($command, $options = array()) {
@@ -157,11 +144,16 @@ class MySQLRAMServer extends MySQL {
     $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://root:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
   }
 
-  public function setRAMDiskPath($path) {
-    $this->ram_disk_path = $path;
-    Path::mkdir_p_if_not_exists($this->ram_disk_path);
-    $this->mysql_data_path = Path::join($this->ram_disk_path, 'mysql');
-    $this->tmp_path = Path::join($this->ram_disk_path, 'tmp');
+  /**
+   * @param \Amp\RamDisk\RamDiskInterface $ram_disk
+   * @void
+   */
+  public function setRamDisk($ram_disk) {
+    $this->ram_disk = $ram_disk;
+
+    Path::mkdir_p_if_not_exists($ram_disk->getPath());
+    $this->mysql_data_path = Path::join($ram_disk->getPath(), 'mysql');
+    $this->tmp_path = Path::join($ram_disk->getPath(), 'tmp');
     $this->mysqld_pid_file_path = Path::join($this->tmp_path, 'mysqld.pid');
     $this->mysql_socket_path = Path::join($this->tmp_path, 'mysqld.sock');
   }

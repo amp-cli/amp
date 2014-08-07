@@ -19,7 +19,9 @@ parameters:
   mysql_type: 'dsn'
   mysql_dsn: ''
 
-  # mysql_ram_disk_dir: '~/.amp/ram_disk'
+  # ram_disk_dir: '~/.amp/ram_disk'
+  ram_disk_size: 500
+
   mysql_ram_server_port: 3307
 
   perm_type: 'worldWritable'
@@ -53,11 +55,17 @@ services:
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]
 
+  ramdisk.linux:
+    class: Amp\RamDisk\LinuxRamDisk
+    calls:
+    - [setPath, ['%ram_disk_dir%']]
+    - [setSizeMb, ['%ram_disk_size%']]
+
   ## This database connection used for ephemeral, performance-oriented test environments
   mysql.ram_disk:
     class: Amp\Database\MySQLRAMServer
     calls:
-      - [setRAMDiskPath, ['%ram_disk_dir%']]
+      - [setRamDisk, ['@ramdisk.linux']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
 
   httpd.none:
