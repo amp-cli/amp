@@ -68,6 +68,20 @@ services:
       - [setRamDisk, ['@ramdisk.linux']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
 
+  ramdisk.osx:
+    class: Amp\RamDisk\OsxRamDisk
+    calls:
+    - [setPath, ['%ram_disk_dir%']]
+    - [setSizeMb, ['%ram_disk_size%']]
+    - [setDevFile, ['%app_dir%/osx_ramdisk_device']]
+
+  ## This database connection used for ephemeral, performance-oriented test environments
+  mysql.osx_ram_disk:
+    class: Amp\Database\MySQLRAMServer
+    calls:
+      - [setRamDisk, ['@ramdisk.osx']]
+      - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
+
   httpd.none:
     class: Amp\Httpd\None
 
