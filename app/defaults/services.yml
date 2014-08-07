@@ -20,6 +20,7 @@ parameters:
   mysql_dsn: ''
 
   # ram_disk_dir: '~/.amp/ram_disk'
+  ram_disk_type: 'auto'
   ram_disk_size: 500
 
   mysql_ram_server_port: 3307
@@ -61,34 +62,21 @@ services:
      - [setConfigFilePath, ["/etc/apparmor.d/local/usr.sbin.mysqld"]]
      - [setAppArmorLines, [['%ram_disk_dir%/ r', '%ram_disk_dir%/** rwk']]]
 
-  ramdisk.linux:
-    class: Amp\RamDisk\LinuxRamDisk
-    calls:
-    - [setPath, ['%ram_disk_dir%']]
-    - [setSizeMb, ['%ram_disk_size%']]
-
   ## This database connection used for ephemeral, performance-oriented test environments
   mysql.ram_disk:
     class: Amp\Database\MySQLRAMServer
     calls:
-      - [setRamDisk, ['@ramdisk.linux']]
+      - [setRamDisk, ['@ram_disk']]
       - [setAppArmor, ['@app_armor.mysql_ram_disk']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
       - [setDefaultDataFiles, [['/usr/share/mysql/mysql_system_tables.sql', '/usr/share/mysql/mysql_system_tables_data.sql']]]
       ## FIXME: do not hardcode Debian/Ubuntu paths
 
-  ramdisk.osx:
-    class: Amp\RamDisk\OsxRamDisk
-    calls:
-    - [setPath, ['%ram_disk_dir%']]
-    - [setSizeMb, ['%ram_disk_size%']]
-    - [setDevFile, ['%app_dir%/osx_ramdisk_device']]
-
   ## This database connection used for ephemeral, performance-oriented test environments
   mysql.osx_ram_disk:
     class: Amp\Database\MySQLRAMServer
     calls:
-      - [setRamDisk, ['@ramdisk.osx']]
+      - [setRamDisk, ['@ram_disk']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
       - [setDefaultDataFiles, [['/Applications/MAMP/Library/share/mysql_system_tables.sql', '/Applications/MAMP/Library/share/mysql_system_tables_data.sql']]]
       ## FIXME: do not hardcode MAMP paths
@@ -155,6 +143,26 @@ services:
     class: Amp\Permission\External
     calls:
       - [setDirCommand, ['write', '%perm_custom_command%']]
+
+  ram_disk.auto:
+    class: Amp\Ramdisk\RamDiskInterface
+    factory_class: Amp\RamDisk\RamDiskFactory
+    factory_method: get
+    arguments:
+      - '@service_container'
+
+  ram_disk.linux:
+    class: Amp\RamDisk\LinuxRamDisk
+    calls:
+    - [setPath, ['%ram_disk_dir%']]
+    - [setSizeMb, ['%ram_disk_size%']]
+
+  ram_disk.osx:
+    class: Amp\RamDisk\OsxRamDisk
+    calls:
+    - [setPath, ['%ram_disk_dir%']]
+    - [setSizeMb, ['%ram_disk_size%']]
+    - [setDevFile, ['%app_dir%/osx_ramdisk_device']]
 
   template.engine:
     class: Symfony\Component\Templating\PhpEngine

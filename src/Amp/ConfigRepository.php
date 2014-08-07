@@ -54,6 +54,7 @@ class ConfigRepository {
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
       'ram_disk_dir' => 'Directory to create a a RAM disk',
+      'ram_disk_type' => 'Type of RAM disk [auto,linux,osx]',
     );
 
     // FIXME externalize
