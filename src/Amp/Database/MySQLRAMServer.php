@@ -34,7 +34,7 @@ class MySQLRAMServer extends MySQL {
     $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path}";
   }
 
-  public function createDatasource($hint) {
+  public function init() {
     if (!$this->ram_disk->isMounted()) {
       $this->ram_disk->mount();
       Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
@@ -65,6 +65,8 @@ class MySQLRAMServer extends MySQL {
       if ($i == 9) {
         throw new \Exception("There was a problem starting the MySQLRAM server. We expect to see a socket file at {$this->mysql_socket_path} but it hasn't appeared after 10 waiting seconds.");
       }
+
+      // Probably new DB files
       $i = 0;
       $last_exception = NULL;
       while ($i < 9) {
@@ -74,6 +76,9 @@ class MySQLRAMServer extends MySQL {
           break;
         }
         catch (\Exception $e) {
+          if ($this->adminDatasource->isValid()) {
+            break; // may happen if user killed mysqld without resetting ramdisk
+          }
           $last_exception = $e;
         }
         sleep(1);
@@ -81,6 +86,12 @@ class MySQLRAMServer extends MySQL {
       if ($i == 9) {
         throw $last_exception;
       }
+    }
+  }
+
+  public function createDatasource($hint) {
+    if (!$this->isRunning()) {
+      $this->init();
     }
     $pass = \Amp\Util\String::createRandom(16);
     $user = \Amp\Util\String::createHintedRandom($hint, 16, 5, 'abcdefghijklmnopqrstuvwxyz0123456789');
@@ -95,6 +106,20 @@ class MySQLRAMServer extends MySQL {
     $datasource->setDatabase($user);
 
     return $datasource;
+  }
+
+  public function createDatabase(Datasource $datasource, $perm = DatabaseManagementInterface::PERM_ADMIN) {
+    if (!$this->isRunning()) {
+      $this->init();
+    }
+    parent::createDatabase($datasource, $perm);
+  }
+
+  public function dropDatabase($datasource) {
+    if (!$this->isRunning()) {
+      $this->init();
+    }
+    parent::dropDatabase($datasource);
   }
 
   public function isRunning() {
@@ -113,7 +138,7 @@ class MySQLRAMServer extends MySQL {
 
   public function setMySQLRamServerPort($port) {
     $this->port = $port;
-    $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://root:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
+    $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://{$this->mysql_admin_user}:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
   }
 
   /**
