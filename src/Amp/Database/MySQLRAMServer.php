@@ -100,7 +100,7 @@ class MySQLRAMServer extends MySQL {
     throw new Exception("MySQLinuxRAMServer doesn't accept an admin DSN. You can set the porat with msyql_ram_server_port.");
   }
 
-  public function setMYSQLRamServerPort($port) {
+  public function setMySQLRamServerPort($port) {
     $this->port = $port;
     $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://root:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
   }
