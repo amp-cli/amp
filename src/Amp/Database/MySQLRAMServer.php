@@ -7,9 +7,11 @@ use Amp\Util\Path;
 
 class MySQLRAMServer extends MySQL {
   public $mysqld_base_command;
+  public $mysqld_pid_file_path;
   public $mysql_data_path;
   public $mysql_admin_user = 'root';
   public $mysql_admin_password = 'root';
+  public $mysql_socket_path;
   public $port;
   public $tmp_path;
 
@@ -61,7 +63,7 @@ class MySQLRAMServer extends MySQL {
         sleep(1);
       }
       if ($i == 9) {
-        throw new Exception("There was a problem starting the MySQLRAM server. We expect to see a socket file at {$this->mysql_socket_path} but it hasn't appeared after 10 waiting seconds.");
+        throw new \Exception("There was a problem starting the MySQLRAM server. We expect to see a socket file at {$this->mysql_socket_path} but it hasn't appeared after 10 waiting seconds.");
       }
       $i = 0;
       $last_exception = NULL;
@@ -106,7 +108,7 @@ class MySQLRAMServer extends MySQL {
   }
 
   public function setAdminDsn($dns) {
-    throw new Exception("MySQLinuxRAMServer doesn't accept an admin DSN. You can set the porat with msyql_ram_server_port.");
+    throw new \Exception("MySQLinuxRAMServer doesn't accept an admin DSN. You can set the porat with msyql_ram_server_port.");
   }
 
   public function setMySQLRamServerPort($port) {
