@@ -53,7 +53,8 @@ class ConfigRepository {
       'perm_type' => "How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]. See https://github.com/totten/amp/blob/master/doc/perm.md",
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
-      'ram_disk_dir' => 'Directory to create a a RAM disk',
+      'ram_disk_dir' => 'Directory to create as a RAM disk',
+      'ram_disk_size' => 'Amount of space to allocate for ramdisk (MB)',
       'ram_disk_type' => 'Type of RAM disk [auto,linux,osx]',
     );
 
