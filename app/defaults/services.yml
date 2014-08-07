@@ -55,6 +55,12 @@ services:
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]
 
+  app_armor.mysql_ram_disk:
+    class: Amp\Database\MySQLRAMServer\AppArmor
+    calls:
+     - [setConfigFilePath, ["/etc/apparmor.d/local/usr.sbin.mysqld"]]
+     - [setAppArmorLines, [['%ram_disk_dir%/ r', '%ram_disk_dir%/** rwk']]]
+
   ramdisk.linux:
     class: Amp\RamDisk\LinuxRamDisk
     calls:
@@ -66,6 +72,7 @@ services:
     class: Amp\Database\MySQLRAMServer
     calls:
       - [setRamDisk, ['@ramdisk.linux']]
+      - [setAppArmor, ['@app_armor.mysql_ram_disk']]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
 
   ramdisk.osx:

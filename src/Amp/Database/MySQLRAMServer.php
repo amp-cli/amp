@@ -4,71 +4,29 @@ namespace Amp\Database;
 use Amp\Database\Datasource;
 use Amp\Database\MySQL;
 use Amp\Util\Path;
-use Amp\Util\FileExt;
 
 class MySQLRAMServer extends MySQL {
-  public $app_armor_config_file_path = "/etc/apparmor.d/local/usr.sbin.mysqld";
-  public $app_armor_lines;
   public $mysqld_base_command;
   public $mysql_data_path;
   public $mysql_admin_user = 'root';
   public $mysql_admin_password = 'root';
   public $port;
+  public $tmp_path;
 
   /**
    * @var \Amp\RamDisk\RamDiskInterface
    */
   public $ram_disk;
 
-  public function appArmorConfigured() {
-    $this->buildAppArmorLines();
-    if (!file_exists($this->app_armor_config_file_path)) {
-      return FALSE;
-    }
-    $app_armor_lines_flipped = array_flip($this->app_armor_lines);
-    $num_matched = 0;
-    $app_armor_config_file = FileExt::open($this->app_armor_config_file_path, 'r');
-    while (($line = fgets($app_armor_config_file)) !== FALSE) {
-      if (array_key_exists($line, $app_armor_lines_flipped)) {
-        $num_matched += 1;
-      }
-    }
-    FileExt::close($app_armor_config_file);
-    if ($num_matched == count($this->app_armor_lines)) {
-      return TRUE;
-    } else {
-      return FALSE;
-    }
-  }
+  /**
+   * @var \Amp\Database\MySQLRAMServer\AppArmor
+   */
+  public $app_armor;
 
-  public function buildAppArmorLines() {
-    if ($this->app_armor_lines == NULL) {
-      $this->app_armor_lines = array(
-        "{$this->ram_disk->getPath()}/ r,\n",
-        "{$this->ram_disk->getPath()}/** rwk,\n",
-      );
-    }
-  }
 
   public function buildMySQLDBaseCommand() {
     $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path}";
   }
-
-  public function configureAppArmor() {
-    $this->buildAppArmorLines();
-    $file_system = new \Amp\Util\Filesystem();
-    $new_config_file_path = Path::join($this->tmp_path, basename($this->app_armor_config_file_path));
-    $file_system->copy($this->app_armor_config_file_path, $new_config_file_path);
-    $new_config_file = FileExt::open($new_config_file_path, 'a');
-    FileExt::write($new_config_file, "\n");
-    foreach ($this->app_armor_lines as $app_armor_line) {
-      FileExt::write($new_config_file, $app_armor_line);
-    }
-    FileExt::close($new_config_file);
-    $this->runCommand("sudo mv $new_config_file_path {$this->app_armor_config_file_path}");
-    $this->runCommand("sudo /etc/init.d/apparmor restart", array('throw_exception_on_nonzero' => FALSE));
-  }
-
 
   public function createDatasource($hint) {
     if (!$this->ram_disk->isMounted()) {
@@ -76,8 +34,11 @@ class MySQLRAMServer extends MySQL {
       Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
       Path::mkdir_p_if_not_exists($this->tmp_path);
     }
-    if (!$this->appArmorConfigured()) {
-      $this->configureAppArmor();
+    if ($this->app_armor) {
+      $this->app_armor->setTmpPath($this->tmp_path);  // TODO: move to services.yml or remove entirely
+      if (!$this->app_armor->isConfigured()) {
+        $this->app_armor->configure();
+      }
     }
     $this->buildMySQLDBaseCommand();
     if (!$this->isRunning()) {
@@ -156,5 +117,12 @@ class MySQLRAMServer extends MySQL {
     $this->tmp_path = Path::join($ram_disk->getPath(), 'tmp');
     $this->mysqld_pid_file_path = Path::join($this->tmp_path, 'mysqld.pid');
     $this->mysql_socket_path = Path::join($this->tmp_path, 'mysqld.sock');
+  }
+
+  /**
+   * @param \Amp\Database\MySQLRAMServer\AppArmor $app_armor
+   */
+  public function setAppArmor($app_armor) {
+    $this->app_armor = $app_armor;
   }
 }
