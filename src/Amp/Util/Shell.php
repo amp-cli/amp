@@ -5,6 +5,16 @@ namespace Amp\Util;
 use Amp\Util\ArrayExt;
 
 class Shell {
+  /**
+   * Format a shell command, escaping each argument
+   *
+   * Ex: Shell::run(Shell::fmt('somecommand', 'first arg', 'second arg'))
+   */
+  static function fmt() {
+    $args = func_get_args();
+    return implode(' ', array_map('escapeshellarg', $args));
+  }
+
   static function run($command, $options = array()) {
     $options['throw_exception_on_nonzero'] = ArrayExt::fetch('throw_exception_on_nonzero', $options, TRUE);
     $options['print_command'] = ArrayExt::fetch('print_command', $options, FALSE);

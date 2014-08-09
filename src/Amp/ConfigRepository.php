@@ -48,12 +48,14 @@ class ConfigRepository {
       'apache24_tpl' => 'Apache 2.4 or greater configuration template',
       'nginx_dir' => 'Directory which stores nginx config files',
       'nginx_tpl' => 'Nginx configuration template',
-      'mysql_type' => 'How to connect to MySQL admin [dsn,mycnf,ram_disk]',
+      'mysql_type' => 'How to connect to MySQL admin [dsn,mycnf,ram_disk,osx_ram_disk]',
       'mysql_dsn' => 'Administrative credentials for MySQL',
       'perm_type' => "How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]. See https://github.com/totten/amp/blob/master/doc/perm.md",
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
-      'ram_disk_dir' => 'Directory to create a a RAM disk',
+      'ram_disk_dir' => 'Directory to create as a RAM disk',
+      'ram_disk_size' => 'Amount of space to allocate for ramdisk (MB)',
+      'ram_disk_type' => 'Type of RAM disk [auto,linux,osx]',
     );
 
     // FIXME externalize

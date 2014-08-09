@@ -107,6 +107,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
     $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));
+    $container->setAlias('ram_disk', 'ram_disk.' . $container->getParameter('ram_disk_type'));
     $this->container = $container;
   }
 
