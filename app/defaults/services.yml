@@ -68,6 +68,10 @@ services:
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]
 
+  ## This connects to user-created databases
+  db.mysql_precreated:
+    class: Amp\Database\MySQLPrecreated
+
   db.pg_dsn:
     class: Amp\Database\PostgreSQL
     calls:
