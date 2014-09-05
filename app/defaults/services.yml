@@ -56,6 +56,10 @@ services:
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]
 
+  ## This connects to user-created databases
+  mysql.precreated:
+    class: Amp\Database\MySQLPrecreated
+
   app_armor.mysql_ram_disk:
     class: Amp\Database\MySQLRAMServer\AppArmor
     calls:
