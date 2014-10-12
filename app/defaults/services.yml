@@ -29,6 +29,8 @@ parameters:
   perm_user: ''
   perm_custom_command: ''
 
+  instances_timeout: 5
+
 services:
   ## Data storage for AMP instances
   instances:
@@ -38,7 +40,7 @@ services:
       - [setFile, ['%instances_yml%']]
       - [setDb, ['@mysql']]
       - [setHttpd, ['@httpd']]
-      - [setLockWait, [5]]
+      - [setLockWait, ['%instances_timeout%']]
 
   ## This database connection used for most environments
   # mysql.cli:
