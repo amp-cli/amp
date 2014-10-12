@@ -29,8 +29,8 @@ class PidLock {
    */
   private $pid;
 
-  private $minDelay = 1;
-  private $maxDelay = 4;
+  private $minDelayUs = 10000; // 10,000 us == 10ms
+  private $maxDelayUs = 200000; // 200,000 us == 200ms == 0.2s
 
   /**
    * @param string $file the file for which we want a lock
@@ -53,12 +53,14 @@ class PidLock {
    * @return bool TRUE if acquired; else false
    */
   function acquire($wait) {
-    $totalDelay = 0; // total total spent waiting so far (seconds)
-    $nextDelay = 0;
-    while ($totalDelay < $wait) {
-      if ($nextDelay) {
-        sleep($nextDelay);
-        $totalDelay += $nextDelay;
+    $waitUs = $wait * 1000 * 1000;
+
+    $totalDelayUs = 0; // total total spent waiting so far (microseconds)
+    $nextDelayUs = 0;
+    while ($totalDelayUs < $waitUs) {
+      if ($nextDelayUs) {
+        usleep($nextDelayUs);
+        $totalDelayUs += $nextDelayUs;
       }
 
       if (!$this->fs->exists($this->lockFile)) {
@@ -76,7 +78,7 @@ class PidLock {
         return TRUE;
       }
 
-      $nextDelay = rand($this->minDelay, min($this->maxDelay, $wait - $totalDelay));
+      $nextDelayUs = rand($this->minDelayUs, min($this->maxDelayUs, $waitUs - $totalDelayUs));
     }
     return FALSE;
   }
