@@ -23,6 +23,7 @@ parameters:
   ram_disk_type: 'auto'
   ram_disk_size: 500
 
+  mysqld_path: mysqld
   mysql_ram_server_port: 3307
 
   perm_type: 'worldWritable'
@@ -70,6 +71,7 @@ services:
     calls:
       - [setRamDisk, ['@ram_disk']]
       - [setAppArmor, ['@app_armor.mysql_ram_disk']]
+      - [setMysqldPath, [%mysqld_path%]]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
       - [setDefaultDataFiles, [['/usr/share/mysql/mysql_system_tables.sql', '/usr/share/mysql/mysql_system_tables_data.sql']]]
       ## FIXME: do not hardcode Debian/Ubuntu paths
@@ -79,6 +81,7 @@ services:
     class: Amp\Database\MySQLRAMServer
     calls:
       - [setRamDisk, ['@ram_disk']]
+      - [setMysqldPath, [%mysqld_path%]]
       - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
       - [setDefaultDataFiles, [['/Applications/MAMP/Library/share/mysql_system_tables.sql', '/Applications/MAMP/Library/share/mysql_system_tables_data.sql']]]
       ## FIXME: do not hardcode MAMP paths

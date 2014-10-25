@@ -50,6 +50,7 @@ class ConfigRepository {
       'nginx_tpl' => 'Nginx configuration template',
       'mysql_type' => 'How to connect to MySQL admin [dsn,mycnf,ram_disk,osx_ram_disk]',
       'mysql_dsn' => 'Administrative credentials for MySQL',
+      'mysqld_path' => 'Path to mysqld binary',
       'perm_type' => "How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]. See https://github.com/totten/amp/blob/master/doc/perm.md",
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',

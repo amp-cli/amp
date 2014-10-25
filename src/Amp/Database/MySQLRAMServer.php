@@ -8,6 +8,7 @@ use Amp\Util\Path;
 class MySQLRAMServer extends MySQL {
   public $mysqld_base_command;
   public $mysqld_pid_file_path;
+  public $mysqld_path = 'mysqld';
   public $mysql_data_path;
   public $mysql_admin_user = 'root';
   public $mysql_admin_password = 'root';
@@ -31,7 +32,7 @@ class MySQLRAMServer extends MySQL {
   public $default_data_files;
 
   public function buildMySQLDBaseCommand() {
-    $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path}";
+    $this->mysqld_base_command = "{$this->mysqld_path} --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path}";
   }
 
   public function init() {
@@ -134,6 +135,10 @@ class MySQLRAMServer extends MySQL {
 
   public function setAdminDsn($dns) {
     throw new \Exception("MySQLinuxRAMServer doesn't accept an admin DSN. You can set the porat with msyql_ram_server_port.");
+  }
+
+  public function setMysqldPath($path) {
+    $this->mysqld_path = $path;
   }
 
   public function setMySQLRamServerPort($port) {
