@@ -40,7 +40,7 @@ class ConfigRepository {
 
     // FIXME externalize
     $this->descriptions = array(
-      'httpd_type' => 'Type of webserver [none,apache,nginx]',
+      'httpd_type' => 'Type of webserver [none,apache,apache24,nginx]',
       'log_dir' => 'Directory which stores log files',
       'apache_dir' => 'Directory which stores Apache config files',
       //'apache24_dir' => 'Directory which stores Apache config files',
