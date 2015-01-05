@@ -171,7 +171,9 @@ class ConfigCommand extends ContainerAwareCommand {
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         $options = array(
           'none' => "\"none\": Do not set any special permissions for the web user",
-          'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)",
+          'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)\n"
+            . "         In some distros+filesystems, this requires extra configuration.\n"
+            . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
           'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
           'custom' => '"custom": Set permissions with a custom command',
           'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
