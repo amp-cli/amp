@@ -243,7 +243,8 @@ class ConfigCommand extends ContainerAwareCommand {
           array(
             'apache' => 'Apache 2.3 or earlier',
             'apache24' => 'Apache 2.4 or later',
-            'nginx' => 'nginx'
+            'nginx' => 'nginx (WIP)',
+            'none' => 'None (Note: You must configure any vhosts manually.)',
           ),
           $default
         );
