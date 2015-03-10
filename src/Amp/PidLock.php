@@ -38,6 +38,10 @@ class PidLock {
    * @param int|null $pid the process which holds the lock; if null, the current process
    */
   function __construct($file, $lockFile = NULL, $pid = NULL) {
+    if (!$this->hasDeps()) {
+      $this->warnDeps();
+      return;
+    }
     $this->file = $file;
     $this->lockFile = $lockFile ? $lockFile : "{$file}.lock";
     $this->fs = new \Symfony\Component\Filesystem\Filesystem();
@@ -49,10 +53,33 @@ class PidLock {
   }
 
   /**
+   * Determine if we have sufficient APIs to perform
+   * locking.
+   *
+   * @return bool
+   */
+  public function hasDeps() {
+    return function_exists('posix_getpid')
+      && function_exists('posix_getpgid')
+      && function_exists('usleep');
+  }
+
+  /**
+   * Display warning about missing APIs.
+   */
+  public function warnDeps() {
+    fwrite(STDERR, "WARNING: " . __CLASS__ . ": POSIX API is unavaiable. Cannot lock resources. Concurrent operations may be problematic.\n");
+  }
+
+  /**
    * @param int $wait max time to wait to acquire lock (seconds)
    * @return bool TRUE if acquired; else false
    */
   function acquire($wait) {
+    if (!$this->hasDeps()) {
+      return TRUE;
+    }
+
     $waitUs = $wait * 1000 * 1000;
 
     $totalDelayUs = 0; // total total spent waiting so far (microseconds)
@@ -84,6 +111,10 @@ class PidLock {
   }
 
   function release() {
+    if (!$this->hasDeps()) {
+      return;
+    }
+
     if ($this->fs->exists($this->lockFile)) {
       $lockPid = (int) trim(file_get_contents($this->lockFile));
       if ($lockPid == $this->pid) {
@@ -93,6 +124,9 @@ class PidLock {
   }
 
   function steal() {
+    if (!$this->hasDeps()) {
+      return;
+    }
     $this->fs->dumpFile($this->lockFile, $this->pid);
   }
 }
