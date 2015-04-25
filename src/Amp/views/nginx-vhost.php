@@ -17,6 +17,17 @@ server {
   include <?php echo $include_vhost_file ?>;
 
   <?php } else { ?>
+
+  location / {
+    try_files $uri @rewrite;
+  }
+
+  location @rewrite {
+    # Some modules enforce no slash (/) at the end of the URL
+    # Else this rewrite block wouldn't be needed (GlobalRedirect)
+    rewrite ^/(.*)$ /index.php?q=$1;
+  }
+  
   location ~ \..*/.*\.php$ {
     return 403;
   }
@@ -34,6 +45,10 @@ server {
     fastcgi_pass 127.0.0.1:9000;
     fastcgi_intercept_errors on;
     fastcgi_read_timeout 60;
+  }
+
+  location /sites/default/files/civicrm {
+    deny all;
   }
   <?php } ?>
 
