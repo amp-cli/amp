@@ -46,6 +46,10 @@ server {
     fastcgi_intercept_errors on;
     fastcgi_read_timeout 60;
   }
+
+  location /sites/default/files/civicrm {
+    deny all;
+  }
   <?php } ?>
 
 }
