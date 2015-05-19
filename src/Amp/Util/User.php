@@ -46,13 +46,17 @@ class User {
    * @throws \Exception
    */
   public static function getCurrentUser() {
-    $uid = posix_geteuid();
-    $pw = posix_getpwuid($uid);
-    if ($pw && isset($pw['name'])) {
-      return $pw['name'];
+    if (function_exists('posix_getpwuid')) {
+      $uid = posix_geteuid();
+      $pw = posix_getpwuid($uid);
+      if ($pw && isset($pw['name'])) {
+        return $pw['name'];
+      }
     }
-    else {
-      throw new \Exception("Failed to determine current user name.");
+    if (getenv('username')) { // Windows
+      return getenv('username');
     }
+
+    throw new \Exception("Failed to determine current user name.");
   }
 }
