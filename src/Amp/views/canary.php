@@ -16,7 +16,7 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
 
 // ---------- Test database ----------
 
-require_once "<?php echo $autoloader ?>";
+require_once "<?php echo addslashes($autoloader) ?>";
 $datasource = new \Amp\Database\Datasource(array(
   'civi_dsn' => $_POST['dsn']
 ));
