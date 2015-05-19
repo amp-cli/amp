@@ -114,6 +114,12 @@ class Instance {
   }
 
   public static function makeId($root, $name) {
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+      // Windows filenames are not stable identifiers. Normalize.
+      $root = strtolower($root);
+      $root = strtr($root, '\\', '/');
+    }
+
     if (empty($name)) {
       return $root . '::\'\'';
     }
