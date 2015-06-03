@@ -87,16 +87,13 @@ class Datasource {
    * @return bool
    */
   function isValid() {
-    try {
-      $dbh = $this->createPDO();
-      foreach ($dbh->query('SELECT 99 as value') as $row) {
-        if ($row['value'] == 99) {
-          return TRUE;
-        }
+    $dbh = $this->createPDO();
+    foreach ($dbh->query('SELECT 99 as value') as $row) {
+      if ($row['value'] == 99) {
+        return TRUE;
       }
-      $dbh = NULL;
-    } catch (\PDOException $e) {
     }
+    $dbh = NULL;
     return FALSE;
   }
 
