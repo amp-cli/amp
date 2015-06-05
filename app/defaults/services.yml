@@ -16,7 +16,7 @@ parameters:
   # nginx_dir: '~/.amp/nginx.d'
   nginx_tpl: 'nginx-vhost.php'
 
-  mysql_type: 'dsn'
+  db_type: 'mysql_dsn'
   mysql_dsn: ''
 
   # ram_disk_dir: '~/.amp/ram_disk'
@@ -38,7 +38,7 @@ services:
     calls:
       - [setFileMode, [0600]]
       - [setFile, ['%instances_yml%']]
-      - [setDb, ['@mysql']]
+      - [setDb, ['@db']]
       - [setHttpd, ['@httpd']]
       - [setLockWait, ['%instances_timeout%']]
 
@@ -47,13 +47,13 @@ services:
   #  class: Amp\Database\MySQLCLI
 
   ## This infers the DSN based on ~/.my.cnf
-  mysql.mycnf:
+  db.mysql_mycnf:
     class: Amp\Database\MySQL
     factory_class: Amp\Database\MySQLCnfFactory
     factory_method: get
 
   ## This connects to a user-supplied DSN
-  mysql.dsn:
+  db.mysql_dsn:
     class: Amp\Database\MySQL
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]
@@ -65,7 +65,7 @@ services:
      - [setAppArmorLines, [['%ram_disk_dir%/ r', '%ram_disk_dir%/** rwk']]]
 
   ## This database connection used for ephemeral, performance-oriented test environments
-  mysql.ram_disk:
+  db.mysql_ram_disk:
     class: Amp\Database\MySQLRAMServer
     calls:
       - [setRamDisk, ['@ram_disk']]
@@ -75,7 +75,7 @@ services:
       ## FIXME: do not hardcode Debian/Ubuntu paths
 
   ## This database connection used for ephemeral, performance-oriented test environments
-  mysql.osx_ram_disk:
+  db.mysql_osx_ram_disk:
     class: Amp\Database\MySQLRAMServer
     calls:
       - [setRamDisk, ['@ram_disk']]

@@ -36,14 +36,14 @@ class CreateCommand extends ContainerAwareCommand {
   protected function configure() {
     $this
       ->setName('create')
-      ->setDescription('Create a MySQL+HTTPD instance')
+      ->setDescription('Create a DB+HTTPD instance')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service', '')
       ->addOption('skip-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
       ->addOption('skip-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
-      ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/mysql container')
-      ->addOption('perm', NULL, InputOption::VALUE_REQUIRED, 'Permission level of the MySQL User ("admin","super")', "admin")
+      ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/db container')
+      ->addOption('perm', NULL, InputOption::VALUE_REQUIRED, 'Permission level of the DB User ("admin","super")', "admin")
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
       ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Output environment variables to file instead of stdout');
   }
@@ -62,8 +62,8 @@ class CreateCommand extends ContainerAwareCommand {
     $this->instances->lock();
 
     $container = $this->getContainer();
-    $mysql_type = $container->getParameter('mysql_type');
-    if ($mysql_type == "") {
+    $db_type = $container->getParameter('db_type');
+    if ($db_type == "") {
       $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'config', array());
       $this->getApplication()->loadContainer();
       $this->instances = $this->getContainer()->get('instances');

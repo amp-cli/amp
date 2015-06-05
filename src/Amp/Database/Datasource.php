@@ -98,7 +98,7 @@ class Datasource {
   }
 
   function toCiviDSN() {
-    $civi_dsn = "mysql://{$this->username}:{$this->password}@{$this->host}";
+    $civi_dsn = "{$this->driver}://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
       $civi_dsn = "$civi_dsn:{$this->port}";
     }

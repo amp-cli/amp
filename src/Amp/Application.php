@@ -108,7 +108,7 @@ class Application extends \Symfony\Component\Console\Application {
       $container->setParameter('instances_timeout', getenv('AMP_INSTANCES_TIMEOUT'));
     }
 
-    $container->setAlias('mysql', 'mysql.' . $container->getParameter('mysql_type'));
+    $container->setAlias('db', 'db.' . $container->getParameter('db_type'));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
     $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));
     $container->setAlias('ram_disk', 'ram_disk.' . $container->getParameter('ram_disk_type'));
