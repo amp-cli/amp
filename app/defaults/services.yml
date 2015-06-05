@@ -18,6 +18,7 @@ parameters:
 
   db_type: 'mysql_dsn'
   mysql_dsn: ''
+  pg_dsn: ''
 
   # ram_disk_dir: '~/.amp/ram_disk'
   ram_disk_type: 'auto'
@@ -57,6 +58,11 @@ services:
     class: Amp\Database\MySQL
     calls:
       - [setAdminDsn, ['%mysql_dsn%']]
+
+  db.pg_dsn:
+    class: Amp\Database\PostgreSQL
+    calls:
+      - [setAdminDsn, ['%pg_dsn%']]
 
   app_armor.mysql_ram_disk:
     class: Amp\Database\MySQLRAMServer\AppArmor

@@ -158,6 +158,7 @@ class Datasource {
     return $pdo_dsn;
   }
 
+  // FIXME: pg, mysql-specific
   function updateHost() {
     /*
      * If you use localhost for the host, the MySQL client library will
