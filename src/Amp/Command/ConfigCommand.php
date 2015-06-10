@@ -52,14 +52,16 @@ class ConfigCommand extends ContainerAwareCommand {
         ."To accomplish this amp needs GRANT-level privileges. It is\n"
         ."recommended that you supply the root/administrator credentials\n"
         ."for this task. If you wish to create a new user for amp to use\n"
-        ."please assign it appropriate privileges.\n"
+        ."please assign it appropriate privileges eg:\n\n"
 // FIXME
-//      ."please assign it appropriate privileges eg:\n\n"
-//      ."<fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>"
+        ."MySQL: <fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>\n"
+        ."PgSQL: <fg=cyan;bg=black;option=bold>\$ createuser --superuser --createdb --createrole -P #user</fg=cyan;bg=black;option=bold>\n"
+        ."       <fg=cyan;bg=black;option=bold>Add 'local all #user md5' to pg_hba.conf</fg=cyan;bg=black;option=bold>\n"
+        ."       <fg=cyan;bg=black;option=bold>Test $ psql -U #user -W template1</fg=cyan;bg=black;option=bold>"
         ."</info>"
     );
 
-    $this->config->setParameter('db_type', 'mysql_dsn'); // temporary limitation
+    $this->askDbType()->execute($input, $output, $dialog);
     $this->askDbDsn()->execute($input, $output, $dialog);
 
     $output->writeln("");
@@ -164,6 +166,26 @@ class ConfigCommand extends ContainerAwareCommand {
           $default
         );
         return (empty($value)) ? FALSE : $value;
+      }
+    );
+  }
+  
+  
+  protected function askDbType() {
+    return $this->createPrompt('db_type')
+      ->setAsk(
+      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+        return $dialog->select($output,
+          "Enter httpd_type",
+          array(
+            'mysql_dsn' => 'MySQL based on DSN',
+            'mysql_mycnf' => 'MySQL based on existing configuration',
+            'mysql_ram_disk' => 'MySQL ram disk',
+            'mysql_osx_ram_disk' => 'MySQL OSX ram disk',
+            'pg_dsn' => 'PostgreSQL based on DSN'
+          ),
+          $default
+        );
       }
     );
   }

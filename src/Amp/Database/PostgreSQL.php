@@ -78,14 +78,12 @@ class PostgreSQL implements DatabaseManagementInterface {
     $pass = $datasource->getPassword();
 
     $dbh = $this->adminDatasource->createPDO();
+    
+    $dbh->exec("DROP DATABASE IF EXISTS  \"$db\"");
+    $dbh->exec("DROP ROLE IF EXISTS  $user");
 
-    $sql = "CREATE ROLE $user with encrypted password '$pass' login";
-    echo $sql . "\n";
-    $dbh->exec($sql);
-
-    $sql = "CREATE DATABASE \"$db\" owner $user";
-    echo $sql . "\n";
-    $dbh->exec($sql);
+    $dbh->exec("CREATE ROLE $user with encrypted password '$pass' login");
+    $dbh->exec("CREATE DATABASE \"$db\" owner $user");
   }
 
   /**
