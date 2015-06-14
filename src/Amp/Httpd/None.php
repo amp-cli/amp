@@ -1,5 +1,6 @@
 <?php
 namespace Amp\Httpd;
+use Amp\Instance;
 
 /**
  * A null implementation of the HTTPD -- ie use this is
@@ -7,18 +8,22 @@ namespace Amp\Httpd;
 class None implements HttpdInterface {
 
   /**
-   * @param string $root local path to document root
-   * @param string $url preferred public URL
+   * @param Instance $instance
+   *   The webapp being configured.
    */
-  public function createVhost($root, $url) {
+  public function createVhost(Instance $instance) {
+    $root = $instance->getRoot();
+    $url = $instance->getUrl();
     file_put_contents('php://stderr', "\n**** Please create the vhost for $url in $root ****\n\n", FILE_APPEND);
   }
 
   /**
-   * @param string $root local path to document root
-   * @param string $url preferred public URL
+   * @param Instance $instance
+   *   The webapp being configured.
    */
-  public function dropVhost($root, $url) {
+  public function dropVhost(Instance $instance) {
+    $root = $instance->getRoot();
+    $url = $instance->getUrl();
     file_put_contents('php://stderr', "\n**** Please destroy the vhost for $url in $root ****\n\n", FILE_APPEND);
   }
 

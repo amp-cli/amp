@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+use Amp\Instance;
 use Amp\Database\DatabaseManagementInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -40,8 +41,8 @@ class InstanceRepository extends FileRepository {
         $instance->setUrl('http://localhost:7979');
       }
 
-      $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
-      $this->httpd->createVhost($instance->getRoot(), $instance->getUrl());
+      $this->httpd->dropVhost($instance);
+      $this->httpd->createVhost($instance);
     }
 
     $this->put($instance->getId(), $instance);
@@ -59,7 +60,7 @@ class InstanceRepository extends FileRepository {
       }
 
       if ($instance->getUrl()) {
-        $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
+        $this->httpd->dropVhost($instance);
       }
     }
     parent::remove($name);

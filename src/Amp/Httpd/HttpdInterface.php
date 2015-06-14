@@ -1,19 +1,20 @@
 <?php
 namespace Amp\Httpd;
+use Amp\Instance;
 use Amp\ServiceInterface;
 
 interface HttpdInterface {
 
   /**
-   * @param string $root local path to document root
-   * @param string $url preferred public URL
+   * @param Instance $instance
+   *   The webapp being configured.
    */
-  public function createVhost($root, $url);
+  public function createVhost(Instance $instance);
 
   /**
-   * @param string $root local path to document root
-   * @param string $url preferred public URL
+   * @param Instance $instance
+   *   The webapp being configured.
    */
-  public function dropVhost($root, $url);
+  public function dropVhost(Instance $instance);
 
 }

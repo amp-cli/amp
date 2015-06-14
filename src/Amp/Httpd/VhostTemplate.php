@@ -1,5 +1,6 @@
 <?php
 namespace Amp\Httpd;
+use Amp\Instance;
 use Amp\Util\Filesystem;
 use Amp\Permission\PermissionInterface;
 use Symfony\Component\Templating\EngineInterface;
@@ -40,10 +41,13 @@ class VhostTemplate implements HttpdInterface {
   }
 
   /**
-   * @param string $root local path to document root
-   * @param string $url preferred public URL
+   * @param Instance $instance
+   *   The webapp being configured.
    */
-  public function createVhost($root, $url) {
+  public function createVhost(Instance $instance) {
+    $root = $instance->getRoot();
+    $url = $instance->getUrl();
+
     $parameters = parse_url($url);
     if (!$parameters || !isset($parameters['host'])) {
       throw new \Exception("Failed to parse URL: " . $url);
@@ -67,10 +71,13 @@ class VhostTemplate implements HttpdInterface {
   }
 
   /**
-   * @param string $root local path to document root
-   * @param string $url preferred public URL
+   * @param Instance $instance
+   *   The webapp being configured.
    */
-  public function dropVhost($root, $url) {
+  public function dropVhost(Instance $instance) {
+    $root = $instance->getRoot();
+    $url = $instance->getUrl();
+
     $this->fs->remove($this->createFilePath($root, $url));
   }
 
