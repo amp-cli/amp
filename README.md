@@ -171,6 +171,35 @@ Parameters and services may be configured in amp's source-tree
 ("amp config", "amp config:set", etc) are stored in the local
 home directory ("~/.amp/services.yml").
 
+## Config files ##
+
+Some environments require passing along more advanced options to the
+HTTPD/SQL server.  For example, in nginx, one must provide a vhost template
+which is tuned for the specific webapp. In the webapp's folder, you can
+create ```.amp/``` folder with more configuration files.
+
+<table><tbody>
+<tr>
+  <td>```.amp/```</td>
+  <td>All config files</td>
+</tr>
+<tr>
+  <td>```.amp/NAME/```</td>
+  <td>```NAME``` should usually be ```default```. However, if you use ```amp create --name=foo```, then you *may* use ```foo```.</td>
+</tr>
+<tr>
+  <td>```.amp/NAME/views/```</td>
+  <td>This folder contains overrides for templates (such as ```apache-vhost.php```).</td>
+</tr>
+<tr>
+  <td>```.amp/NAME/options.yml```</td>
+  <td>(Future use)</td>
+</tr>
+</tbody></table>
+
+For example, to override the default Apache vhost template, one would create
+the file ```.amp/default/views/apache-vhost.php```.
+
 ## Planned Features ##
 
  * Add DatabaseManagementInterface for launching mysqld (in ramdisk)
