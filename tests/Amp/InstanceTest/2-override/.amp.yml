@@ -1,0 +1,6 @@
+default:
+  foo: foo default
+  bar: bar default
+alpha:
+  foo: foo alpha
+  

@@ -1,6 +1,7 @@
 <?php
 namespace Amp;
 use Amp\Database\Datasource;
+use Symfony\Component\Yaml\Yaml;
 
 class Instance {
 
@@ -24,11 +25,51 @@ class Instance {
    */
   private $url;
 
+  /**
+   * @var array|NULL Advanced options (key-value pairs).
+   */
+  private $options;
+
   public function __construct($name = NULL, $dsn = NULL, $root = NULL, $url = NULL) {
     $this->setName($name);
     $this->setDsn($dsn);
     $this->setRoot($root);
     $this->setUrl($url);
+    $this->options = NULL;
+  }
+
+  /**
+   * Load any advanced options from the .amp.yml file (if
+   * it exists).
+   *
+   * Notes:
+   *  - The .amp.yml file will not be changed by amp; as far
+   *    we're concerned, it's read-only and unchanging
+   *    within the life of an `amp` invocation.
+   *  - The top level of the file is broken down into sections.
+   *    The 'default' section is a baseline. Additional sections
+   *    may be added for each named instance (to override
+   *    the defaults).
+   *
+   * @return array
+   *   Key-value pairs.
+   */
+  public function getOptions() {
+    if ($this->options === NULL) {
+      $this->options = array();
+      if (is_readable($this->getRoot() . '/.amp.yml')) {
+        $options = Yaml::parse(file_get_contents($this->getRoot() . '/.amp.yml'));
+
+        // Merge $options['default'] and $options[$name].
+        foreach (array('default', $this->getName()) as $section) {
+          if (isset($options[$section])) {
+            $this->options = array_merge($this->options, $options[$section]);
+          }
+        }
+      }
+    }
+
+    return $this->options;
   }
 
   /**
@@ -127,4 +168,5 @@ class Instance {
       return $root . '::' . $name;
     }
   }
+
 }
