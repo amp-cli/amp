@@ -38,7 +38,7 @@ class TestCommand extends ContainerAwareCommand {
     $this->instances = $instances;
     $this->expectedResponse = 'response-code-' . \Amp\Util\String::createRandom(10);
     parent::__construct($app, $name);
-    $this->templateEngine = $this->getContainer()->get('template.engine');
+    $this->templateEngine = $this->getContainer()->get('template.factory')->create();
   }
 
   protected function configure() {

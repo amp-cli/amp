@@ -89,7 +89,7 @@ services:
   httpd.apache:
     class: Amp\Httpd\VhostTemplate
     calls:
-      - [setTemplateEngine, ['@template.engine']]
+      - [setTemplateFactory, ['@template.factory']]
       - [setTemplate, ['%apache_tpl%']]
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
@@ -98,7 +98,7 @@ services:
   httpd.apache24:
     class: Amp\Httpd\VhostTemplate
     calls:
-      - [setTemplateEngine, ['@template.engine']]
+      - [setTemplateFactory, ['@template.factory']]
       - [setTemplate, ['%apache24_tpl%']]
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
@@ -107,7 +107,7 @@ services:
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
     calls:
-      - [setTemplateEngine, ['@template.engine']]
+      - [setTemplateFactory, ['@template.factory']]
       - [setTemplate, ['%nginx_tpl%']]
       - [setDir, ['%nginx_dir%']]
       - [setLogDir, ['%log_dir%']]
@@ -166,7 +166,5 @@ services:
     - [setSizeMb, ['%ram_disk_size%']]
     - [setDevFile, ['%app_dir%/osx_ramdisk_device']]
 
-  template.engine:
-    class: Symfony\Component\Templating\PhpEngine
-    factory_class: Amp\TemplateEngineFactory
-    factory_method: get
+  template.factory:
+    class: Amp\TemplateEngineFactory

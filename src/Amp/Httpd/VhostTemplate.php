@@ -3,6 +3,7 @@ namespace Amp\Httpd;
 use Amp\Instance;
 use Amp\Util\Filesystem;
 use Amp\Permission\PermissionInterface;
+use Amp\TemplateEngineFactory;
 use Symfony\Component\Templating\EngineInterface;
 
 class VhostTemplate implements HttpdInterface {
@@ -32,9 +33,9 @@ class VhostTemplate implements HttpdInterface {
   private $template;
 
   /**
-   * @var EngineInterface
+   * @var TemplateEngineFactory
    */
-  private $templateEngine;
+  private $templateFactory;
 
   public function __construct() {
     $this->fs = new Filesystem();
@@ -59,7 +60,7 @@ class VhostTemplate implements HttpdInterface {
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';
     $parameters['log_dir'] = $this->getLogDir();
-    $content = $this->getTemplateEngine()->render($this->getTemplate(), $parameters);
+    $content = $this->getTemplateFactory()->create($instance)->render($this->getTemplate(), $parameters);
     $this->fs->dumpFile($this->createFilePath($root, $url), $content);
 
     $this->setupLogDir();
@@ -152,17 +153,17 @@ class VhostTemplate implements HttpdInterface {
   }
 
   /**
-   * @param \Symfony\Component\Templating\EngineInterface $templateEngine
+   * @param TemplateEngineFactory $templateFactory
    */
-  public function setTemplateEngine($templateEngine) {
-    $this->templateEngine = $templateEngine;
+  public function setTemplateFactory($templateFactory) {
+    $this->templateFactory = $templateFactory;
   }
 
   /**
-   * @return \Symfony\Component\Templating\EngineInterface
+   * @return TemplateEngineFactory
    */
-  public function getTemplateEngine() {
-    return $this->templateEngine;
+  public function getTemplateFactory() {
+    return $this->templateFactory;
   }
 
 }
