@@ -62,7 +62,9 @@ class ConfigCommand extends ContainerAwareCommand {
     );
 
     $this->askDbType()->execute($input, $output, $dialog);
-    $this->askDbDsn()->execute($input, $output, $dialog);
+    $db_type = $this->getContainer()->getParameter('db_type')
+    if (array_key_exists( $db_type, array( 'mysql_dsn', 'pg_dsn' ))
+      $this->askDbDsn()->execute($input, $output, $dialog);
 
     $output->writeln("");
     $output->writeln("<info>=======================[ Configure File Permissions ]========================</info>");
