@@ -1,8 +1,10 @@
 <?php
 namespace Amp;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
 use Symfony\Component\Config\Loader\DelegatingLoader;
@@ -36,6 +38,7 @@ class Application extends \Symfony\Component\Console\Application {
 
     $application = new Application('amp', '@package_version@', $appDir, $configDirectories);
     $application->setCatchExceptions(FALSE);
+    $application->upgradeIfNeeded();
     $application->run();
   }
 
@@ -108,7 +111,8 @@ class Application extends \Symfony\Component\Console\Application {
       $container->setParameter('instances_timeout', getenv('AMP_INSTANCES_TIMEOUT'));
     }
 
-    $container->setAlias('db', 'db.' . $container->getParameter('db_type'));
+    $dbParam = $container->hasParameter('version') ? 'db_type' : 'mysql_type';
+    $container->setAlias('db', 'db.' . $container->getParameter($dbParam));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
     $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));
     $container->setAlias('ram_disk', 'ram_disk.' . $container->getParameter('ram_disk_type'));
@@ -135,6 +139,7 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigGetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $this->getContainer()->get('config.repository'));
+    $commands[] = new \Amp\Command\ConfigUpgradeCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\DatadirCommand($this, NULL, $this->getContainer()->get('perm'));
     $commands[] = new \Amp\Command\TestCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'));
@@ -144,5 +149,14 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'));
     $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'));
     return $commands;
+  }
+
+  /**
+   * Upgrade the configuration
+   */
+  public function upgradeIfNeeded() {
+    $command = $this->get( 'config:upgrade' );
+    $exitCode = $this->doRunCommand($command, new ArgvInput(), new ConsoleOutput());
+    return $exitCode;
   }
 }
