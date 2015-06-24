@@ -115,7 +115,7 @@ to meet MySQL's size limits.  The name is the same for the DB and user.
 
 Q: Where does "amp" store its configuration data?
 
-A: ~/.amp by default or if you define the environment variable AMPHOME it will store in the directory thus defined.
+A: By default, `~/.amp`. If you define the environment variable AMPHOME, it will store in the specified directory.
 
 Q: I have five web apps installed. How does AMP distinguish them?
 
