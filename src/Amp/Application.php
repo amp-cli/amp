@@ -25,10 +25,17 @@ class Application extends \Symfony\Component\Console\Application {
   /**
    * Primary entry point for execution of the standalone command.
    *
-   * @return
+   * @param string $binDir
+   *
+   * @throws \Exception
    */
   public static function main($binDir) {
-    $appDir = getenv('HOME') . DIRECTORY_SEPARATOR . '.amp';
+    if (getenv('AMPHOME')) {
+      $appDir = getenv('AMPHOME');
+    }
+    else {
+      $appDir = getenv('HOME') . DIRECTORY_SEPARATOR . '.amp';
+    }
     $configDirectories = array(
       dirname($binDir) . '/app/defaults',
       $appDir,
