@@ -111,6 +111,7 @@ class Application extends \Symfony\Component\Console\Application {
       $container->setParameter('instances_timeout', getenv('AMP_INSTANCES_TIMEOUT'));
     }
 
+    // TODO: If we load default configuration first, the version paramter will always be here.
     $dbParam = $container->hasParameter('version') ? 'db_type' : 'mysql_type';
     $container->setAlias('db', 'db.' . $container->getParameter($dbParam));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
@@ -155,6 +156,7 @@ class Application extends \Symfony\Component\Console\Application {
    * Upgrade the configuration
    */
   public function upgradeIfNeeded() {
+    // TODO: Figure out how to get the version number of .amp/services.yml.
     $command = $this->get( 'config:upgrade' );
     $exitCode = $this->doRunCommand($command, new ArgvInput(), new ConsoleOutput());
     return $exitCode;
