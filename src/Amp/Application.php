@@ -112,7 +112,7 @@ class Application extends \Symfony\Component\Console\Application {
     }
 
     // TODO: If we load default configuration first, the version paramter will always be here.
-    $dbParam = $container->hasParameter('version') ? 'db_type' : 'mysql_type';
+    $dbParam = $container->hasParameter('db_type') ? 'db_type' : 'mysql_type';
     $container->setAlias('db', 'db.' . $container->getParameter($dbParam));
     $container->setAlias('httpd', 'httpd.' . $container->getParameter('httpd_type'));
     $container->setAlias('perm', 'perm.' . $container->getParameter('perm_type'));

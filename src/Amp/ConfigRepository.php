@@ -134,6 +134,7 @@ class ConfigRepository {
         $this->data = array(
           'parameters' => array(),
           'services' => array(),
+          'version' => 'new'
         );
       }
     }
