@@ -26,8 +26,6 @@ class Application extends \Symfony\Component\Console\Application {
 
   /**
    * Primary entry point for execution of the standalone command.
-   *
-   * @return
    */
   public static function main($binDir) {
     $appDir = getenv('HOME') . DIRECTORY_SEPARATOR . '.amp';
@@ -69,18 +67,18 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(
       __DIR__,
       'Templates',
-      'apache-vhost.php'
+      'apache-vhost.php',
     )));
     $container->setParameter('apache24_tpl', implode(DIRECTORY_SEPARATOR, array(
       __DIR__,
       'Templates',
-      'apache24-vhost.php'
+      'apache24-vhost.php',
     )));
     $container->setParameter('nginx_dir', $this->appDir . DIRECTORY_SEPARATOR . 'nginx.d');
     $container->setParameter('nginx_tpl', implode(DIRECTORY_SEPARATOR, array(
       __DIR__,
       'Templates',
-      'nginx-vhost.php'
+      'nginx-vhost.php',
     )));
     $container->setParameter('instances_yml', $this->appDir . DIRECTORY_SEPARATOR . 'instances.yml');
     $container->setParameter('config_yml', $this->appDir . DIRECTORY_SEPARATOR . 'services.yml');
@@ -97,7 +95,7 @@ class Application extends \Symfony\Component\Console\Application {
 
     $locator = new FileLocator($this->configDirectories);
     $loaderResolver = new LoaderResolver(array(
-      new YamlFileLoader($container, $locator)
+      new YamlFileLoader($container, $locator),
     ));
     $delegatingLoader = new DelegatingLoader($loaderResolver);
     foreach (array('services.yml') as $file) {
@@ -157,8 +155,11 @@ class Application extends \Symfony\Component\Console\Application {
    */
   public function upgradeIfNeeded() {
     // TODO: Figure out how to get the version number of .amp/services.yml.
-    $command = $this->get( 'config:upgrade' );
-    $exitCode = $this->doRunCommand($command, new ArgvInput(), new ConsoleOutput());
+    $command = $this->get('config:upgrade');
+    global $argv;
+    $newArgv = array($argv[0], 'config:upgrade');
+    $exitCode = $this->doRunCommand($command, new ArgvInput($newArgv), new ConsoleOutput());
     return $exitCode;
   }
+
 }
