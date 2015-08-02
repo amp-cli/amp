@@ -13,7 +13,7 @@ otherwise creating new websites, consider these steps:
 
  * Configure administrative access to your MySQL server:
 
-     amp config:set --mysql_type=dsn --mysql_dsn=mysql://user:pass@host/
+     amp config:set --db_type=mysql_dsn --mysql_dsn=mysql://user:pass@host/
 
  * If you use Apache, add this directive to your configuration:
 

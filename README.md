@@ -158,11 +158,11 @@ amp config
 
 ## Set options individually
 amp config:set --httpd_type=XXX
-amp config:set --mysql_type=XXX
+amp config:set --db_type=XXX
 amp config:set --perm_type=XXX
 
 ## Set options en masse
-amp config:set --httpd_type=XXX --mysql_type=XXX --perm_type=XXX
+amp config:set --httpd_type=XXX --db_type=XXX --perm_type=XXX
 ```
 
 Parameters and services may be configured in amp's source-tree
