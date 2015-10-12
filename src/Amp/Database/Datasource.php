@@ -87,21 +87,18 @@ class Datasource {
    * @return bool
    */
   function isValid() {
-    try {
-      $dbh = $this->createPDO();
-      foreach ($dbh->query('SELECT 99 as value') as $row) {
-        if ($row['value'] == 99) {
-          return TRUE;
-        }
+    $dbh = $this->createPDO();
+    foreach ($dbh->query('SELECT 99 as value') as $row) {
+      if ($row['value'] == 99) {
+        return TRUE;
       }
-      $dbh = NULL;
-    } catch (\PDOException $e) {
     }
+    $dbh = NULL;
     return FALSE;
   }
 
   function toCiviDSN() {
-    $civi_dsn = "mysql://{$this->username}:{$this->password}@{$this->host}";
+    $civi_dsn = "{$this->driver}://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
       $civi_dsn = "$civi_dsn:{$this->port}";
     }
@@ -161,6 +158,7 @@ class Datasource {
     return $pdo_dsn;
   }
 
+  // FIXME: pg, mysql-specific
   function updateHost() {
     /*
      * If you use localhost for the host, the MySQL client library will

@@ -115,7 +115,7 @@ to meet MySQL's size limits.  The name is the same for the DB and user.
 
 Q: Where does "amp" store its configuration data?
 
-A: ~/.amp
+A: By default, `~/.amp`. If you define the environment variable AMPHOME, it will store in the specified directory.
 
 Q: I have five web apps installed. How does AMP distinguish them?
 
@@ -160,11 +160,11 @@ amp config
 
 ## Set options individually
 amp config:set --httpd_type=XXX
-amp config:set --mysql_type=XXX
+amp config:set --db_type=XXX
 amp config:set --perm_type=XXX
 
 ## Set options en masse
-amp config:set --httpd_type=XXX --mysql_type=XXX --perm_type=XXX
+amp config:set --httpd_type=XXX --db_type=XXX --perm_type=XXX
 ```
 
 Parameters and services may be configured in amp's source-tree

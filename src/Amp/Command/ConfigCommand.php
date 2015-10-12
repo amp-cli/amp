@@ -45,20 +45,26 @@ class ConfigCommand extends ContainerAwareCommand {
     );
 
     $output->writeln("");
-    $output->writeln("<info>=============================[ Configure MySQL ]=============================</info>");
+    $output->writeln("<info>=============================[ Configure Database ]=============================</info>");
     $output->writeln("");
     $output->writeln("<info>"
-        ."Amp creates a unique MySQL user for each generated instance.\n"
+        ."Amp creates a unique database user for each generated instance.\n"
         ."To accomplish this amp needs GRANT-level privileges. It is\n"
         ."recommended that you supply the root/administrator credentials\n"
         ."for this task. If you wish to create a new user for amp to use\n"
         ."please assign it appropriate privileges eg:\n\n"
-        ."<fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>"
+// FIXME
+        ."MySQL: <fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>\n"
+        ."PgSQL: <fg=cyan;bg=black;option=bold>\$ createuser --superuser --createdb --createrole -P #user</fg=cyan;bg=black;option=bold>\n"
+        ."       <fg=cyan;bg=black;option=bold>Add 'local all #user md5' to pg_hba.conf</fg=cyan;bg=black;option=bold>\n"
+        ."       <fg=cyan;bg=black;option=bold>Test $ psql -U #user -W template1</fg=cyan;bg=black;option=bold>"
         ."</info>"
     );
 
-    $this->config->setParameter('mysql_type', 'dsn'); // temporary limitation
-    $this->askMysqlDsn()->execute($input, $output, $dialog);
+    $this->askDbType()->execute($input, $output, $dialog);
+    $db_type = $this->getContainer()->getParameter('db_type');
+    if (in_array( $db_type, array( 'mysql_dsn', 'pg_dsn' )))
+      $this->askDbDsn()->execute($input, $output, $dialog);
 
     $output->writeln("");
     $output->writeln("<info>=======================[ Configure File Permissions ]========================</info>");
@@ -147,13 +153,14 @@ class ConfigCommand extends ContainerAwareCommand {
     $this->config->save();
   }
 
-  protected function askMysqlDsn() {
-    return $this->createPrompt('mysql_dsn')
+  protected function askDbDsn() {
+    $db_type = $this->getContainer()->getParameter('db_type');
+    return $this->createPrompt($db_type)
       ->setAsk(
       function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
         $value = $dialog->askAndValidate(
           $output,
-          "Enter mysql_dsn> ",
+          "Enter dsn> ",
           function ($dsn) {
             return ConfigCommand::validateDsn($dsn);
           },
@@ -161,6 +168,26 @@ class ConfigCommand extends ContainerAwareCommand {
           $default
         );
         return (empty($value)) ? FALSE : $value;
+      }
+    );
+  }
+  
+  
+  protected function askDbType() {
+    return $this->createPrompt('db_type')
+      ->setAsk(
+      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+        return $dialog->select($output,
+          "Enter httpd_type",
+          array(
+            'mysql_dsn' => 'MySQL based on DSN',
+            'mysql_mycnf' => 'MySQL based on existing configuration',
+            'mysql_ram_disk' => 'MySQL ram disk',
+            'mysql_osx_ram_disk' => 'MySQL OSX ram disk',
+            'pg_dsn' => 'PostgreSQL based on DSN'
+          ),
+          $default
+        );
       }
     );
   }

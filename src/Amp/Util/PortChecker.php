@@ -17,6 +17,7 @@ class PortChecker {
         'http' => 80,
         'https' => 443,
         'mysql' => 3306,
+        'postgresql' => 5432,
         'git' => 9418,
       );
     }

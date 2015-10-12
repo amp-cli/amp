@@ -48,8 +48,9 @@ class ConfigRepository {
       'apache24_tpl' => 'Apache 2.4 or greater configuration template',
       'nginx_dir' => 'Directory which stores nginx config files',
       'nginx_tpl' => 'Nginx configuration template',
-      'mysql_type' => 'How to connect to MySQL admin [dsn,mycnf,ram_disk,osx_ram_disk]',
+      'db_type' => 'How to connect to the database as admin [mysql_dsn,mysql_mycnf,mysql_ram_disk,mysql_osx_ram_disk,pg_dsn]',
       'mysql_dsn' => 'Administrative credentials for MySQL',
+      'pg_dsn' => 'Administrative credentials for PostgreSQL',
       'perm_type' => "How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]. See https://github.com/totten/amp/blob/master/doc/perm.md",
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
@@ -74,6 +75,20 @@ class ConfigRepository {
         ));
         if (empty($dsns)) {
           return 'mysql://user:pass@hostname:3306';
+        }
+        else {
+          return $dsns;
+        }
+      },
+      'pg_dsn' => function () {
+        $checker = new \Amp\Util\PortChecker();
+        // Some folks report problems using "localhost"
+        $dsns = $checker->filterUrls(array(
+          'pgsql://user:pass@127.0.0.1:5432/template1',
+          'pgsql://user:pass@localhost:5432/template1',
+        ));
+        if (empty($dsns)) {
+          return 'pgsql://user:pass@hostname:5432/template1';
         }
         else {
           return $dsns;
@@ -119,6 +134,7 @@ class ConfigRepository {
         $this->data = array(
           'parameters' => array(),
           'services' => array(),
+          'version' => 'new'
         );
       }
     }
