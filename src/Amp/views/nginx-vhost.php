@@ -27,7 +27,7 @@ server {
     # Else this rewrite block wouldn't be needed (GlobalRedirect)
     rewrite ^/(.*)$ /index.php?q=$1;
   }
-  
+
   location ~ \..*/.*\.php$ {
     return 403;
   }
@@ -50,6 +50,14 @@ server {
   location /sites/default/files/civicrm {
     deny all;
   }
+
+  location /wp-content/plugins/files/civicrm/upload {
+    deny all;
+  }
+  location /wp-content/plugins/files/civicrm/custom {
+    deny all;
+  }
+
   <?php } ?>
 
 }
