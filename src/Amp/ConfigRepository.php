@@ -132,9 +132,10 @@ class ConfigRepository {
       }
       else {
         $this->data = array(
-          'parameters' => array(),
+          'parameters' => array(
+            'version' => 'new'
+          ),
           'services' => array(),
-          'version' => 'new'
         );
       }
     }
