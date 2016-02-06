@@ -1,3 +1,21 @@
+## Download
+
+```
+sudo curl -LsS https://download.civicrm.org/amp/amp.phar -o /usr/local/bin/amp
+sudo chmod +x /usr/local/bin/amp
+```
+
+## Build
+
+To bild a new `phar` executable, use [box](http://box-project.github.io/box2/):
+
+```
+git clone https://github.com/totten/amp
+cd amp
+composer install
+php -dphar.readonly=0 `which box` build
+```
+
 ## About "amp": Vision ##
 
 "amp" is a tool to facilitate development of PHP web applications. The goal is
