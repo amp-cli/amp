@@ -293,12 +293,13 @@ class ConfigCommand extends ContainerAwareCommand {
     $datasource = new \Amp\Database\Datasource(array(
       'civi_dsn' => $dsn,
     ));
-    if ($datasource->isValid()) {
-      return $dsn;
+    $dbh = $datasource->createPDO();
+    foreach ($dbh->query('SELECT 99 as value') as $row) {
+      if ($row['value'] == 99) {
+        return $dsn;
+      }
     }
-    else {
-      throw new \RuntimeException("Connection failed");
-    }
+    throw new \RuntimeException("Connection failed");
   }
 
   protected function createPrompt($parameter) {
