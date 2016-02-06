@@ -36,7 +36,8 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
       'values' => array(
         'dsn' => 'mysql_dsn',
         'ram_disk' => 'mysql_ram_disk',
-        'osx_ram_disk' => 'mysql_osx_ram_disk'
+        'osx_ram_disk' => 'mysql_osx_ram_disk',
+        'mycnf' => 'mysql_mycnf',
         )
       ),
     'mysql.mycnf' => array(
