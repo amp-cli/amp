@@ -148,14 +148,14 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigUpgradeCommand($this, NULL, $this->getContainer()->get('config.repository'));
-    $commands[] = new \Amp\Command\DatadirCommand($this, NULL, $this->getContainer()->get('perm'));
-    $commands[] = new \Amp\Command\TestCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\CreateCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\ShowCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\ExportCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\SqlCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'));
-    $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'));
+    $commands[] = new \Amp\Command\DatadirCommand($this, NULL);
+    $commands[] = new \Amp\Command\TestCommand($this, NULL);
+    $commands[] = new \Amp\Command\CreateCommand($this, NULL);
+    $commands[] = new \Amp\Command\ShowCommand($this, NULL);
+    $commands[] = new \Amp\Command\ExportCommand($this, NULL);
+    $commands[] = new \Amp\Command\SqlCommand($this, NULL);
+    $commands[] = new \Amp\Command\DestroyCommand($this, NULL);
+    $commands[] = new \Amp\Command\CleanupCommand($this, NULL);
     return $commands;
   }
 

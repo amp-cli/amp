@@ -3,7 +3,6 @@ namespace Amp\Command;
 
 use Amp\Database\DatabaseManagementInterface;
 use Amp\Instance;
-use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,17 +17,10 @@ class DestroyCommand extends ContainerAwareCommand {
   private $fs;
 
   /**
-   * @var InstanceRepository
-   */
-  private $instances;
-
-  /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
-    $this->instances = $instances;
+  public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -52,14 +44,15 @@ class DestroyCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $this->instances->lock();
-    $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
+    $instances = $this->getContainer()->get('instances');
+    $instances->lock();
+    $instance = $instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
       return;
     }
 
-    $this->instances->remove($instance->getId());
-    $this->instances->save();
+    $instances->remove($instance->getId());
+    $instances->save();
   }
 
 }
