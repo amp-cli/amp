@@ -3,7 +3,6 @@ namespace Amp\Command;
 
 use Amp\Database\DatabaseManagementInterface;
 use Amp\Instance;
-use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,11 +10,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateCommand extends ContainerAwareCommand {
-
-  /**
-   * @var InstanceRepository
-   */
-  private $instances;
 
   /**
    * @var Filesystem
@@ -27,8 +21,7 @@ class CreateCommand extends ContainerAwareCommand {
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
-    $this->instances = $instances;
+  public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -59,16 +52,17 @@ class CreateCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $this->instances->lock();
+    $instances = $this->getContainer()->get('instances');
+    $instances->lock();
 
     $container = $this->getContainer();
     $db_type = $container->getParameter('db_type');
     if ($db_type == "") {
       $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'config', array());
       $this->getApplication()->loadContainer();
-      $this->instances = $this->getContainer()->get('instances');
+      $instances = $this->getContainer()->get('instances');
     }
-    $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
+    $instance = $instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if ($instance === NULL) {
       $instance = new Instance();
       $instance->setRoot($input->getOption('root'));
@@ -82,8 +76,8 @@ class CreateCommand extends ContainerAwareCommand {
       $instance->setUrl($input->getOption('url'));
     }
 
-    $this->instances->create($instance, !$input->getOption('skip-url'), !$input->getOption('skip-db'), $input->getOption('perm'));
-    $this->instances->save();
+    $instances->create($instance, !$input->getOption('skip-url'), !$input->getOption('skip-db'), $input->getOption('perm'));
+    $instances->save();
 
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
       $this->export($instance->getRoot(), $instance->getName(), $input->getOption('prefix'), $input->getOption('output-file'), $output);
