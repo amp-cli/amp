@@ -9,4 +9,5 @@ class TemplateEngineFactory {
     $loader = new FilesystemLoader(__DIR__ . '/views/%name%');
     return new PhpEngine(new TemplateNameParser(), $loader);
   }
+
 }

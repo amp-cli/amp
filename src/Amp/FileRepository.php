@@ -171,7 +171,7 @@ abstract class FileRepository {
    * @param string $string
    * @return array of array
    */
-  abstract function decodeDocument($string);
+  public abstract function decodeDocument($string);
 
   /**
    * Convert from array to object
@@ -179,13 +179,13 @@ abstract class FileRepository {
    * @param array $array
    * @return object
    */
-  abstract function decodeItem($array);
+  public abstract function decodeItem($array);
 
   /**
    * @param array $items a list of arrays representing items
    * @return string
    */
-  abstract function encodeDocument($items);
+  public abstract function encodeDocument($items);
 
   /**
    * Convert from object to array
@@ -193,5 +193,6 @@ abstract class FileRepository {
    * @param $obj
    * @return array
    */
-  abstract function encodeItem($obj);
+  public abstract function encodeItem($obj);
+
 }
