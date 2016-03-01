@@ -2,7 +2,6 @@
 namespace Amp\Command;
 
 use Amp\Instance;
-use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,11 +9,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanupCommand extends ContainerAwareCommand {
-
-  /**
-   * @var InstanceRepository
-   */
-  private $instances;
 
   /**
    * @var Filesystem
@@ -26,8 +20,7 @@ class CleanupCommand extends ContainerAwareCommand {
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
-    $this->instances = $instances;
+  public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -40,12 +33,13 @@ class CleanupCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $this->instances->lock();
+    $instances = $this->getContainer()->get('instances');
+    $instances->lock();
     $count = 0;
-    foreach ($this->instances->findAll() as $instance) {
+    foreach ($instances->findAll() as $instance) {
       if ($input->getOption('force') || !file_exists($instance->getRoot())) {
         $output->writeln("Destroy (root={$instance->getRoot()}, name={$instance->getName()}, dsn={$instance->getDsn()})");
-        $this->instances->remove($instance->getId());
+        $instances->remove($instance->getId());
         $count++;
       } else {
         $output->writeln("Skip (root={$instance->getRoot()}, name={$instance->getName()}, dsn={$instance->getDsn()})");
@@ -54,6 +48,6 @@ class CleanupCommand extends ContainerAwareCommand {
 
     $output->writeln("Destroyed {$count} instance(s)");
 
-    $this->instances->save();
+    $instances->save();
   }
 }
