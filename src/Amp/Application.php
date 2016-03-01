@@ -154,7 +154,7 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ShowCommand($this, NULL);
     $commands[] = new \Amp\Command\ExportCommand($this, NULL);
     $commands[] = new \Amp\Command\SqlCommand($this, NULL);
-    $commands[] = new \Amp\Command\DestroyCommand($this, NULL, $this->getContainer()->get('instances'));
+    $commands[] = new \Amp\Command\DestroyCommand($this, NULL);
     $commands[] = new \Amp\Command\CleanupCommand($this, NULL, $this->getContainer()->get('instances'));
     return $commands;
   }
