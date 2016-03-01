@@ -49,11 +49,12 @@ class SqlCommand extends ContainerAwareCommand {
       array(
         0 => STDIN,
         1 => STDOUT,
-        2 => STDERR
+        2 => STDERR,
       ),
       $pipes,
       $input->getOption('root')
     );
     return proc_close($process);
   }
+
 }

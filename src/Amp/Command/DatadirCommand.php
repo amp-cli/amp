@@ -34,10 +34,12 @@ class DatadirCommand extends ContainerAwareCommand {
         $output->writeln("<info>Create data directory: $path</info>");
         $this->fs->mkdir($path);
         $perm->applyDirPermission('write', $path);
-      } else {
+      }
+      else {
         $output->writeln("<info>Update data directory: $path</info>");
         $perm->applyDirPermission('write', $path);
       }
     }
   }
+
 }

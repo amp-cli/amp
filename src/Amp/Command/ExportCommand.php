@@ -34,7 +34,8 @@ class ExportCommand extends ContainerAwareCommand {
     $root = $this->fs->toAbsolutePath($input->getOption('root'));
     if (!$this->fs->exists($root)) {
       throw new \Exception("Failed to locate root: " . $root);
-    } else {
+    }
+    else {
       $input->setOption('root', $root);
     }
 
@@ -72,4 +73,5 @@ class ExportCommand extends ContainerAwareCommand {
     }
     // $output->writeln('export ' . implode(' ', array_keys($envVars)));
   }
+
 }

@@ -59,4 +59,5 @@ class ShowCommand extends ContainerAwareCommand {
       $output->writeln('For more detailed info, use "amp show -v" or "amp export [--root=X] [---name=X]');
     }
   }
+
 }
