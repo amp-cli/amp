@@ -2,7 +2,6 @@
 namespace Amp\Command;
 
 use Amp\Instance;
-use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,11 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Templating\EngineInterface;
 
 class TestCommand extends ContainerAwareCommand {
-
-  /**
-   * @var InstanceRepository
-   */
-  private $instances;
 
   /**
    * @var EngineInterface
@@ -33,9 +27,8 @@ class TestCommand extends ContainerAwareCommand {
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
+  public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
-    $this->instances = $instances;
     $this->expectedResponse = 'response-code-' . \Amp\Util\String::createRandom(10);
     parent::__construct($app, $name);
     $this->templateEngine = $this->getContainer()->get('template.engine');
@@ -49,7 +42,8 @@ class TestCommand extends ContainerAwareCommand {
 
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $this->instances->lock();
+    $instances = $this->getContainer()->get('instances');
+    $instances->lock();
 
     // Display help text
     //$output->write($this->templateEngine->render('testing.php', array(
@@ -71,8 +65,8 @@ class TestCommand extends ContainerAwareCommand {
     $output->writeln("<info>Connect to test application</info>");
     $output->writeln("<comment>Expect response: \"{$this->expectedResponse}\"</comment>");
 
-    $this->instances->load(); // force reload
-    $instance = $this->instances->find(Instance::makeId($root, ''));
+    $instances->load(); // force reload
+    $instance = $instances->find(Instance::makeId($root, ''));
     $response = $this->doPost($instance->getUrl() . '/index.php', array(
       'dsn' => $instance->getDsn(),
     ));
