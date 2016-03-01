@@ -148,7 +148,7 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\ConfigSetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigResetCommand($this, NULL, $this->getContainer()->get('config.repository'));
     $commands[] = new \Amp\Command\ConfigUpgradeCommand($this, NULL, $this->getContainer()->get('config.repository'));
-    $commands[] = new \Amp\Command\DatadirCommand($this, NULL, $this->getContainer()->get('perm'));
+    $commands[] = new \Amp\Command\DatadirCommand($this, NULL);
     $commands[] = new \Amp\Command\TestCommand($this, NULL);
     $commands[] = new \Amp\Command\CreateCommand($this, NULL);
     $commands[] = new \Amp\Command\ShowCommand($this, NULL);
