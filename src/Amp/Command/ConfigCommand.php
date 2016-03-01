@@ -18,7 +18,7 @@ class ConfigCommand extends ContainerAwareCommand {
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
+   * @param ConfigRepository $config
    */
   public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
     $this->config = $config;
@@ -35,51 +35,52 @@ class ConfigCommand extends ContainerAwareCommand {
     $dialog = $this->getHelperSet()->get('dialog');
 
     $output->writeln("<info>"
-        . "Welcome! amp will help setup your PHP applications by creating\n"
-        . "databases and virtual-hosts. amp is intended for use during\n"
-        . "development and testing.\n"
-        . "\n"
-        . "Please fill in a few configuration options so that we can properly\n"
-        . "install the PHP application."
-        . "</info>"
+      . "Welcome! amp will help setup your PHP applications by creating\n"
+      . "databases and virtual-hosts. amp is intended for use during\n"
+      . "development and testing.\n"
+      . "\n"
+      . "Please fill in a few configuration options so that we can properly\n"
+      . "install the PHP application."
+      . "</info>"
     );
 
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure Database ]=============================</info>");
     $output->writeln("");
     $output->writeln("<info>"
-        ."Amp creates a unique database user for each generated instance.\n"
-        ."To accomplish this amp needs GRANT-level privileges. It is\n"
-        ."recommended that you supply the root/administrator credentials\n"
-        ."for this task. If you wish to create a new user for amp to use\n"
-        ."please assign it appropriate privileges eg:\n\n"
-// FIXME
-        ."MySQL: <fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>\n"
-        ."PgSQL: <fg=cyan;bg=black;option=bold>\$ createuser --superuser --createdb --createrole -P #user</fg=cyan;bg=black;option=bold>\n"
-        ."       <fg=cyan;bg=black;option=bold>Add 'local all #user md5' to pg_hba.conf</fg=cyan;bg=black;option=bold>\n"
-        ."       <fg=cyan;bg=black;option=bold>Test $ psql -U #user -W template1</fg=cyan;bg=black;option=bold>"
-        ."</info>"
+      . "Amp creates a unique database user for each generated instance.\n"
+      . "To accomplish this amp needs GRANT-level privileges. It is\n"
+      . "recommended that you supply the root/administrator credentials\n"
+      . "for this task. If you wish to create a new user for amp to use\n"
+      . "please assign it appropriate privileges eg:\n\n"
+      // FIXME
+      . "MySQL: <fg=cyan;bg=black;option=bold>GRANT ALL ON *.* to '#user'@'localhost' IDENTIFIED BY '#pass' WITH GRANT OPTION</fg=cyan;bg=black;option=bold>\n"
+      . "PgSQL: <fg=cyan;bg=black;option=bold>\$ createuser --superuser --createdb --createrole -P #user</fg=cyan;bg=black;option=bold>\n"
+      . "       <fg=cyan;bg=black;option=bold>Add 'local all #user md5' to pg_hba.conf</fg=cyan;bg=black;option=bold>\n"
+      . "       <fg=cyan;bg=black;option=bold>Test $ psql -U #user -W template1</fg=cyan;bg=black;option=bold>"
+      . "</info>"
     );
 
     $this->askDbType()->execute($input, $output, $dialog);
     $db_type = $this->getContainer()->getParameter('db_type');
-    if (in_array( $db_type, array( 'mysql_dsn', 'pg_dsn' )))
+    if (in_array($db_type, array('mysql_dsn', 'pg_dsn'))) {
       $this->askDbDsn()->execute($input, $output, $dialog);
+    }
 
     $output->writeln("");
     $output->writeln("<info>=======================[ Configure File Permissions ]========================</info>");
     $output->writeln("");
     $currentUser = \Amp\Util\User::getCurrentUser();
     $output->writeln("<info>"
-        . "It appears that you are currently working as user \"{$currentUser}\".\n"
-        . "\n"
-        . "If the web server executes PHP requests as the same user, then no special\n"
-        . "permissions are required.\n"
-        . "\n"
-        . "If the web server executes PHP requests as a different user (such as\n"
-        . "\"www-data\" or \"apache\"), then special permissions will be required\n"
-        . "for any web-writable data directories."
-        . "</info>"
+      . "It appears that you are currently working as user \"{$currentUser}\".\n"
+      . "\n"
+      . "If the web server executes PHP requests as the same user, then no special\n"
+      . "permissions are required.\n"
+      . "\n"
+      . "If the web server executes PHP requests as a different user (such as\n"
+      . "\"www-data\" or \"apache\"), then special permissions will be required\n"
+      . "for any web-writable data directories."
+      . "</info>"
     );
     $this->askPermType()->execute($input, $output, $dialog);
     switch ($this->config->getParameter("perm_type")) {
@@ -120,6 +121,7 @@ class ConfigCommand extends ContainerAwareCommand {
         $output->writeln("You will need to restart Apache after adding the directive -- and again");
         $output->writeln("after creating any new sites.");
         break;
+
       case 'nginx':
         $configPath = $this->getContainer()->getParameter('nginx_dir');
         $output->writeln("");
@@ -139,6 +141,7 @@ class ConfigCommand extends ContainerAwareCommand {
         $output->writeln("You will need to restart nginx after adding the directive -- and again");
         $output->writeln("after creating any new sites.");
         break;
+
       default:
     }
 
@@ -157,128 +160,128 @@ class ConfigCommand extends ContainerAwareCommand {
     $db_type = $this->getContainer()->getParameter('db_type');
     return $this->createPrompt($db_type)
       ->setAsk(
-      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-        $value = $dialog->askAndValidate(
-          $output,
-          "Enter dsn> ",
-          function ($dsn) {
-            return ConfigCommand::validateDsn($dsn);
-          },
-          FALSE,
-          $default
-        );
-        return (empty($value)) ? FALSE : $value;
-      }
-    );
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          $value = $dialog->askAndValidate(
+            $output,
+            "Enter dsn> ",
+            function ($dsn) {
+              return ConfigCommand::validateDsn($dsn);
+            },
+            FALSE,
+            $default
+          );
+          return (empty($value)) ? FALSE : $value;
+        }
+      );
   }
-  
-  
+
+
   protected function askDbType() {
     return $this->createPrompt('db_type')
       ->setAsk(
-      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-        return $dialog->select($output,
-          "Enter httpd_type",
-          array(
-            'mysql_dsn' => 'MySQL: Specify administrative credentials (DSN)',
-            'mysql_mycnf' => 'MySQL: Read user+password+host+port from $HOME/.my.cnf',
-            'mysql_ram_disk' => 'MySQL: Launch new DB in a ramdisk (Linux)',
-            'mysql_osx_ram_disk' => 'MySQL: Launch new DB in a ramdisk (OS X)',
-            'pg_dsn' => 'PostgreSQL: Specify administrative credentials (DSN)'
-          ),
-          $default
-        );
-      }
-    );
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          return $dialog->select($output,
+            "Enter httpd_type",
+            array(
+              'mysql_dsn' => 'MySQL: Specify administrative credentials (DSN)',
+              'mysql_mycnf' => 'MySQL: Read user+password+host+port from $HOME/.my.cnf',
+              'mysql_ram_disk' => 'MySQL: Launch new DB in a ramdisk (Linux)',
+              'mysql_osx_ram_disk' => 'MySQL: Launch new DB in a ramdisk (OS X)',
+              'pg_dsn' => 'PostgreSQL: Specify administrative credentials (DSN)',
+            ),
+            $default
+          );
+        }
+      );
   }
 
   protected function askPermType() {
     return $this->createPrompt('perm_type')
       ->setAsk(
-      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-        $options = array(
-          'none' => "\"none\": Do not set any special permissions for the web user",
-          'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)\n"
-            . "         In some distros+filesystems, this requires extra configuration.\n"
-            . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
-          'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
-          'custom' => '"custom": Set permissions with a custom command',
-          'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
-        );
-        $optionKeys = array_keys($options);
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          $options = array(
+            'none' => "\"none\": Do not set any special permissions for the web user",
+            'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)\n"
+              . "         In some distros+filesystems, this requires extra configuration.\n"
+              . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
+            'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
+            'custom' => '"custom": Set permissions with a custom command',
+            'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
+          );
+          $optionKeys = array_keys($options);
 
-        $defaultPos = array_search($default, $optionKeys);
-        if ($defaultPos === FALSE) {
-          $defaultPos = '0';
+          $defaultPos = array_search($default, $optionKeys);
+          if ($defaultPos === FALSE) {
+            $defaultPos = '0';
+          }
+          $selectedNum = $dialog->select($output,
+            "Enter perm_type",
+            array_values($options),
+            $defaultPos
+          );
+          return $optionKeys[$selectedNum];
         }
-        $selectedNum = $dialog->select($output,
-          "Enter perm_type",
-          array_values($options),
-          $defaultPos
-        );
-        return $optionKeys[$selectedNum];
-      }
-    );
+      );
   }
 
   protected function askPermUser() {
     return $this->createPrompt('perm_user')
       ->setAsk(
-      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-        $value = $dialog->askAndValidate(
-          $output,
-          "Enter perm_user> ",
-          function ($user) {
-            return \Amp\Util\User::validateUser($user);
-          },
-          FALSE,
-          $default
-        );
-        return (empty($value)) ? FALSE : $value;
-      }
-    );
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          $value = $dialog->askAndValidate(
+            $output,
+            "Enter perm_user> ",
+            function ($user) {
+              return \Amp\Util\User::validateUser($user);
+            },
+            FALSE,
+            $default
+          );
+          return (empty($value)) ? FALSE : $value;
+        }
+      );
   }
 
   protected function askPermCommand() {
     return $this->createPrompt('perm_custom_command')
       ->setAsk(
-      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-        $value = $dialog->askAndValidate(
-          $output,
-          "Enter perm_custom_command> ",
-          function ($command) use ($output) {
-            $testDir = $this->getContainer()->getParameter('app_dir')
-              . DIRECTORY_SEPARATOR . 'tmp'
-              . DIRECTORY_SEPARATOR . \Amp\Util\String::createRandom(16);
-            $output->writeln("<info>Executing against test directory ($testDir)</info>");
-            $result = \Amp\Permission\External::validateDirCommand($testDir, $command);
-            $output->writeln("<info>OK (Executed without error)</info>");
-            return $result;
-          },
-          FALSE,
-          $default
-        );
-        return (empty($value)) ? FALSE : $value;
-      }
-    );
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          $value = $dialog->askAndValidate(
+            $output,
+            "Enter perm_custom_command> ",
+            function ($command) use ($output) {
+              $testDir = $this->getContainer()->getParameter('app_dir')
+                . DIRECTORY_SEPARATOR . 'tmp'
+                . DIRECTORY_SEPARATOR . \Amp\Util\String::createRandom(16);
+              $output->writeln("<info>Executing against test directory ($testDir)</info>");
+              $result = \Amp\Permission\External::validateDirCommand($testDir, $command);
+              $output->writeln("<info>OK (Executed without error)</info>");
+              return $result;
+            },
+            FALSE,
+            $default
+          );
+          return (empty($value)) ? FALSE : $value;
+        }
+      );
   }
 
   protected function askHttpdType() {
     return $this->createPrompt('httpd_type')
       ->setAsk(
-      function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-        return $dialog->select($output,
-          "Enter httpd_type",
-          array(
-            'apache' => 'Apache 2.3 or earlier',
-            'apache24' => 'Apache 2.4 or later',
-            'nginx' => 'nginx (WIP)',
-            'none' => 'None (Note: You must configure any vhosts manually.)',
-          ),
-          $default
-        );
-      }
-    );
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          return $dialog->select($output,
+            "Enter httpd_type",
+            array(
+              'apache' => 'Apache 2.3 or earlier',
+              'apache24' => 'Apache 2.4 or later',
+              'nginx' => 'nginx (WIP)',
+              'none' => 'None (Note: You must configure any vhosts manually.)',
+            ),
+            $default
+          );
+        }
+      );
   }
 
   /**
