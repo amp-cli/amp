@@ -14,4 +14,5 @@ interface PermissionInterface {
    * @param string $dir the directory whose permissions should change
    */
   public function applyDirPermission($perm, $dir);
+
 }

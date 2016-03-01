@@ -69,7 +69,6 @@ class External implements PermissionInterface {
   /**
    * Ensure that $command executes without error when applied to a test directory.
    *
-   * @param string $perm eg PermissionInterface::WEB_WRITE
    * @param string $testDir
    * @param string $command
    * @return string $command if well-formed
