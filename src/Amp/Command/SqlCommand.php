@@ -2,7 +2,6 @@
 namespace Amp\Command;
 
 use Amp\Instance;
-use Amp\InstanceRepository;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,17 +12,11 @@ use Symfony\Component\Console\Output\StreamOutput;
 class SqlCommand extends ContainerAwareCommand {
 
   /**
-   * @var InstanceRepository
-   */
-  private $instances;
-
-  /**
    * @param \Amp\Application $app
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
-    $this->instances = $instances;
+  public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
     parent::__construct($app, $name);
   }
@@ -47,7 +40,7 @@ class SqlCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $instance = $this->instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
+    $instance = $this->getContainer()->get('instances')->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
       throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
     }
