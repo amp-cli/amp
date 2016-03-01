@@ -18,7 +18,6 @@ class CleanupCommand extends ContainerAwareCommand {
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
   public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
