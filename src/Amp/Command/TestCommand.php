@@ -58,7 +58,7 @@ class TestCommand extends ContainerAwareCommand {
     $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'create', array(
       '--root' => $root,
       '--force' => 1, // assume previous tests may have failed badly
-      '--url' => 'http://localhost:7979'
+      '--url' => 'http://localhost:7979',
     ));
     $output->writeln("");
     $instances->load(); // force reload
@@ -137,11 +137,12 @@ class TestCommand extends ContainerAwareCommand {
       'http' => array(
         'method' => 'POST',
         'header' => 'Content-type: application/x-www-form-urlencoded',
-        'content' => http_build_query($postData)
-      )
+        'content' => http_build_query($postData),
+      ),
     );
     $context = stream_context_create($opts);
     $result = file_get_contents($url, FALSE, $context);
     return $result;
   }
+
 }

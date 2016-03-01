@@ -40,7 +40,8 @@ class CleanupCommand extends ContainerAwareCommand {
         $output->writeln("Destroy (root={$instance->getRoot()}, name={$instance->getName()}, dsn={$instance->getDsn()})");
         $instances->remove($instance->getId());
         $count++;
-      } else {
+      }
+      else {
         $output->writeln("Skip (root={$instance->getRoot()}, name={$instance->getName()}, dsn={$instance->getDsn()})");
       }
     }
@@ -49,4 +50,5 @@ class CleanupCommand extends ContainerAwareCommand {
 
     $instances->save();
   }
+
 }

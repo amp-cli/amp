@@ -41,4 +41,5 @@ class ConfigGetCommand extends ContainerAwareCommand {
     $table->setRows($rows);
     $table->render($output);
   }
+
 }

@@ -21,7 +21,6 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
    */
   private $app;
 
-  
   /**
    * @var ConfigRepository
    */
@@ -38,30 +37,30 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
         'ram_disk' => 'mysql_ram_disk',
         'osx_ram_disk' => 'mysql_osx_ram_disk',
         'mycnf' => 'mysql_mycnf',
-        )
       ),
+    ),
     'mysql.mycnf' => array(
       'name' => 'db.mysql_mycnf',
-      'values' => array()
+      'values' => array(),
     ),
     'mysql.dsn' => array(
       'name' => 'db.mysql_dsn',
-      'values' => array()
-      ),
+      'values' => array(),
+    ),
     'mysql.ram_disk' => array(
       'name' => 'db.mysql_ram_disk',
-      'values' => array()
-      ),
+      'values' => array(),
+    ),
     'mysql.osx_ram_disk' => array(
       'name' => 'db.mysql_osx_ram_disk',
-      'values' => array()
-      )
+      'values' => array(),
+    ),
   );
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param array $parameters list of configuration parameters to accept ($key => $label)
+   * @param ConfigRepository $config
    */
   public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
     $this->config = $config;
@@ -76,23 +75,24 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-//    print_r( $this->getContainer() );
-//  print_r( $this->config );
     $startVer = $this->config->getParameter('version');
-    if (empty($startVer))
+    if (empty($startVer)) {
       $startVer = 1; // Legacy file which predates versioning.
+    }
 
     if ($startVer === 'new') {
-        $this->config->setParameter('version', LATEST_SCHEMA_VERSION);
-        $this->config->save();
-    } elseif ($startVer < LATEST_SCHEMA_VERSION) {
+      $this->config->setParameter('version', LATEST_SCHEMA_VERSION);
+      $this->config->save();
+    }
+    elseif ($startVer < LATEST_SCHEMA_VERSION) {
       switch ($startVer) {
         case 1:
           $this->upgradeV1ToV2();
-//      case 2:
-//        $this->upgradeV2ToV3();
+          //case 2:
+          // $this->upgradeV2ToV3();
         case 'finished':
           break;
+
         default:
           throw new RuntimeException("Unrecognized schema start version");
       }

@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Yaml\Yaml;
 
@@ -102,7 +103,7 @@ class ConfigRepository {
           'apache',
           'apache2',
           'nginx',
-          'httpd'
+          'httpd',
         ));
         if (empty($webUsers)) {
           return 'www-data';
@@ -133,7 +134,7 @@ class ConfigRepository {
       else {
         $this->data = array(
           'parameters' => array(
-            'version' => 'new'
+            'version' => 'new',
           ),
           'services' => array(),
         );

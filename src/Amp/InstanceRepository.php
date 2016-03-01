@@ -71,7 +71,7 @@ class InstanceRepository extends FileRepository {
    * @param string $string
    * @return array of array
    */
-  function decodeDocument($string) {
+  public function decodeDocument($string) {
     return Yaml::parse($string);
   }
 
@@ -79,7 +79,7 @@ class InstanceRepository extends FileRepository {
    * @param array $items a list of arrays representing items
    * @return string
    */
-  function encodeDocument($items) {
+  public function encodeDocument($items) {
     return Yaml::dump($items);
   }
 

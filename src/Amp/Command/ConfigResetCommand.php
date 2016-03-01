@@ -50,4 +50,5 @@ class ConfigResetCommand extends ContainerAwareCommand {
       $output->writeln('<error>No properties specified</error>');
     }
   }
+
 }

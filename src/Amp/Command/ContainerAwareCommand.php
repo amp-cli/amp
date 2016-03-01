@@ -31,4 +31,5 @@ abstract class ContainerAwareCommand extends Command {
   public function getContainer() {
     return $this->app->getContainer();
   }
+
 }

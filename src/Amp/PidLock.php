@@ -37,7 +37,7 @@ class PidLock {
    * @param string|null $lockFile the file which represents the lock; if null, autogenerate
    * @param int|null $pid the process which holds the lock; if null, the current process
    */
-  function __construct($file, $lockFile = NULL, $pid = NULL) {
+  public function __construct($file, $lockFile = NULL, $pid = NULL) {
     if (!$this->hasDeps()) {
       $this->warnDeps();
       return;
@@ -75,7 +75,7 @@ class PidLock {
    * @param int $wait max time to wait to acquire lock (seconds)
    * @return bool TRUE if acquired; else false
    */
-  function acquire($wait) {
+  public function acquire($wait) {
     if (!$this->hasDeps()) {
       return TRUE;
     }
@@ -110,7 +110,7 @@ class PidLock {
     return FALSE;
   }
 
-  function release() {
+  public function release() {
     if (!$this->hasDeps()) {
       return;
     }
@@ -123,10 +123,11 @@ class PidLock {
     }
   }
 
-  function steal() {
+  public function steal() {
     if (!$this->hasDeps()) {
       return;
     }
     $this->fs->dumpFile($this->lockFile, $this->pid);
   }
+
 }
