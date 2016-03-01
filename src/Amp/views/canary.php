@@ -14,15 +14,19 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
   exit('Connection must originate on localhost');
 }
 
+$config = require 'config.php';
+
+// ---------- Test HTTP inputs ----------
+
+if ($_REQUEST['exampleData'] !== 'foozball') {
+  echo "Error: Expected GET or POST value 'exampleData=foozball'";
+}
+
 // ---------- Test database ----------
 
-require_once "<?php echo addslashes($autoloader) ?>";
-$datasource = new \Amp\Database\Datasource(array(
-  'civi_dsn' => $_POST['dsn']
-));
-
 try {
-  $dbh = $datasource->createPDO();
+  $dbh = new \PDO($config['dsn'], $config['user'], $config['pass']);
+  $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
   foreach ($dbh->query('SELECT 99 as value') as $row) {
     if ($row['value'] == 99) {
       // ok
@@ -39,7 +43,7 @@ try {
 
 // ---------- Test file permissions ----------
 
-$dataFile = '<?php echo addslashes($dataDir) ?>/example.txt';
+$dataFile = $config['dataDir'] . '/example.txt';
 if (FALSE === file_put_contents($dataFile, "data")) {
   echo "Error: Failed to write $dataFile";
   die();
