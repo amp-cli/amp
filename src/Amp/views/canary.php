@@ -14,41 +14,48 @@ if (isset($_SERVER['HTTP_CLIENT_IP'])
   exit('Connection must originate on localhost');
 }
 
+$config = require 'config.php';
+$errors = array();
+
+// ---------- Test HTTP inputs ----------
+
+if (!isset($_REQUEST['exampleData']) || $_REQUEST['exampleData'] !== 'foozball') {
+  $errors[]= "Error: Expected GET or POST value 'exampleData=foozball'";
+}
+
 // ---------- Test database ----------
 
-require_once "<?php echo addslashes($autoloader) ?>";
-$datasource = new \Amp\Database\Datasource(array(
-  'civi_dsn' => $_POST['dsn']
-));
-
 try {
-  $dbh = $datasource->createPDO();
+  $dbh = new \PDO($config['dsn'], $config['user'], $config['pass']);
+  $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
   foreach ($dbh->query('SELECT 99 as value') as $row) {
     if ($row['value'] == 99) {
       // ok
     } else {
-      echo "Error: Bad query result <br/>";
-      die();
+      $errors[] = "Error: Bad query result <br/>";
     }
   }
   $dbh = NULL;
 } catch (PDOException $e) {
-  echo "Error: " . $e->getMessage() . "<br/>";
-  die();
+  $errors[] = "Error: " . $e->getMessage() . "<br/>";
 }
 
 // ---------- Test file permissions ----------
 
-$dataFile = '<?php echo addslashes($dataDir) ?>/example.txt';
+$dataFile = $config['dataDir'] . '/example.txt';
 if (FALSE === file_put_contents($dataFile, "data")) {
-  echo "Error: Failed to write $dataFile";
-  die();
+  $errors[] = "Error: Failed to write $dataFile";
 }
 if (FALSE === unlink($dataFile)) {
-  echo "Error: Failed to remove $dataFile";
-  die();
+  $errors[] = "Error: Failed to remove $dataFile";
 }
 
-// ---------- OK ----------
+// ---------- Wrap up ----------
 
-echo "<?= $expectedResponse ?>";
+if (empty($errors)) {
+  echo "<?= $expectedResponse ?>";
+}
+else {
+  echo implode("\n", $errors);
+  die();
+}

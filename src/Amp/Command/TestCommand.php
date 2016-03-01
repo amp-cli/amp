@@ -1,6 +1,7 @@
 <?php
 namespace Amp\Command;
 
+use Amp\Database\Datasource;
 use Amp\Instance;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,6 +42,7 @@ class TestCommand extends ContainerAwareCommand {
 
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    /** @var \Amp\InstanceRepository $instances */
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
 
@@ -59,15 +61,16 @@ class TestCommand extends ContainerAwareCommand {
       '--url' => 'http://localhost:7979'
     ));
     $output->writeln("");
+    $instances->load(); // force reload
+    $instance = $instances->find(Instance::makeId($root, ''));
+    $this->createConfigFile($instance->getRoot() . '/config.php', $instance->getDatasource(), $dataDir);
 
     // Connect to test instance
     $output->writeln("<info>Connect to test application</info>");
     $output->writeln("<comment>Expect response: \"{$this->expectedResponse}\"</comment>");
 
-    $instances->load(); // force reload
-    $instance = $instances->find(Instance::makeId($root, ''));
     $response = $this->doPost($instance->getUrl() . '/index.php', array(
-      'dsn' => $instance->getDsn(),
+      'exampleData' => 'foozball',
     ));
 
     if ($response == $this->expectedResponse) {
@@ -111,7 +114,6 @@ class TestCommand extends ContainerAwareCommand {
 
     // Create PHP code
     $content = $this->templateEngine->render('canary.php', array(
-      'autoloader' => $this->fs->toAbsolutePath($this->findAutoloader()),
       'expectedResponse' => $this->expectedResponse,
       'dataDir' => $dataDir,
     ));
@@ -120,18 +122,14 @@ class TestCommand extends ContainerAwareCommand {
     return array($root, $dataDir);
   }
 
-  protected function findAutoloader() {
-    $autoloaders = array(
-      dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
-      dirname(dirname(dirname(dirname(dirname(__DIR__))))) . DIRECTORY_SEPARATOR . 'autoload.php'
+  protected function createConfigFile($file, Datasource $datasource, $dataDir) {
+    $config = array(
+      'dsn' => $datasource->toPDODSN(),
+      'user' => $datasource->getUsername(),
+      'pass' => $datasource->getPassword(),
+      'dataDir' => $dataDir,
     );
-    foreach ($autoloaders as $autoloader) {
-      if (file_exists($autoloader)) {
-        return $autoloader;
-        break;
-      }
-    }
-    throw new \RuntimeException("Failed to find autoloader");
+    $this->fs->dumpFile($file, "<?php\nreturn " . var_export($config, 1) . ";");
   }
 
   protected function doPost($url, $postData) {
