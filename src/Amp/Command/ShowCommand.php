@@ -1,7 +1,6 @@
 <?php
 namespace Amp\Command;
 
-use Amp\InstanceRepository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -10,17 +9,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ShowCommand extends ContainerAwareCommand {
 
   /**
-   * @var InstanceRepository
-   */
-  private $instances;
-
-  /**
    * @param \Amp\Application $app
    * @param string|null $name
    * @param array $parameters list of configuration parameters to accept ($key => $label)
    */
-  public function __construct(\Amp\Application $app, $name = NULL, InstanceRepository $instances) {
-    $this->instances = $instances;
+  public function __construct(\Amp\Application $app, $name = NULL) {
     parent::__construct($app, $name);
   }
 
@@ -31,9 +24,10 @@ class ShowCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    $instances = $this->getContainer()->get('instances');
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
       $rows = array();
-      foreach ($this->instances->findAll() as $instance) {
+      foreach ($instances->findAll() as $instance) {
         $rows[] = array('root', $instance->getRoot());
         $rows[] = array('name', $instance->getName());
         $rows[] = array('dsn', $instance->getDsn());
@@ -49,7 +43,7 @@ class ShowCommand extends ContainerAwareCommand {
     }
     else {
       $rows = array();
-      foreach ($this->instances->findAll() as $instance) {
+      foreach ($instances->findAll() as $instance) {
         $rows[] = array(
           $instance->getRoot(),
           $instance->getName(),
