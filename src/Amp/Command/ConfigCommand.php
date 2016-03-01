@@ -184,7 +184,7 @@ class ConfigCommand extends ContainerAwareCommand {
             "Enter httpd_type",
             array(
               'mysql_dsn' => 'MySQL: Specify administrative credentials (DSN)',
-              'mysql_mycnf' => 'MySQL: Read user+password+host+port from $HOME/.my.cnf',
+              'mysql_mycnf' => 'MySQL: Read user+password+host+port from $HOME/.my.cnf (experimental)',
               'mysql_ram_disk' => 'MySQL: Launch new DB in a ramdisk (Linux)',
               'mysql_osx_ram_disk' => 'MySQL: Launch new DB in a ramdisk (OS X)',
               'pg_dsn' => 'PostgreSQL: Specify administrative credentials (DSN)',
