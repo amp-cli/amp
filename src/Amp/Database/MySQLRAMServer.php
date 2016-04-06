@@ -31,7 +31,7 @@ class MySQLRAMServer extends MySQL {
   public $default_data_files;
 
   public function buildMySQLDBaseCommand() {
-    $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path}";
+    $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path} --innodb-file-per-table";
   }
 
   public function init() {
