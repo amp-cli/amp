@@ -37,9 +37,9 @@ class MySQLRAMServer extends MySQL {
   public function init() {
     if (!$this->ram_disk->isMounted()) {
       $this->ram_disk->mount();
-      Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
-      Path::mkdir_p_if_not_exists($this->tmp_path);
     }
+    Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
+    Path::mkdir_p_if_not_exists($this->tmp_path);
     if ($this->app_armor) {
       $this->app_armor->setTmpPath($this->tmp_path);  // TODO: move to services.yml or remove entirely
       if (!$this->app_armor->isConfigured()) {

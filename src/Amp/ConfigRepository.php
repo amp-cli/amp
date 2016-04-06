@@ -57,7 +57,7 @@ class ConfigRepository {
       'perm_custom_command' => 'Command to set a directory as web-writeable [for custom]',
       'ram_disk_dir' => 'Directory to create as a RAM disk',
       'ram_disk_size' => 'Amount of space to allocate for ramdisk (MB)',
-      'ram_disk_type' => 'Type of RAM disk [auto,linux,osx]',
+      'ram_disk_type' => 'Type of RAM disk [auto,linux,osx,manual]',
     );
 
     // FIXME externalize

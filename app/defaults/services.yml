@@ -165,6 +165,11 @@ services:
     - [setPath, ['%ram_disk_dir%']]
     - [setSizeMb, ['%ram_disk_size%']]
 
+  ram_disk.manual:
+    class: Amp\RamDisk\ManualRamDisk
+    calls:
+    - [setPath, ['%ram_disk_dir%']]
+
   ram_disk.osx:
     class: Amp\RamDisk\OsxRamDisk
     calls:
