@@ -11,7 +11,7 @@ Install `mysqld`. Ensure `mysqld` is in the `PATH`.
 This has been used in Debian/Ubuntu (with the stock mysql-server package)
 and with OSX/MAMP.
 
-# Commands
+# Setup
 
 ```bash
 ## Option 1. Enable the MySQL RAM disk provider. Use defaults.
@@ -30,4 +30,23 @@ amp config:set --db_type=mysql_ram_disk --ram_disk_type=manual --ram_disk_dir=/t
 echo none /mnt/mysql tmpfs size=1400m,mode=1777,uid=0 0 0 | sudo tee -a /etc/motd
 sudo mount -a
 sudo -u thedeveloper -H amp config:set --db_type=mysql_ram_disk --ram_disk_type=manual --ram_disk_dir=/mnt/mysql
+```
+
+# How it works
+
+When you run `amp create`, it checks to see if the ram-disk exists
+and if the mysqld is running on it. As needed, it starts both.
+
+The data will be wiped after rebooting or unmounting.
+
+If you want to intentionally reset all the data:
+
+```bash
+## Kill mysqld
+kill $( cat ~/.amp/ram_disk/tmp/mysqld.pid )
+
+## (Linux) Unmount
+sudo umount ~/.amp/ram_disk
+
+## (OSX) Unmount using the graphical "Disk Utility"
 ```
