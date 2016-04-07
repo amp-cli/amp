@@ -6,6 +6,7 @@ parameters:
   # log_dir: '%app_dir%/log'
 
   httpd_type: 'apache'
+  httpd_restart_wait: 1
   httpd_restart_command: ''
 
   hosts_type: 'none'
@@ -111,6 +112,7 @@ services:
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
       - [setRestartCommand, ['%httpd_restart_command%']]
+      - [setRestartWait, ['%httpd_restart_wait%']]
 
   httpd.apache24:
     class: Amp\Httpd\VhostTemplate
@@ -121,6 +123,7 @@ services:
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
       - [setRestartCommand, ['%httpd_restart_command%']]
+      - [setRestartWait, ['%httpd_restart_wait%']]
 
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
@@ -131,6 +134,7 @@ services:
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
       - [setRestartCommand, ['%httpd_restart_command%']]
+      - [setRestartWait, ['%httpd_restart_wait%']]
 
   config.repository:
     class: Amp\ConfigRepository

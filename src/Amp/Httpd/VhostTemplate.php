@@ -41,6 +41,11 @@ class VhostTemplate implements HttpdInterface {
    */
   private $restartCommand;
 
+  /**
+   * @var int
+   */
+  private $restartWait = 0;
+
   public function __construct() {
     $this->fs = new Filesystem();
   }
@@ -85,6 +90,9 @@ class VhostTemplate implements HttpdInterface {
       passthru($this->restartCommand, $result);
       if ($result) {
         throw new \RuntimeException("httpd_restart_command failed ($this->restartCommand)");
+      }
+      if ($this->restartWait) {
+        sleep($this->restartWait);
       }
     }
   }
@@ -157,6 +165,20 @@ class VhostTemplate implements HttpdInterface {
    */
   public function setRestartCommand($restartCommand) {
     $this->restartCommand = $restartCommand;
+  }
+
+  /**
+   * @return int
+   */
+  public function getRestartWait() {
+    return $this->restartWait;
+  }
+
+  /**
+   * @param int $restartWait
+   */
+  public function setRestartWait($restartWait) {
+    $this->restartWait = $restartWait;
   }
 
   /**

@@ -43,6 +43,7 @@ class ConfigRepository {
     $this->descriptions = array(
       'httpd_type' => 'Type of webserver [none,apache,apache24,nginx]',
       'httpd_restart_command' => 'Command to restart httpd (ex: sudo apache2ctl graceful)',
+      'httpd_restart_wait' => 'Time to wait for HTTPD to restart (seconds)',
       'hosts_type' => 'Type of hostname management [none,file]',
       'hosts_file' => 'Location of the hosts file (ex: /etc/hosts)',
       'hosts_ip' => 'Default IP for new entries in hosts file (ex: 127.0.0.1)',
