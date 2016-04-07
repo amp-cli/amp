@@ -35,6 +35,12 @@ class VhostTemplate implements HttpdInterface {
    */
   private $templateEngine;
 
+  /**
+   * @var string
+   *   Maybe empty, 'NONE', or a command.
+   */
+  private $restartCommand;
+
   public function __construct() {
     $this->fs = new Filesystem();
   }
@@ -72,6 +78,15 @@ class VhostTemplate implements HttpdInterface {
    */
   public function dropVhost($root, $url) {
     $this->fs->remove($this->createFilePath($root, $url));
+  }
+
+  public function restart() {
+    if ($this->restartCommand && $this->restartCommand !== 'NONE') {
+      passthru($this->restartCommand, $result);
+      if ($result) {
+        throw new \RuntimeException("httpd_restart_command failed ($this->restartCommand)");
+      }
+    }
   }
 
   /**
@@ -128,6 +143,20 @@ class VhostTemplate implements HttpdInterface {
    */
   public function getPerm() {
     return $this->perm;
+  }
+
+  /**
+   * @return string
+   */
+  public function getRestartCommand() {
+    return $this->restartCommand;
+  }
+
+  /**
+   * @param string $restartCommand
+   */
+  public function setRestartCommand($restartCommand) {
+    $this->restartCommand = $restartCommand;
   }
 
   /**

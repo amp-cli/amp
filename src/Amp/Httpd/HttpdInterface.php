@@ -16,4 +16,6 @@ interface HttpdInterface {
    */
   public function dropVhost($root, $url);
 
+  public function restart();
+
 }

@@ -95,6 +95,7 @@ services:
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
+      - [setRestartCommand, ['%httpd_restart_command%']]
 
   httpd.apache24:
     class: Amp\Httpd\VhostTemplate
@@ -104,6 +105,7 @@ services:
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
+      - [setRestartCommand, ['%httpd_restart_command%']]
 
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
@@ -113,6 +115,7 @@ services:
       - [setDir, ['%nginx_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
+      - [setRestartCommand, ['%httpd_restart_command%']]
 
   config.repository:
     class: Amp\ConfigRepository

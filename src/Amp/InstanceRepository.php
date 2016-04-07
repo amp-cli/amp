@@ -11,9 +11,15 @@ class InstanceRepository extends FileRepository {
   private $db;
 
   /**
-   * @var HttpdInterface
+   * @var \Amp\Httpd\HttpdInterface
    */
   private $httpd;
+
+  /**
+   * @var array
+   *   Ex: Array('httpd' => array(Instance)).
+   */
+  private $dirty = array();
 
   /**
    * Create a new instance (with given web-root, URL,
@@ -40,6 +46,7 @@ class InstanceRepository extends FileRepository {
         $instance->setUrl('http://localhost:7979');
       }
 
+      $this->dirty['httpd'][] = $instance;
       $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
       $this->httpd->createVhost($instance->getRoot(), $instance->getUrl());
     }
@@ -59,10 +66,19 @@ class InstanceRepository extends FileRepository {
       }
 
       if ($instance->getUrl()) {
+        $this->dirty['httpd'][] = $instance;
         $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
       }
     }
     parent::remove($name);
+  }
+
+  public function save() {
+    parent::save();
+    if (!empty($this->dirty['httpd'])) {
+      $this->httpd->restart();
+      unset($this->dirty['httpd']);
+    }
   }
 
   // ---------------- Required methods ----------------
@@ -121,14 +137,14 @@ class InstanceRepository extends FileRepository {
   }
 
   /**
-   * @param \Amp\HttpdInterface $httpd
+   * @param \Amp\Httpd\HttpdInterface $httpd
    */
   public function setHttpd($httpd) {
     $this->httpd = $httpd;
   }
 
   /**
-   * @return \Amp\HttpdInterface
+   * @return \Amp\Httpd\HttpdInterface
    */
   public function getHttpd() {
     return $this->httpd;

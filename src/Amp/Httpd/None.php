@@ -12,6 +12,7 @@ class None implements HttpdInterface {
    */
   public function createVhost($root, $url) {
     file_put_contents('php://stderr', "\n**** Please create the vhost for $url in $root ****\n\n", FILE_APPEND);
+    $this->dirty = 1;
   }
 
   /**
@@ -20,6 +21,11 @@ class None implements HttpdInterface {
    */
   public function dropVhost($root, $url) {
     file_put_contents('php://stderr', "\n**** Please destroy the vhost for $url in $root ****\n\n", FILE_APPEND);
+    $this->dirty = 1;
+  }
+
+  public function restart() {
+    file_put_contents('php://stderr', "\n**** Please restart HTTPD ****\n\n", FILE_APPEND);
   }
 
 }
