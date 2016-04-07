@@ -50,7 +50,7 @@ class MySQLRAMServer extends MySQL {
     if (!$this->isRunning()) {
       $this->runCommand("echo \"use mysql;\" > {$this->tmp_path}/install_mysql.sql");
       if ($this->getDefaultDataFiles()) {
-        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', (array)$this->getDefaultDataFiles())) . " >> {$this->tmp_path}/install_mysql.sql");
+        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', (array) $this->getDefaultDataFiles())) . " >> {$this->tmp_path}/install_mysql.sql");
       }
       else {
         throw new \Exception("Error finding default data files");
@@ -128,7 +128,7 @@ class MySQLRAMServer extends MySQL {
   }
 
   public function runCommand($command, $options = array()) {
-    $options['print_command'] = true;
+    $options['print_command'] = TRUE;
     return \Amp\Util\Shell::run($command);
   }
 
@@ -175,4 +175,5 @@ class MySQLRAMServer extends MySQL {
   public function getDefaultDataFiles() {
     return $this->default_data_files;
   }
+
 }

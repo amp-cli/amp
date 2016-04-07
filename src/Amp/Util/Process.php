@@ -1,6 +1,7 @@
 <?php
 namespace Amp\Util;
 class Process {
+
   /**
    * Determine the full path to an executable
    *

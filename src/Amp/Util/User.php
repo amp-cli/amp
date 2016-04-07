@@ -53,10 +53,12 @@ class User {
         return $pw['name'];
       }
     }
-    if (getenv('username')) { // Windows
+    if (getenv('username')) {
+      // Windows
       return getenv('username');
     }
 
     throw new \Exception("Failed to determine current user name.");
   }
+
 }

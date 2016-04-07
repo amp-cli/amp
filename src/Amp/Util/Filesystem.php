@@ -2,6 +2,7 @@
 namespace Amp\Util;
 
 class Filesystem extends \Symfony\Component\Filesystem\Filesystem {
+
   /**
    * @param string $path
    * @return string updated $path
@@ -18,7 +19,8 @@ class Filesystem extends \Symfony\Component\Filesystem\Filesystem {
     }
     if (is_dir($res)) {
       return realpath($res);
-    } else {
+    }
+    else {
       return $res;
     }
   }

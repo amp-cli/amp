@@ -84,10 +84,12 @@ class MySQL implements DatabaseManagementInterface {
         $dbh->exec("GRANT ALL ON *.* to '$user'@'localhost' IDENTIFIED BY '$pass' WITH GRANT OPTION");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'%' IDENTIFIED BY '$pass' WITH GRANT OPTION");
         break;
+
       case DatabaseManagementInterface::PERM_ADMIN:
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'localhost' IDENTIFIED BY '$pass'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'%' IDENTIFIED BY '$pass'");
         break;
+
       default:
         throw new \Exception("Unrecognized permission level");
     }
@@ -102,4 +104,5 @@ class MySQL implements DatabaseManagementInterface {
     $dbh = $this->adminDatasource->createPDO();
     $dbh->exec("DROP DATABASE IF EXISTS `{$datasource->getDatabase()}`");
   }
+
 }

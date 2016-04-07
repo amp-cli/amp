@@ -78,7 +78,7 @@ class PostgreSQL implements DatabaseManagementInterface {
     $pass = $datasource->getPassword();
 
     $dbh = $this->adminDatasource->createPDO();
-    
+
     $dbh->exec("DROP DATABASE IF EXISTS  \"$db\"");
     $dbh->exec("DROP ROLE IF EXISTS  $user");
 
@@ -95,4 +95,5 @@ class PostgreSQL implements DatabaseManagementInterface {
     $dbh = $this->adminDatasource->createPDO();
     $dbh->exec("DROP DATABASE IF EXISTS \"{$datasource->getDatabase()}\"");
   }
+
 }

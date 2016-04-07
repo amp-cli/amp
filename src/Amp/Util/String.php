@@ -21,8 +21,8 @@ class String {
 
   /**
    * @param string $hint a string that should appear in the name
-   * @param int $randLen #random chars
    * @param int $fullLen total max# chars. must be at least +1 over $randLen
+   * @param int $randLen #random chars
    * @return string
    */
   public static function createHintedRandom($hint, $fullLen, $randLen, $randAlphabet = self::ALPHANUMERIC) {

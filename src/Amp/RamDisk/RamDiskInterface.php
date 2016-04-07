@@ -11,13 +11,14 @@ interface RamDiskInterface {
   /**
    * @return bool
    */
-  function isMounted();
+  public function isMounted();
 
   /**
    * @void
    * @throws Exception
    */
-  function mount();
+  public function mount();
 
   // FIXME: Why is there no unmount()?
+
 }
