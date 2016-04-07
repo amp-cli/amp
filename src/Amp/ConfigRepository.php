@@ -43,6 +43,9 @@ class ConfigRepository {
     $this->descriptions = array(
       'httpd_type' => 'Type of webserver [none,apache,apache24,nginx]',
       'httpd_restart_command' => 'Command to restart httpd (ex: sudo apache2ctl graceful)',
+      'hosts_type' => 'Type of hostname management [none,file]',
+      'hosts_file' => 'Location of the hosts file (ex: /etc/hosts)',
+      'hosts_ip' => 'Default IP for new entries in hosts file (ex: 127.0.0.1)',
       'log_dir' => 'Directory which stores log files',
       'apache_dir' => 'Directory which stores Apache config files',
       //'apache24_dir' => 'Directory which stores Apache config files',
@@ -64,6 +67,12 @@ class ConfigRepository {
     // FIXME externalize
     // Each callback returns a scalar or array of examples
     $this->exampleCallbacks = array(
+      'hosts_file' => function () {
+        return array('/etc/hosts');
+      },
+      'hosts_ip' => function () {
+        return array('127.0.0.1');
+      },
       'mysql_dsn' => function () {
         $checker = new \Amp\Util\PortChecker();
         // Some folks report problems using "localhost"

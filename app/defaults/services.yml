@@ -8,6 +8,10 @@ parameters:
   httpd_type: 'apache'
   httpd_restart_command: ''
 
+  hosts_type: 'none'
+  hosts_file: '/etc/hosts'
+  hosts_ip: '127.0.0.1'
+
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'
 
@@ -83,6 +87,16 @@ services:
   ## Provided for backward compat.
   db.mysql_osx_ram_disk:
     alias: db.mysql_ram_disk
+
+  hosts.none:
+    class: Amp\Hostname\NoHosts
+
+  hosts.file:
+    class: Amp\Hostname\HostsFile
+    calls:
+      - [setFile, ['%hosts_file%']]
+      - [setSudo, [true]]
+      - [setIp, ['%hosts_ip%']]
 
   httpd.none:
     class: Amp\Httpd\None
