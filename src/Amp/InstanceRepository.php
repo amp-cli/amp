@@ -11,6 +11,11 @@ class InstanceRepository extends FileRepository {
   private $db;
 
   /**
+   * @var \Amp\Hostname\HostnameInterface
+   */
+  private $hosts;
+
+  /**
    * @var \Amp\Httpd\HttpdInterface
    */
   private $httpd;
@@ -49,6 +54,9 @@ class InstanceRepository extends FileRepository {
       $this->dirty['httpd'][] = $instance;
       $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
       $this->httpd->createVhost($instance->getRoot(), $instance->getUrl());
+
+      $hostname = parse_url($instance->getUrl(), PHP_URL_HOST);
+      $this->hosts->createHostname($hostname);
     }
 
     $this->put($instance->getId(), $instance);
@@ -134,6 +142,20 @@ class InstanceRepository extends FileRepository {
    */
   public function getDb() {
     return $this->db;
+  }
+
+  /**
+   * @return Hostname\HostnameInterface
+   */
+  public function getHosts() {
+    return $this->hosts;
+  }
+
+  /**
+   * @param Hostname\HostnameInterface $hosts
+   */
+  public function setHosts($hosts) {
+    $this->hosts = $hosts;
   }
 
   /**

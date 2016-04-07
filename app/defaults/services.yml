@@ -45,6 +45,7 @@ services:
       - [setFileMode, [0600]]
       - [setFile, ['%instances_yml%']]
       - [setDb, ['@db']]
+      - [setHosts, ['@hosts']]
       - [setHttpd, ['@httpd']]
       - [setLockWait, ['%instances_timeout%']]
 
