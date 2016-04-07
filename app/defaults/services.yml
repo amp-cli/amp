@@ -73,21 +73,15 @@ services:
   ## This database connection used for ephemeral, performance-oriented test environments
   db.mysql_ram_disk:
     class: Amp\Database\MySQLRAMServer
-    calls:
-      - [setRamDisk, ['@ram_disk']]
-      - [setAppArmor, ['@app_armor.mysql_ram_disk']]
-      - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
-      - [setDefaultDataFiles, [['/usr/share/mysql/mysql_system_tables.sql', '/usr/share/mysql/mysql_system_tables_data.sql']]]
-      ## FIXME: do not hardcode Debian/Ubuntu paths
+    factory_class: Amp\Database\MySQLFactoryHelper
+    factory_method: createRAMServer
+    arguments:
+      - '@service_container'
 
   ## This database connection used for ephemeral, performance-oriented test environments
+  ## Provided for backward compat.
   db.mysql_osx_ram_disk:
-    class: Amp\Database\MySQLRAMServer
-    calls:
-      - [setRamDisk, ['@ram_disk']]
-      - [setMySQLRamServerPort, [%mysql_ram_server_port%]]
-      - [setDefaultDataFiles, [['/Applications/MAMP/Library/share/mysql_system_tables.sql', '/Applications/MAMP/Library/share/mysql_system_tables_data.sql']]]
-      ## FIXME: do not hardcode MAMP paths
+    alias: db.mysql_ram_disk
 
   httpd.none:
     class: Amp\Httpd\None
