@@ -6,6 +6,7 @@ parameters:
   # log_dir: '%app_dir%/log'
 
   httpd_type: 'apache'
+  httpd_restart_command: ''
 
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'

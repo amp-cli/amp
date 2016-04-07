@@ -42,6 +42,7 @@ class ConfigRepository {
     // FIXME externalize
     $this->descriptions = array(
       'httpd_type' => 'Type of webserver [none,apache,apache24,nginx]',
+      'httpd_restart_command' => 'Command to restart httpd (ex: sudo apache2ctl graceful)',
       'log_dir' => 'Directory which stores log files',
       'apache_dir' => 'Directory which stores Apache config files',
       //'apache24_dir' => 'Directory which stores Apache config files',
@@ -122,6 +123,48 @@ class ConfigRepository {
           $examples[] = '/bin/chmod +a "www allow delete,write,append,file_inherit,directory_inherit" {DIR}';
         }
         return count($examples) > 1 ? $examples : $examples[0];
+      },
+      'httpd_restart_command' => function () {
+        $APACHECTLS = array('apachectl', 'apache2ctl');
+        $SYSDIRS = array(
+          '/bin',
+          '/sbin',
+          '/usr/bin',
+          '/usr/sbin',
+          '/usr/local/bin',
+          '/usr/local/sbin',
+        );
+        $examples = array();
+
+        // Add-on kits. No need for sudo
+        foreach (array('/Applications/MAMP/Library/bin') as $dir) {
+          foreach ($APACHECTLS as $prog) {
+            if (file_exists("$dir/$prog")) {
+              $examples[] = "$dir/$prog graceful";
+            }
+          }
+        }
+
+        // OS distributions. Require sudo.
+        foreach ($SYSDIRS as $dir) {
+          foreach ($APACHECTLS as $prog) {
+            if (file_exists("$dir/$prog")) {
+              $examples[] = "sudo $dir/$prog graceful";
+            }
+          }
+          if (file_exists("$dir/service")) {
+            $examples[] = "sudo $dir/service apache2 restart";
+            $examples[] = "sudo $dir/service httpd restart";
+          }
+        }
+
+        if (empty($examples)) {
+          $examples[] = "sudo apachectl graceful";
+        }
+
+        $examples[] = "NONE";
+
+        return $examples;
       },
     );
   }

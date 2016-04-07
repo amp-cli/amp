@@ -100,6 +100,25 @@ class ConfigCommand extends ContainerAwareCommand {
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure HTTPD ]=============================</info>");
     $this->askHttpdType()->execute($input, $output, $dialog);
+
+    switch ($this->config->getParameter('httpd_type')) {
+      case 'apache':
+      case 'apache24':
+      case 'nginx':
+        $output->writeln("<info>\n"
+          . "Whenever you create a new vhost, you may need to restart the web server.\n"
+          . "Amp can do this automatically if you specify a command.\n"
+          . "\n"
+          . "NOTE: Commands based on `sudo` may require you to enter a password periodically.\n"
+          . "</info>"
+        );
+        $this->askHttpdRestartCommand()->execute($input, $output, $dialog);
+        break;
+
+      default:
+
+    }
+
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
       case 'apache24':
@@ -282,6 +301,25 @@ class ConfigCommand extends ContainerAwareCommand {
         }
       );
   }
+
+  protected function askHttpdRestartCommand() {
+    return $this->createPrompt('httpd_restart_command')
+      ->setAsk(
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          $value = $dialog->askAndValidate(
+            $output,
+            "Enter httpd_restart_command> ",
+            function ($command) use ($output) {
+              return $command;
+            },
+            FALSE,
+            $default
+          );
+          return (empty($value)) ? FALSE : $value;
+        }
+      );
+  }
+
 
   /**
    * @param string $dsn
