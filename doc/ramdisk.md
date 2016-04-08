@@ -27,7 +27,8 @@ amp config:set --db_type=mysql_ram_disk --ram_disk_type=manual --ram_disk_dir=/t
 
 ## Option 4. As with option 3, you may want to avoid sudo on Linux. The administrator can
 ## register a custom ramdisk in /etc/fstab and then configure amp to use that.
-echo none /mnt/mysql tmpfs size=1400m,mode=1777,uid=0 0 0 | sudo tee -a /etc/motd
+echo none /mnt/mysql tmpfs size=1400m,mode=1777,uid=0 0 0 | sudo tee -a /etc/fstab
+mkdir /mnt/mysql
 sudo mount -a
 sudo -u thedeveloper -H amp config:set --db_type=mysql_ram_disk --ram_disk_type=manual --ram_disk_dir=/mnt/mysql
 ```
