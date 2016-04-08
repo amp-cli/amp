@@ -156,18 +156,21 @@ class ConfigRepository {
         }
 
         // OS distributions. Require sudo.
-        foreach ($SYSDIRS as $dir) {
-          foreach ($APACHECTLS as $prog) {
+        foreach ($APACHECTLS as $prog) {
+          foreach ($SYSDIRS as $dir) {
             if (file_exists("$dir/$prog")) {
               $examples[] = "sudo $dir/$prog graceful";
             }
           }
+        }
+        foreach ($SYSDIRS as $dir) {
           if (file_exists("$dir/service")) {
             $examples[] = "sudo $dir/service apache2 restart";
             $examples[] = "sudo $dir/service httpd restart";
           }
         }
 
+        // Fallback example.
         if (empty($examples)) {
           $examples[] = "sudo apachectl graceful";
         }
