@@ -79,16 +79,15 @@ class AppArmor {
     if (!file_exists($this->app_armor_config_file_path)) {
       return FALSE;
     }
-    $app_armor_lines_flipped = array_flip($this->getFormattedAppArmorLines());
-    $num_matched = 0;
+    $unmatched_lines = array_flip($this->getFormattedAppArmorLines());
     $app_armor_config_file = FileExt::open($this->app_armor_config_file_path, 'r');
     while (($line = fgets($app_armor_config_file)) !== FALSE) {
-      if (array_key_exists($line, $app_armor_lines_flipped)) {
-        $num_matched += 1;
+      if (isset($unmatched_lines[$line])) {
+        unset($unmatched_lines[$line]);
       }
     }
     FileExt::close($app_armor_config_file);
-    if ($num_matched == count($this->getFormattedAppArmorLines())) {
+    if (empty($unmatched_lines)) {
       return TRUE;
     }
     else {
@@ -96,7 +95,11 @@ class AppArmor {
     }
   }
 
-  public function configure() {
+  /**
+   * @return string
+   * @throws \Exception
+   */
+  public function createNewConfig() {
     $file_system = new \Amp\Util\Filesystem();
     $new_config_file_path = Path::join($this->tmp_path, basename($this->app_armor_config_file_path));
     $file_system->copy($this->app_armor_config_file_path, $new_config_file_path);
@@ -106,6 +109,11 @@ class AppArmor {
       FileExt::write($new_config_file, $app_armor_line);
     }
     FileExt::close($new_config_file);
+    return $new_config_file_path;
+  }
+
+  public function configure() {
+    $new_config_file_path = $this->createNewConfig();
     $this->runCommand("sudo mv $new_config_file_path {$this->app_armor_config_file_path}");
     $this->runCommand("sudo /etc/init.d/apparmor restart", array('throw_exception_on_nonzero' => FALSE));
   }
@@ -114,4 +122,5 @@ class AppArmor {
     $options['print_command'] = TRUE;
     return \Amp\Util\Shell::run($command);
   }
+
 }
