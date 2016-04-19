@@ -98,6 +98,23 @@ class ConfigCommand extends ContainerAwareCommand {
     }
 
     $output->writeln("");
+    $output->writeln("<info>=============================[ Configure Hostnames ]=============================</info>");
+    $output->writeln("<info>"
+      . "When defining a new vhost (e.g. \"http://example-1.localhost\"), the hostname must\n"
+      . "be mapped to an IP address.\n"
+      . "\n"
+      . "amp can attempt to register hostnames automatically in the /etc/hosts file.\n"
+      . "However, if you use wildcard DNS, dnsmasq, or manually manage hostnames, then\n"
+      . "this feature can be disabled.\n"
+      . "</info>"
+    );
+
+    $this->askHostsType(
+      $this->getContainer()->getParameter('hosts_file'),
+      $this->getContainer()->getParameter('hosts_ip')
+    )->execute($input, $output, $dialog);
+
+    $output->writeln("");
     $output->writeln("<info>=============================[ Configure HTTPD ]=============================</info>");
     $this->askHttpdType()->execute($input, $output, $dialog);
 
@@ -280,6 +297,22 @@ class ConfigCommand extends ContainerAwareCommand {
             $default
           );
           return (empty($value)) ? FALSE : $value;
+        }
+      );
+  }
+
+  protected function askHostsType($file, $ip) {
+    return $this->createPrompt('hosts_type')
+      ->setAsk(
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) use ($file, $ip) {
+          return $dialog->select($output,
+            "Enter hosts_type",
+            array(
+              'file' => "File-based hosts. Automatically add records to \"$file\" using IP ($ip) and sudo.",
+              'none' => 'None. Manually configure hostnames with your own tool.',
+            ),
+            $default
+          );
         }
       );
   }
