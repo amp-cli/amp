@@ -155,17 +155,19 @@ Dependency-Injection).
 
 There are a few key services defined in the container:
 
- * mysql -- A service for creating and destroying MySQL DB's
-   (based on DatabaseManagementInterface)
- * httpd -- A service for creating and destroying HTTP virtual-hosts
-   (based on HttpdInterface)
- * perm -- A service for setting file permissions on data directories
-   (based on PermissionInterface)
- * instances -- A repository for CRUD'ing web-app instances (using the
-   "mysql" and "httpd" services) which stores metadata in YAML
-   (~/.app/instances.yml).
+ * `db` -- A service for creating and destroying MySQL DB's
+   (based on `DatabaseManagementInterface`)
+ * `httpd` -- A service for creating and destroying HTTP virtual-hosts
+   (based on `HttpdInterface`)
+ * `perm` -- A service for setting file permissions on data directories
+   (based on `PermissionInterface`)
+ * `hosts` -- A service for mapping hostnames to the local httpd
+   (based on `HostnameInterface`)
+ * `instances` -- A repository for CRUD'ing web-app instances (using the
+   `db` and `httpd` services) which stores metadata in YAML
+   (`~/.app/instances.yml`).
 
-There may be competing implementations of "mysql", "httpd", and "perm" -- eg
+There may be competing implementations of `db`, `httpd`, `hosts`, and `perm` -- eg
 one implementation might connect to a remote mysqld while another launches a
 local mysqld on a ramdisk.  These can be chosen at runtime by calling
 commands like:
@@ -184,14 +186,13 @@ amp config:set --httpd_type=XXX --db_type=XXX --perm_type=XXX
 ```
 
 Parameters and services may be configured in amp's source-tree
-("app/defaults/services.yml") or in the local home directory
-("~/.amp/services.yml"). Parameters entered through the CLI
-("amp config", "amp config:set", etc) are stored in the local
-home directory ("~/.amp/services.yml").
+(`app/defaults/services.yml`) or in the local home directory
+(`~/.amp/services.yml`). Parameters entered through the CLI
+(`amp config`, `amp config:set`, etc) are stored in the local
+home directory (`~/.amp/services.yml`).
 
 ## Planned Features ##
 
- * Add DatabaseManagementInterface for launching mysqld (in ramdisk)
  * Add HttpdInterface for nginx
  * Add HttpdInterface for PHP's built-in web-server
  * Callback support (eg "amp create" calls a script bundled with my-application)
@@ -205,8 +206,5 @@ home directory ("~/.amp/services.yml").
 
  * Add DatabaseManagementInterface based on MySQL CLI
  * For "amp export" and "amp create", add option "--format=shell,json,yml"
- * Guided configuration and testing (eg "amp config -i")
- * Register new virtual-hosts in /etc/hosts
- * Automatically restart Apache/nginx after creating or changing virtual-hosts
  * Add more heuristics/settings to work well in common dev environments
    (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
