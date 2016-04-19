@@ -37,7 +37,9 @@ class TestCommand extends ContainerAwareCommand {
   protected function configure() {
     $this
       ->setName('test')
-      ->setDescription('Test that amp is working');
+      ->setDescription('Test that amp is working')
+      ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'The URL at which to deploy the test app', 'http://localhost:7979')
+    ;
   }
 
 
@@ -45,6 +47,8 @@ class TestCommand extends ContainerAwareCommand {
     /** @var \Amp\InstanceRepository $instances */
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
+
+    $defaultUrl = $input->getOption('url');
 
     // Display help text
     //$output->write($this->templateEngine->render('testing.php', array(
@@ -58,7 +62,7 @@ class TestCommand extends ContainerAwareCommand {
     $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'create', array(
       '--root' => $root,
       '--force' => 1, // assume previous tests may have failed badly
-      '--url' => 'http://localhost:7979',
+      '--url' => $defaultUrl,
     ));
     $output->writeln("");
     $instances->load(); // force reload
@@ -86,7 +90,22 @@ class TestCommand extends ContainerAwareCommand {
     }
     else {
       $output->writeln("<error>Received incorrect response: \"$response\"</error>");
-      $output->writeln("<comment>Tip: Try running \"amp config\" and/or restarting the webserver.</comment>");
+      $output->writeln("<comment>Tips for common issues:</comment>");
+      $output->writeln("<comment> - (Re)run \"amp config\"</comment>");
+
+      $httpdType = $this->getContainer()->getParameter('httpd_type');
+      $output->writeln("<comment> - Double-check the httpd_type ($httpdType) along with any displayed instructions.</comment>");
+      if (!$httpdType || $httpdType === 'none') {
+        $output->writeln("<comment> - In absence of a known httpd_type, you will be responsible for configuring vhosts. Ensure that the vhost ($defaultUrl) is configured.</comment>");
+      }
+
+      $restartCommand = $this->getContainer()->getParameter('httpd_restart_command');
+      $output->writeln("<comment> - Double-check the httpd_restart_command.</comment>");
+      if (!$restartCommand || $restartCommand === 'NONE') {
+        $output->writeln("<comment> - In absence of the httpd_restart_command, you will be responsible for any restarts. Cycle through and alternately run \"amp test\" and restart httpd manually.</comment>");
+      }
+
+      $output->writeln("<comment> - (Re)run \"amp test\"</comment>");
     }
 
     if (!rmdir($dataDir)) {
