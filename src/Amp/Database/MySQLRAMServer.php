@@ -93,8 +93,8 @@ class MySQLRAMServer extends MySQL {
     if (!$this->isRunning()) {
       $this->init();
     }
-    $pass = \Amp\Util\String::createRandom(16);
-    $user = \Amp\Util\String::createHintedRandom($hint, 16, 5, 'abcdefghijklmnopqrstuvwxyz0123456789');
+    $pass = \Amp\Util\StringUtil::createRandom(16);
+    $user = \Amp\Util\StringUtil::createHintedRandom($hint, 16, 5, 'abcdefghijklmnopqrstuvwxyz0123456789');
 
     $datasource = new Datasource();
     $datasource->setDriver($this->adminDatasource->getDriver());

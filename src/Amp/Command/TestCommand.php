@@ -29,7 +29,7 @@ class TestCommand extends ContainerAwareCommand {
    */
   public function __construct(\Amp\Application $app, $name = NULL) {
     $this->fs = new Filesystem();
-    $this->expectedResponse = 'response-code-' . \Amp\Util\String::createRandom(10);
+    $this->expectedResponse = 'response-code-' . \Amp\Util\StringUtil::createRandom(10);
     parent::__construct($app, $name);
     $this->templateEngine = $this->getContainer()->get('template.engine');
   }
@@ -125,7 +125,7 @@ class TestCommand extends ContainerAwareCommand {
     }
 
     // Create empty data dir
-    $dataDirCode = \Amp\Util\String::createRandom(32);
+    $dataDirCode = \Amp\Util\StringUtil::createRandom(32);
     $dataDir = $root . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . $dataDirCode;
     $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'datadir', array(
       'path' => array($dataDir),

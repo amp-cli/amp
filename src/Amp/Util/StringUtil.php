@@ -1,6 +1,6 @@
 <?php
 namespace Amp\Util;
-class String {
+class StringUtil {
   const ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
   /**
@@ -27,7 +27,7 @@ class String {
    */
   public static function createHintedRandom($hint, $fullLen, $randLen, $randAlphabet = self::ALPHANUMERIC) {
     $hint = preg_replace('/[^a-zA-Z0-9]/', '', $hint);
-    return substr($hint, 0, $fullLen - 1 - $randLen) . '_' . \Amp\Util\String::createRandom($randLen, $randAlphabet);
+    return substr($hint, 0, $fullLen - 1 - $randLen) . '_' . \Amp\Util\StringUtil::createRandom($randLen, $randAlphabet);
   }
 
 }
