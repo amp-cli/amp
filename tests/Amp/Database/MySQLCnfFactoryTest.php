@@ -21,15 +21,15 @@ class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
       $actualDSNs[] = $datasource->toCiviDSN();
     }
     $expectedDSNs = array(
-      'mysql://admin1:secret1@hostname1.com:12345/?new_link=true',
-      'mysql://admin2a:secret2a@default-host-1:123/?new_link=true',
-      'mysql://admin2a:secret2a@default-host-1:456/?new_link=true',
-      'mysql://admin2a:secret2a@default-host-2:123/?new_link=true',
-      'mysql://admin2a:secret2a@default-host-2:456/?new_link=true',
-      'mysql://admin2b:secret2b@default-host-1:123/?new_link=true',
-      'mysql://admin2b:secret2b@default-host-1:456/?new_link=true',
-      'mysql://admin2b:secret2b@default-host-2:123/?new_link=true',
-      'mysql://admin2b:secret2b@default-host-2:456/?new_link=true',
+      'mysqli://admin1:secret1@hostname1.com:12345/?new_link=true',
+      'mysqli://admin2a:secret2a@default-host-1:123/?new_link=true',
+      'mysqli://admin2a:secret2a@default-host-1:456/?new_link=true',
+      'mysqli://admin2a:secret2a@default-host-2:123/?new_link=true',
+      'mysqli://admin2a:secret2a@default-host-2:456/?new_link=true',
+      'mysqli://admin2b:secret2b@default-host-1:123/?new_link=true',
+      'mysqli://admin2b:secret2b@default-host-1:456/?new_link=true',
+      'mysqli://admin2b:secret2b@default-host-2:123/?new_link=true',
+      'mysqli://admin2b:secret2b@default-host-2:456/?new_link=true',
     );
     $this->assertEquals($expectedDSNs, $actualDSNs);
   }

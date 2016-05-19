@@ -102,7 +102,7 @@ class Datasource {
   }
 
   function toCiviDSN() {
-    $civi_dsn = "{$this->driver}://{$this->username}:{$this->password}@{$this->host}";
+    $civi_dsn = "{$this->convertPDODrivertoPHPExtension($this->driver)}://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
       $civi_dsn = "$civi_dsn:{$this->port}";
     }
@@ -120,7 +120,7 @@ class Datasource {
   }
 
   function toDrupalDSN() {
-    $drupal_dsn = "{$this->driver}://{$this->username}:{$this->password}@{$this->host}";
+    $drupal_dsn = "{$this->convertPDODrivertoPHPExtension($this->driver)}://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
       $drupal_dsn = "$drupal_dsn:{$this->port}";
     }
@@ -173,6 +173,16 @@ class Datasource {
     if ($this->port != NULL && $this->host == 'localhost') {
       $this->host = '127.0.0.1';
     }
+  }
+
+  /**
+   * Convert a PDO driver name to a PHP extension name.
+   */
+  function convertPDODrivertoPHPExtension($driver) {
+    if (!extension_loaded('mysql') && $driver == 'mysql') {
+      return 'mysqli';
+    }
+    return $driver;
   }
 
   public function setDatabase($database) {

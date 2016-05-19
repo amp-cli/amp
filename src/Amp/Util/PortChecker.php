@@ -45,7 +45,7 @@ class PortChecker {
   /**
    * Determine if a service is listening for connections
    *
-   * @param string $url eg "http://example.com", "http://example.com:8080", "mysql://user:pass@localhost:8889"
+   * @param string $url eg "http://example.com", "http://example.com:8080", "mysqli://user:pass@localhost:8889"
    * @return bool
    */
   public function checkUrl($url) {
