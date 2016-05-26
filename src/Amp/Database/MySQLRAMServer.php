@@ -6,7 +6,7 @@ use Amp\Database\MySQL;
 use Amp\Util\Path;
 
 class MySQLRAMServer extends MySQL {
-  public $mysqld_base_command;
+  public $mysqld_command = 'mysqld';
   public $mysqld_pid_file_path;
   public $mysql_data_path;
   public $mysql_admin_user = 'root';
@@ -30,15 +30,11 @@ class MySQLRAMServer extends MySQL {
    */
   public $default_data_files;
 
-  public function buildMySQLDBaseCommand() {
-    $this->mysqld_base_command = "mysqld --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path} --innodb-file-per-table";
-  }
-
   public function init() {
     if (!$this->ram_disk->isMounted()) {
       $this->ram_disk->mount();
     }
-    Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
+    Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path));
     Path::mkdir_p_if_not_exists($this->tmp_path);
     if ($this->app_armor) {
       $this->app_armor->setTmpPath($this->tmp_path);  // TODO: move to services.yml or remove entirely
@@ -46,17 +42,10 @@ class MySQLRAMServer extends MySQL {
         $this->app_armor->configure();
       }
     }
-    $this->buildMySQLDBaseCommand();
+
     if (!$this->isRunning()) {
-      $this->runCommand("echo \"use mysql;\" > {$this->tmp_path}/install_mysql.sql");
-      if ($this->getDefaultDataFiles()) {
-        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', (array) $this->getDefaultDataFiles())) . " >> {$this->tmp_path}/install_mysql.sql");
-      }
-      else {
-        throw new \Exception("Error finding default data files");
-      }
-      $this->runCommand("{$this->mysqld_base_command} --log-warnings=0 --bootstrap --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K < {$this->tmp_path}/install_mysql.sql");
-      $this->runCommand("{$this->mysqld_base_command} > {$this->tmp_path}/mysql-drupal-test.log 2>&1 &");
+      $this->initializeDatabase();
+      $this->runCommand("{$this->getMySQLDBaseCommand()} > {$this->tmp_path}/mysql-drupal-test.log 2>&1 &");
       $i = 0;
       if (!file_exists($this->mysql_socket_path) or $i > 9) {
         $i++;
@@ -128,8 +117,8 @@ class MySQLRAMServer extends MySQL {
   }
 
   public function runCommand($command, $options = array()) {
-    $options['print_command'] = TRUE;
-    return \Amp\Util\Shell::run($command);
+    // $options['print_command'] = TRUE;
+    return \Amp\Util\Shell::run($command, $options);
   }
 
   public function setAdminDsn($dns) {
@@ -174,6 +163,48 @@ class MySQLRAMServer extends MySQL {
    */
   public function getDefaultDataFiles() {
     return $this->default_data_files;
+  }
+
+  public function getMySQLDBaseCommand() {
+    return "{$this->mysqld_command} --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path} --innodb-file-per-table";
+  }
+
+  protected function getVersion() {
+    $output = `{$this->mysqld_command}  --version`;
+    if (preg_match(';mysqld\s+Ver ([0-9][0-9\.+\-a-zA-Z]*)\s;', $output, $matches)) {
+      return $matches[1];
+    }
+    else {
+      throw new \RuntimeException("Failed to determine mysqld version. (\"$output\")");
+    }
+  }
+
+  /**
+   * @param bool $force
+   *   Initialize database files, even files exist.
+   * @throws \Exception
+   */
+  protected function initializeDatabase($force = FALSE) {
+    if (!$force && glob("{$this->mysql_data_path}/*")) {
+      return;
+    }
+
+    $mysqldVersion = $this->getVersion();
+
+    if (version_compare($mysqldVersion, '5.7.6', '<=')) {
+      Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
+      $this->runCommand("echo \"use mysql;\" > {$this->tmp_path}/install_mysql.sql");
+      if ($this->getDefaultDataFiles()) {
+        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', (array) $this->getDefaultDataFiles())) . " >> {$this->tmp_path}/install_mysql.sql");
+      }
+      else {
+        throw new \Exception("Error finding default data files");
+      }
+      $this->runCommand("{$this->getMySQLDBaseCommand()} --log-warnings=0 --bootstrap --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K < {$this->tmp_path}/install_mysql.sql");
+    }
+    else {
+      $this->runCommand("{$this->getMySQLDBaseCommand()} --log-error-verbosity=1 --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K --initialize-insecure");
+    }
   }
 
 }
