@@ -41,7 +41,7 @@ class MySQLFactoryHelper {
       );
     }
 
-    if (preg_match(';/usr/bin;', $mysqldBin)) {
+    if (preg_match(';/usr/s?bin;', $mysqldBin)) {
       $filesets['debian'] = array(
         '/usr/share/mysql/mysql_system_tables.sql',
         '/usr/share/mysql/mysql_system_tables_data.sql',
