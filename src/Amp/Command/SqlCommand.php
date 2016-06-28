@@ -58,7 +58,7 @@ class SqlCommand extends ContainerAwareCommand {
     }
 
     $process = proc_open(
-      "mysql " . $datasource->toMySQLArguments(),
+      "mysql " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')),
       array(
         0 => STDIN,
         1 => STDOUT,

@@ -128,11 +128,28 @@ class Datasource {
     return $drupal_dsn;
   }
 
-  function toMySQLArguments() {
-    $args = "-h {$this->host} -u {$this->username} -p{$this->password}";
+  /**
+   * @param string $tmpDir
+   *   A directory in which we can create temporary files.
+   * @return string
+   */
+  function toMySQLArguments($tmpDir) {
+    $data = "[client]\n";
+    $data .= "host={$this->host}\n";
+    $data .= "user={$this->username}\n";
+    $data .= "password={$this->password}\n";
     if ($this->port != NULL) {
-      $args .= " -P {$this->port}";
+      $data .= "port={$this->port}\n";
     }
+
+    $file = $tmpDir . '/my.cnf-' . md5($data);
+    if (!file_exists($file)) {
+      if (!file_put_contents($file, $data)) {
+        throw new \RuntimeException("Failed to create temporary my.cnf connection file.");
+      }
+    }
+
+    $args = "--defaults-file=" . escapeshellarg($file);
     $args .= " {$this->database}";
     return $args;
   }

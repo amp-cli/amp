@@ -4,6 +4,7 @@ parameters:
   # instances_yml: '~/.amp/instances.yml'
   # config_yml: '%app_dir%/services.yml'
   # log_dir: '%app_dir%/log'
+  # my_cnf_dir: '%app_dir%/my.cnf.d'
 
   httpd_type: 'apache'
   httpd_restart_wait: 1

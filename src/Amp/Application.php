@@ -71,6 +71,7 @@ class Application extends \Symfony\Component\Console\Application {
     $container->setParameter('app_dir', $this->appDir);
     $container->setParameter('amp_src_dir', dirname(__DIR__));
     $container->setParameter('log_dir', $this->appDir . DIRECTORY_SEPARATOR . 'log');
+    $container->setParameter('my_cnf_dir', $this->appDir . DIRECTORY_SEPARATOR . 'my.cnf.d');
     $container->setParameter('apache_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
     //$container->setParameter('apache24_dir', $this->appDir . DIRECTORY_SEPARATOR . 'apache.d');
     $container->setParameter('apache_tpl', implode(DIRECTORY_SEPARATOR, array(
@@ -97,6 +98,7 @@ class Application extends \Symfony\Component\Console\Application {
     $fs->mkdir(array(
       $this->appDir,
       $container->getParameter('log_dir'),
+      $container->getParameter('my_cnf_dir'),
       $container->getParameter('apache_dir'),
       //$container->getParameter('apache24_dir'),
       $container->getParameter('nginx_dir'),
