@@ -185,11 +185,17 @@ class MySQLRAMServer extends MySQL {
    * @throws \Exception
    */
   protected function initializeDatabase($force = FALSE) {
+    // FIXME: This should probably be rewritten as a wrapper for mysql_install_db
+    // with options communicated by creating a custom ~/.amp/ram_disk/tmp/my.cnf
+
     if (!$force && glob("{$this->mysql_data_path}/*")) {
       return;
     }
 
     $mysqldVersion = $this->getVersion();
+
+    $options = '';
+    $pipe = '';
 
     if (version_compare($mysqldVersion, '5.7.6', '<=')) {
       Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
@@ -200,11 +206,20 @@ class MySQLRAMServer extends MySQL {
       else {
         throw new \Exception("Error finding default data files");
       }
-      $this->runCommand("{$this->getMySQLDBaseCommand()} --log-warnings=0 --bootstrap --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K < {$this->tmp_path}/install_mysql.sql");
+      $pipe = "< {$this->tmp_path}/install_mysql.sql";
+      $options .= ' --bootstrap ';
     }
     else {
-      $this->runCommand("{$this->getMySQLDBaseCommand()} --log-error-verbosity=1 --loose-skip-innodb --max_allowed_packet=8M --default-storage-engine=myisam --net_buffer_length=16K --initialize-insecure");
+      $options .= ' --initialize-insecure';
     }
+
+    $options .= version_compare($mysqldVersion, '5.7.2', '<=') ? ' --log-warnings=0' : ' --log-error-verbosity=1';
+    $options .= ' --innodb';
+    $options .= ' --default-storage-engine=innodb';
+    $options .= ' --max_allowed_packet=8M';
+    $options .= ' --net_buffer_length=16K';
+
+    $this->runCommand("{$this->getMySQLDBaseCommand()} $options $pipe");
   }
 
 }
