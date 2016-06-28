@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 
-class SqlCommand extends ContainerAwareCommand {
+class SqlDumpCommand extends ContainerAwareCommand {
 
   /**
    * @param \Amp\Application $app
@@ -22,12 +22,11 @@ class SqlCommand extends ContainerAwareCommand {
 
   protected function configure() {
     $this
-      ->setName('sql')
-      ->setAliases(array('sql:cli'))
-      ->setDescription('Open the SQL CLI')
+      ->setName('sql:dump')
+      ->setDescription('Dump database to a .sql backup file')
       ->addOption('root', 'r', InputOption::VALUE_REQUIRED, 'The local path to the document root', getcwd())
       ->addOption('name', 'N', InputOption::VALUE_REQUIRED, 'Brief technical identifier for the service', '')
-      ->addOption('admin', 'a', InputOption::VALUE_NONE, 'Connect to the administrative data source');
+      ->addOption('passthru', NULL, InputOption::VALUE_OPTIONAL, 'Optional arguments to pass through to underlying dump command');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -41,25 +40,14 @@ class SqlCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    if ($input->getOption('admin')) {
-      $db = $this->getContainer()->get('db');
-      if (is_callable(array($db, 'getAdminDatasource'))) {
-        $datasource = $db->getAdminDatasource();
-      }
-      else {
-        throw new \Exception("This database does not provide access to an administrative datasource.");
-      }
+    $instance = $this->getContainer()->get('instances')->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
+    if (!$instance) {
+      throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
     }
-    else {
-      $instance = $this->getContainer()->get('instances')->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
-      if (!$instance) {
-        throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
-      }
-      $datasource = $instance->getDatasource();
-    }
+    $datasource = $instance->getDatasource();
 
     $process = proc_open(
-      "mysql " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')),
+      "mysqldump " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')) . " " . $input->getOption('passthru'),
       array(
         0 => STDIN,
         1 => STDOUT,
