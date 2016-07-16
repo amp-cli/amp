@@ -7,7 +7,7 @@ sudo chmod +x /usr/local/bin/amp
 
 ## Build
 
-To bild a new `phar` executable, use [box](http://box-project.github.io/box2/):
+To build a new `phar` executable, use [box](http://box-project.github.io/box2/):
 
 ```
 git clone https://github.com/totten/amp
@@ -16,10 +16,10 @@ composer install
 php -dphar.readonly=0 `which box` build
 ```
 
-## About "amp": Vision ##
+## About `amp`: Vision ##
 
-"amp" is a tool to facilitate development of PHP web applications. The goal is
-to complement "composer" (and similar tools) by adding a (mostly) automated
+`amp` is a tool to facilitate development of PHP web applications. The goal is
+to complement `composer` (and similar tools) by adding a (mostly) automated
 step to setup the database and webserver for newly downloaded code. For example,
 a developer checking out a project might say:
 
@@ -32,31 +32,31 @@ Admin User: admin
 Admin Password zFWx9D22
 ```
 
-The "my-application" package depends on the "amp" package (using "require-dev" or
-"suggest").  The "amp create" step creates a new database in the local mysqld and
+The `my-application` package depends on the `amp` package (using `require-dev` or
+`suggest`).  The `amp create` step creates a new database in the local mysqld and
 a new virutal-host in the local httpd; then it writes out necessary credentials
 (eg the mysql username and password) to a config file.
 
 Additional thoughts:
 
- * "amp" IS NOT a complete stack with bundled binaries (for PHP, MySQL, etc).
- * "amp" IS NOT a cluster-management tool for remote servers.
- * "amp" IS NOT a one-click installer.
- * "amp" IS NOT a system-administration suite.
- * "amp" is primarily AN INTERFACE to the local *AMP stack -- it aims to help
+ * `amp` IS NOT a complete stack with bundled binaries (for PHP, MySQL, etc).
+ * `amp` IS NOT a cluster-management tool for remote servers.
+ * `amp` IS NOT a one-click installer.
+ * `amp` IS NOT a system-administration suite.
+ * `amp` is primarily AN INTERFACE to the local *AMP stack -- it aims to help
    application developers write their own install scripts.
- * "amp" aims to be PORTABLE -- to work with common PHP development environments
+ * `amp` aims to be PORTABLE -- to work with common PHP development environments
    such as Debian/Ubuntu, MAMP, XAMPP, or MacPorts.
- * "amp" is designed for DEVELOPMENT AND TESTING. If you need to automatically install
+ * `amp` is designed for DEVELOPMENT AND TESTING. If you need to automatically install
    copies of applications from source-code in a variety of environments (for
    integration-tests, test-fixtures, demos, bug-fixing, training, collaboration, etc),
-   then "amp" can help.
+   then `amp` can help.
 
-## About "amp": Pre-Alpha Example ##
+## About `amp`: Pre-Alpha Example ##
 
-At time of writing, "amp" is in-development and doesn't fully meet its vision.
-In the third line, the developer shouldn't call "amp create" directly; rather,
-the author of "my-application" should include an "install.sh" script, and
+At time of writing, `amp` is in-development and doesn't fully meet its vision.
+In the third line, the developer shouldn't call `amp create` directly; rather,
+the author of `my-application` should include an `install.sh` script, and
 the downstream developer can run it:
 
 ```
@@ -70,13 +70,13 @@ Login to the application:
  * Password: default
 ```
 
-The "amp config" command determines how to connect to MySQL and httpd.
+The `amp config` command determines how to connect to MySQL and httpd.
 It may scan the local system for common configurations (Ubuntu vs
 MAMP vs MacPorts; Apache vs nginx), prompt the user for information, and
 retain the info (in ~/.amp) for future use.
 
-The "install.sh" is mostly specific to the application, but it builds
-on "amp" to address the tedious bit about setting up mysqld and httpd.
+The `install.sh` is mostly specific to the application, but it builds
+on `amp` to address the tedious bit about setting up mysqld and httpd.
 For example, one might say:
 
 ```
@@ -108,41 +108,41 @@ echo " * Password: default"
 
 ## FAQ ##
 
-Q: Is "amp" stable? Should I rely on it right now?
+Q: Is `amp` stable? Should I rely on it right now?
 
-A: Probably not. "amp" is pre-alpha. Interfaces and workflows are likely to change.
+A: Probably not. `amp` is pre-alpha. Interfaces and workflows are likely to change.
 
-Q: How do I configure "amp" to work on my system?
+Q: How do I configure `amp` to work on my system?
 
-A: Run "amp config"
+A: Run `amp config
 
-Q: How do I know if "amp" is working?
+Q: How do I know if `amp` is working?
 
-A: Run "amp test"
+A: Run `amp test`
 
-Q: How does "amp" assign a virtual hostname and port?
+Q: How does `amp` assign a virtual hostname and port?
 
-A: You can specify one by passing the "--url" option to "create". If omitted,
-it will use "localhost" and assign an alternative port.
+A: You can specify one by passing the `--url` option to `create`. If omitted,
+it will use `localhost` and assign an alternative port.
 
-Q: How does "amp" name databases and database users?
+Q: How does `amp` name databases and database users?
 
-A: The name is computed by taking the directory name (eg "my-application")
+A: The name is computed by taking the directory name (eg `my-application`)
 and appending some random characters.  The directory name may be truncated
 to meet MySQL's size limits.  The name is the same for the DB and user.
 
-Q: Where does "amp" store its configuration data?
+Q: Where does `amp` store its configuration data?
 
 A: By default, `~/.amp`. If you define the environment variable AMPHOME, it will store in the specified directory.
 
 Q: I have five web apps installed. How does AMP distinguish them?
 
 A: Each application should have its own directory (eg
-"/home/me/src/my-application-1").  By default, "amp" assumes that each
+`/home/me/src/my-application-1`).  By default, `amp` assumes that each
 directory corresponds to a single virtual-host and a single MySQL database.
 If you need an additional virtual-host and DB for that application, call
-"create" again with the "--name" argument.  If you want an additional
-virtual-host XOR DB, specify "--skip-db" or "--skip-url".
+`create` again with the `--name` argument.  If you want an additional
+virtual-host XOR DB, specify `--skip-db` or `--skip-url`.
 
 Q: How do I build a stand-alone PHAR executable for amp?
 
@@ -150,7 +150,7 @@ A: Install [Box](http://box-project.org/). Then, in the amp source dir, run "php
 
 ## Internal Architecture ##
 
-"amp" uses components from Symfony 2 (eg Console, Config, and
+`amp` uses components from Symfony 2 (eg Console, Config, and
 Dependency-Injection).
 
 There are a few key services defined in the container:
@@ -195,7 +195,7 @@ home directory (`~/.amp/services.yml`).
 
  * Add HttpdInterface for nginx
  * Add HttpdInterface for PHP's built-in web-server
- * Callback support (eg "amp create" calls a script bundled with my-application)
+ * Callback support (eg `amp create` calls a script bundled with my-application)
  * Load per-application config values (my-application/.amp.yml); eg:
    * Specify any callback(s)
    * Specify the Apache vhost template
@@ -205,6 +205,6 @@ home directory (`~/.amp/services.yml`).
 ## Wishlist / Patch-Welcomes ##
 
  * Add DatabaseManagementInterface based on MySQL CLI
- * For "amp export" and "amp create", add option "--format=shell,json,yml"
+ * For `amp export` and `amp create`, add option `--format=shell,json,yml`
  * Add more heuristics/settings to work well in common dev environments
    (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
