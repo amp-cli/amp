@@ -163,7 +163,7 @@ class ConfigCommand extends ContainerAwareCommand {
         $output->writeln("");
         $output->writeln("<comment>Note</comment>: Please ensure that nginx.conf includes this directive:");
         $output->writeln("");
-        $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
+        $output->writeln("  <comment>include {$configPath}/*.conf</comment>");
         $configFiles = $this->findNginxConfigFiles();
         if ($configFiles) {
           $output->writeln("");
