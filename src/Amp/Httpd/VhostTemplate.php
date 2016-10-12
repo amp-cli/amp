@@ -46,6 +46,11 @@ class VhostTemplate implements HttpdInterface {
    */
   private $restartWait = 0;
 
+  /**
+   * @var array
+   */
+  private $httpd_shared_ports;
+
   public function __construct() {
     $this->fs = new Filesystem();
   }
@@ -62,6 +67,7 @@ class VhostTemplate implements HttpdInterface {
     if (empty($parameters['port'])) {
       $parameters['port'] = 80;
     }
+    $parameters['use_listen'] = !in_array((int) $parameters['port'], $this->getSharedPorts());
     $parameters['root'] = $root;
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';
@@ -180,6 +186,32 @@ class VhostTemplate implements HttpdInterface {
   public function setRestartWait($restartWait) {
     $this->restartWait = $restartWait;
   }
+
+  /**
+   * @return array
+   *   Array<int>
+   */
+  public function getSharedPorts() {
+    return $this->httpd_shared_ports;
+  }
+
+  /**
+   * @param int|string|array<int> $httpd_shared_ports
+   *   List of ports.
+   *   Ex: 80
+   *   Ex: array(80, 8080)
+   *   Ex: '80,8080'
+   */
+  public function setSharedPorts($httpd_shared_ports) {
+    if (is_string($httpd_shared_ports)) {
+      $httpd_shared_ports = explode(',', $httpd_shared_ports);
+    }
+    foreach (array_keys($httpd_shared_ports) as $k) {
+      $httpd_shared_ports[$k] = (int) $httpd_shared_ports[$k];
+    }
+    $this->httpd_shared_ports = $httpd_shared_ports;
+  }
+
 
   /**
    * @param string $template

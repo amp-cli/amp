@@ -8,7 +8,7 @@
  */
 ?>
 
-<?php if ($port != 80) { ?>
+<?php if ($use_listen) { ?>
 
 Listen <?php echo $port ?>
 
