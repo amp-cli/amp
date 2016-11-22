@@ -146,7 +146,9 @@ virtual-host XOR DB, specify `--skip-db` or `--skip-url`.
 
 Q: How do I build a stand-alone PHAR executable for amp?
 
-A: Install [Box](http://box-project.org/). Then, in the amp source dir, run "php -d phar.readonly=0 `which box` build"
+A: Install [Box](http://box-project.org/). Then, in the amp source dir, run
+
+    php -d phar.readonly=0 `which box` build
 
 ## Internal Architecture ##
 
