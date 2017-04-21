@@ -1,7 +1,8 @@
 <?php
 namespace Amp\Database;
-use Amp\Database\DatabaseManagementInterface;
-use Amp\Database\Datasource;
+
+use Amp\Instance;
+use Amp\InstanceRepository;
 use Exception;
 
 class MySQLPrecreated implements DatabaseManagementInterface {
@@ -11,6 +12,15 @@ class MySQLPrecreated implements DatabaseManagementInterface {
    * @var Datasource
    */
   protected $adminDatasource = NULL;
+
+  /**
+   * @var InstanceRepository
+   */
+  protected $instances;
+
+  public function __construct(InstanceRepository $instances) {
+    $this->instances = $instances;
+  }
 
   /**
    * @return bool
@@ -49,13 +59,28 @@ class MySQLPrecreated implements DatabaseManagementInterface {
   public function createDatasource($hint) {
     $dsnPattern = getenv('PRECREATED_DSN_PATTERN');
 
-    if ( empty( $dsnPattern ) ) {
-        throw new Exception('Must set PRECREATED_DSN_PATTERN to use MySQLPrecreated.');
+    if (empty($dsnPattern)) {
+      throw new Exception('Must set PRECREATED_DSN_PATTERN to use MySQLPrecreated.');
     }
-    $dsn = str_replace('{{db_seq}}', self::$db_seq++, $dsnPattern);
+    if (strpos($dsnPattern, '{{db_seq}}') !== FALSE) {
+      $existing = $this->instances->findAll();
+      do {
+        $dsn = str_replace('{{db_seq}}', self::$db_seq++, $dsnPattern);
+        $isNumTaken = false; // does another existing DB use this data-source?
+        foreach ($existing as $instance) {
+          /** @var Instance $instance */
+          if ($instance->getDatasource()->toCiviDSN() === $dsn) {
+            $isNumTaken = true;
+            break;
+          }
+        }
+      } while ($isNumTaken);
+    } else {
+      $dsn = $dsnPattern;
+    }
 
     $datasource = new Datasource(array(
-        'civi_dsn' => $dsn
+      'civi_dsn' => $dsn
     ));
 
     return $datasource;
