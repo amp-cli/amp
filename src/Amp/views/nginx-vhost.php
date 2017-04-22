@@ -41,8 +41,8 @@ server {
     #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini
     include fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-    fastcgi_pass unix:/var/run/php5-fpm.sock;
-    # fastcgi_pass 127.0.0.1:9000;
+    # fastcgi_pass unix:/var/run/php5-fpm.sock;
+    fastcgi_pass 127.0.0.1:9000;
     fastcgi_intercept_errors on;
     fastcgi_read_timeout 60;
   }
