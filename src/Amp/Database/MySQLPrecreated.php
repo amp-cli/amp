@@ -69,7 +69,8 @@ class MySQLPrecreated implements DatabaseManagementInterface {
         $isNumTaken = false; // does another existing DB use this data-source?
         foreach ($existing as $instance) {
           /** @var Instance $instance */
-          if ($instance->getDatasource()->toCiviDSN() === $dsn) {
+          $compare = $instance->getDatasource()->toCiviDSN();
+          if ($this->stripOptions($compare) === $this->stripOptions($dsn)) {
             $isNumTaken = true;
             break;
           }
@@ -84,6 +85,11 @@ class MySQLPrecreated implements DatabaseManagementInterface {
     ));
 
     return $datasource;
+  }
+
+  protected function stripOptions($dsn) {
+    $parts = explode('?', $dsn);
+    return $parts[0];
   }
 
   /**
