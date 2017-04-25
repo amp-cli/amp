@@ -3,7 +3,7 @@
 In some environments, you may not have sufficient access to create new DBs
 on the fly -- but you can ask for a set of DB's to be precreated by an
 administrator.  You'll need to follow a simple naming convention for
-datbases and users (more below).
+databases and users (more below).
 
 # Planning
 
@@ -60,6 +60,10 @@ export PRECREATED_DSN_PATTERN='mysql://static_{{db_seq}}:topsecret@127.0.0.1:330
 
 > (Note: The order of the steps in not important -- as long as you do both
 > of them before calling `amp create`.)
+
+> (Note: Ensure that the environment variable `PRECREATED_DSN_PATTERN` is consistently
+> set -- in your `.bashrc` or CI server. If you set the `db_type` to `mysql_precreated`
+> but don't set `PRECREATED_DSN_PATTERN`, then it won't work...)
 
 # Testing
 
