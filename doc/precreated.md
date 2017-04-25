@@ -21,9 +21,9 @@ If you call `amp create` three times, it will look for three DBs with the creden
  * Database: `static_2`; User: `static_2`; Password: `topsecret`; Host: `127.0.0.1`
  * Database: `static_3`; User: `static_3`; Password: `topsecret`; Host: `127.0.0.1`
 
-Any field (datbase, user, password, host, port) can include the variable
-`{{db_seq}}`.
-
+The database name *must* include the variable `db_seq` to be semantically
+correct. For any other field (username, password, host, port), the variable is
+discretionary (depending your system/preference).
 
 # Setup: MySQL
 
