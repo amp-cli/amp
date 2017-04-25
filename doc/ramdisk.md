@@ -1,4 +1,4 @@
-## MySQL RAM Disk
+# MySQL RAM Disk (Experimental)
 
 In OS X and Linux, `amp` can automount a RAM disk and start a new MySQL
 daemon.  This is useful if you need to run a large suite of tests using a
