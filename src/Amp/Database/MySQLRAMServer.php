@@ -127,7 +127,7 @@ class MySQLRAMServer extends MySQL {
 
   public function setMySQLRamServerPort($port) {
     $this->port = $port;
-    $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://{$this->mysql_admin_user}:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
+    $this->adminDatasource = new Datasource(array('civi_dsn' => "mysqli://{$this->mysql_admin_user}:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
   }
 
   /**
