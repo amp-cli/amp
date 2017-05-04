@@ -171,8 +171,8 @@ class MySQLRAMServer extends MySQL {
 
   protected function getVersion() {
     $output = `{$this->mysqld_command}  --version`;
-    if (preg_match(';mysqld\s+Ver ([0-9][0-9\.+\-a-zA-Z]*)\s;', $output, $matches)) {
-      return $matches[1];
+    if (preg_match(';mysqld(.bin)?\s+Ver ([0-9][0-9\.+\-a-zA-Z]*)\s;', $output, $matches)) {
+      return $matches[2];
     }
     else {
       throw new \RuntimeException("Failed to determine mysqld version. (\"$output\")");
