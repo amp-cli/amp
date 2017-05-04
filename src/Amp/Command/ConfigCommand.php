@@ -389,13 +389,15 @@ class ConfigCommand extends ContainerAwareCommand {
     $candidates[] = '/opt/local/apache2/conf/httpd.conf'; // MacPorts (Googled, untested)
     $candidates[] = '/Applications/MAMP/conf/apache/httpd.conf'; // MAMP
     $candidates[] = '/Applications/XAMPP/etc/httpd.conf'; // XAMPP OS X (Googled, untested)
+    $candidates[] = '/Applications/*/apache2/conf/httpd.conf'; // Bitnami OSX
     $candidates[] = '/usr/local/etc/apache2x/httpd.conf'; // FreeBSD (Googled, untested)
     $candidates[] = '/usr/local/etc/apache22/httpd.conf'; // FreeBSD (Googled, untested)
 
     $matches = array();
     foreach ($candidates as $candidate) {
-      if (file_exists($candidate)) {
-        $matches[] = $candidate;
+      $files = (array) glob($candidate);
+      foreach ($files as $file) {
+        $matches[] = $file;
       }
     }
     return $matches;
