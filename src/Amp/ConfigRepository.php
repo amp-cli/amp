@@ -145,13 +145,19 @@ class ConfigRepository {
           '/usr/local/bin',
           '/usr/local/sbin',
         );
+        $ADDONDIRS = array(
+          '/Applications/MAMP/Library/bin',
+          '/Applications/*/apache2/bin',
+        );
         $examples = array();
 
         // Add-on kits. No need for sudo
-        foreach (array('/Applications/MAMP/Library/bin') as $dir) {
-          foreach ($APACHECTLS as $prog) {
-            if (file_exists("$dir/$prog")) {
-              $examples[] = "$dir/$prog graceful";
+        foreach ($ADDONDIRS as $dirglob) {
+          foreach ((array)glob($dirglob) as $dir) {
+            foreach ($APACHECTLS as $prog) {
+              if (file_exists("$dir/$prog")) {
+                $examples[] = "$dir/$prog graceful";
+              }
             }
           }
         }
