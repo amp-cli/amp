@@ -27,10 +27,16 @@ class ConfigGetCommand extends ContainerAwareCommand {
   protected function configure() {
     $this
       ->setName('config:get')
-      ->setDescription('Get configuration options');
+      ->setDescription('Get configuration options')
+      ->addArgument('key', InputArgument::OPTIONAL, 'Name of a configuration field');
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
+    if ($input->getArgument('key')) {
+      $output->writeln($this->getContainer()->getParameter($input->getArgument('key')));
+      return;
+    }
+
     $rows = array();
     foreach ($this->config->getParameters() as $key) {
       $rows[] = array($key, $this->getContainer()->getParameter($key), $this->config->getDescription($key));
