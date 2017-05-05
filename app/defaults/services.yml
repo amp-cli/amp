@@ -32,6 +32,9 @@ parameters:
   ram_disk_type: 'auto'
   ram_disk_size: 500
 
+  mysql_bin: 'mysql'
+  mysqldump_bin: 'mysqldump'
+
   ## Configure mysqld initialization (for ram_disk)
   mysqld_launch_command: 'AUTO'
   mysqld_init_command: 'AUTO'

@@ -3,6 +3,7 @@ namespace Amp\Command;
 
 use Amp\Instance;
 use Amp\Util\Filesystem;
+use Amp\Util\Process;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -46,8 +47,9 @@ class SqlDumpCommand extends ContainerAwareCommand {
     }
     $datasource = $instance->getDatasource();
 
+    $mysqldump = Process::findTrueExecutable($this->getContainer()->getParameter('mysqldump_bin'));
     $process = proc_open(
-      "mysqldump " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')) . " " . $input->getOption('passthru'),
+      $mysqldump . " " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')) . " " . $input->getOption('passthru'),
       array(
         0 => STDIN,
         1 => STDOUT,

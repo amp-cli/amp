@@ -3,6 +3,7 @@ namespace Amp\Command;
 
 use Amp\Instance;
 use Amp\Util\Filesystem;
+use Amp\Util\Process;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -73,8 +74,9 @@ The ENV expressions are prefixed to indicate their escaping rule:
       $datasource = $instance->getDatasource();
     }
 
+    $mysql = Process::findTrueExecutable($this->getContainer()->getParameter('mysql_bin'));
     $process = proc_open(
-      "mysql " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')),
+      $mysql . " " . $datasource->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')),
       array(
         0 => $input->getOption('eval') ? array('pipe', 'r') : STDIN,
         1 => STDOUT,
