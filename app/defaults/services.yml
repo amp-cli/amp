@@ -18,7 +18,7 @@ parameters:
   # apache_dir: '~/.amp/apache.d'
   apache_tpl: 'apache-vhost.php'
 
-# apache_dir: '~/.amp/apache.d'
+  # apache_dir: '~/.amp/apache.d'
   apache24_tpl: 'apache24-vhost.php'
 
   # nginx_dir: '~/.amp/nginx.d'
