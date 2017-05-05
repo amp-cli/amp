@@ -139,11 +139,14 @@ class ConfigCommand extends ContainerAwareCommand {
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
       case 'apache24':
+        $include = ($this->config->getParameter('httpd_type') === 'apache24')
+          ? 'IncludeOptional'
+          : 'Include';
         $configPath = $this->getContainer()->getParameter('apache_dir');
         $output->writeln("");
         $output->writeln("<comment>Note</comment>: Please add this line to the httpd.conf or apache2.conf:");
         $output->writeln("");
-        $output->writeln("  <comment>Include {$configPath}/*.conf</comment>");
+        $output->writeln("  <comment>$include {$configPath}/*.conf</comment>");
         $configFiles = $this->findApacheConfigFiles();
         if ($configFiles) {
           $output->writeln("");
