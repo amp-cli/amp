@@ -30,4 +30,21 @@ class Process {
     return (bool) preg_match(';^#.*bin.*sh;', $firstLine);
   }
 
+  /**
+   * Resolve a command's path. If the command is a shell wrapper, look for
+   * an alternate.
+   *
+   * @param string $name
+   * @return FALSE|string
+   */
+  public static function findTrueExecutable($name) {
+    $bin = Process::findExecutable($name);
+    if (Process::isShellScript($bin)) {
+      if (file_exists($bin . '.bin')) {
+        return $bin . '.bin';
+      }
+    }
+    return $bin;
+  }
+
 }
