@@ -41,6 +41,11 @@ parameters:
   instances_timeout: 5
 
 services:
+  expr:
+    class: Amp\Util\Expr
+    arguments:
+      - '@service_container'
+
   ## Data storage for AMP instances
   instances:
     class: Amp\InstanceRepository
