@@ -25,13 +25,10 @@ class Application extends \Symfony\Component\Console\Application {
   private $configDirectories;
 
   /**
-   * Primary entry point for execution of the standalone command.
-   *
-   * @param string $binDir
-   *
-   * @throws \Exception
+   * @param $binDir
+   * @return \Amp\Application
    */
-  public static function main($binDir) {
+  public static function create($binDir) {
     if (getenv('AMPHOME')) {
       $appDir = getenv('AMPHOME');
     }
@@ -44,6 +41,18 @@ class Application extends \Symfony\Component\Console\Application {
     );
 
     $application = new Application('amp', '@package_version@', $appDir, $configDirectories);
+    return $application;
+  }
+
+  /**
+   * Primary entry point for execution of the standalone command.
+   *
+   * @param string $binDir
+   *
+   * @throws \Exception
+   */
+  public static function main($binDir) {
+    $application = self::create($binDir);
     $application->setCatchExceptions(FALSE);
     $application->upgradeIfNeeded();
     $application->run();
