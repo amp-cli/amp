@@ -32,7 +32,19 @@ parameters:
   ram_disk_type: 'auto'
   ram_disk_size: 500
 
-  mysql_ram_server_port: 3307
+  ## Configure mysqld initialization (for ram_disk)
+  mysqld_launch_command: 'AUTO'
+  mysqld_init_command: 'AUTO'
+  mysqld_password_command: 'AUTO'
+  mysqladmin_bin: mysqladmin
+  mysqld_bin: mysqld
+  # mysqld_port: %mysql_ram_server_port% or 3307
+  mysqld_data_path: '%ram_disk_dir%/mysql'
+  mysqld_tmp_path: '%ram_disk_dir%/tmp'
+  mysqld_pid_path: '%ram_disk_dir%/mysqld.pid'
+  mysqld_socket_path: '%ram_disk_dir%/mysqld.sock'
+  mysqld_admin_user: root
+  mysqld_admin_password: root
 
   perm_type: 'worldWritable'
   perm_user: ''

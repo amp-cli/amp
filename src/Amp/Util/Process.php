@@ -9,6 +9,9 @@ class Process {
    * @return string|FALSE
    */
   public static function findExecutable($name) {
+    if (strpos($name, DIRECTORY_SEPARATOR) !== FALSE) {
+      return $name;
+    }
     $paths = explode(PATH_SEPARATOR, getenv('PATH'));
     foreach ($paths as $path) {
       if (file_exists("$path/$name")) {
@@ -38,6 +41,9 @@ class Process {
    * @return FALSE|string
    */
   public static function findTrueExecutable($name) {
+    if (strpos($name, DIRECTORY_SEPARATOR) !== FALSE) {
+      return $name;
+    }
     $bin = Process::findExecutable($name);
     if (Process::isShellScript($bin)) {
       if (file_exists($bin . '.bin')) {

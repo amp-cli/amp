@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+use Amp\Util\Process;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -122,6 +123,16 @@ class Application extends \Symfony\Component\Console\Application {
       $yamlUserFiles = $locator->locate($file, NULL, FALSE);
       foreach ($yamlUserFiles as $file) {
         $delegatingLoader->load($file);
+      }
+    }
+
+    // renamed mysql_ram_server_port to mysqld_port
+    if (!$container->hasParameter('mysqld_port')) {
+      if ($container->hasParameter('mysql_ram_server_port')) {
+        $container->setParameter('mysqld_port', $container->getParameter('mysql_ram_server_port'));
+      }
+      else {
+        $container->setParameter('mysqld_port', 3307);
       }
     }
 

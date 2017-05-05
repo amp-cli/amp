@@ -1,6 +1,8 @@
 <?php
 namespace Amp\Database;
 
+use Amp\Util\Path;
+use Amp\Util\Process;
 use Amp\Util\Shell;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -12,12 +14,26 @@ class MySQLFactoryHelper {
    * @return DatabaseManagementInterface
    */
   public static function createRAMServer(ContainerInterface $container) {
-    list ($mysqldBin) = Shell::run("which mysqld");
+    /** @var \Amp\Util\Expr $expr */
+    $expr = $container->get('expr');
 
     $server = new MySQLRAMServer();
-    $server->setRamDisk($container->get('ram_disk'));
-    $server->setMySQLRamServerPort($container->getParameter('mysql_ram_server_port'));
-    $server->setDefaultDataFiles(self::findDataFiles($mysqldBin));
+    $server->container = $container;
+    $server->ram_disk = $container->get('ram_disk');
+    $server->mysqld_bin = $container->getParameter('mysqld_bin');
+    $server->mysqladmin_bin = $container->getParameter('mysqladmin_bin');
+    $server->mysqld_data_path = $expr->getParameter('mysqld_data_path');
+    $server->mysqld_tmp_path = $expr->getParameter('mysqld_tmp_path');
+    $server->mysqld_pid_path = $expr->getParameter('mysqld_pid_path');
+    $server->mysqld_socket_path = $expr->getParameter('mysqld_socket_path');
+    $server->mysqld_port = $expr->getParameter('mysqld_port');
+    $server->mysqld_admin_user = $expr->getParameter('mysqld_admin_user');
+    $server->mysqld_admin_password = $expr->getParameter('mysqld_admin_password');
+
+    Path::mkdir_p_if_not_exists($container->get('ram_disk')->getPath());
+
+    $server->buildAdminDatasource();
+    $server->setDefaultDataFiles(self::findDataFiles($container->getParameter('mysqld_bin')));
     if (file_exists("/etc/apparmor.d")) {
       $server->setAppArmor($container->get('app_armor.mysql_ram_disk'));
     }
@@ -25,6 +41,8 @@ class MySQLFactoryHelper {
   }
 
   public static function findDataFiles($mysqldBin) {
+    $mysqldBin = Process::findExecutable($mysqldBin);
+
     $filesets = array();
 
     if (preg_match(';MAMP;', $mysqldBin)) {

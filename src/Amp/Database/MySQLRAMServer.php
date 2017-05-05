@@ -4,16 +4,24 @@ namespace Amp\Database;
 use Amp\Database\Datasource;
 use Amp\Database\MySQL;
 use Amp\Util\Path;
+use Amp\Util\Shell;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MySQLRAMServer extends MySQL {
-  public $mysqld_command = 'mysqld';
-  public $mysqld_pid_file_path;
-  public $mysql_data_path;
-  public $mysql_admin_user = 'root';
-  public $mysql_admin_password = 'root';
-  public $mysql_socket_path;
-  public $port;
-  public $tmp_path;
+  public $mysqladmin_bin;
+  public $mysqld_bin;
+  public $mysqld_pid_path;
+  public $mysqld_data_path;
+  public $mysqld_socket_path;
+  public $mysqld_tmp_path;
+  public $mysqld_port;
+  public $mysqld_admin_user;
+  public $mysqld_admin_password;
+
+  /**
+   * @var ContainerInterface
+   */
+  public $container;
 
   /**
    * @var \Amp\RamDisk\RamDiskInterface
@@ -34,25 +42,25 @@ class MySQLRAMServer extends MySQL {
     if (!$this->ram_disk->isMounted()) {
       $this->ram_disk->mount();
     }
-    Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path));
-    Path::mkdir_p_if_not_exists($this->tmp_path);
+    Path::mkdir_p_if_not_exists(Path::join($this->mysqld_data_path));
+    Path::mkdir_p_if_not_exists($this->mysqld_tmp_path);
     if ($this->app_armor) {
-      $this->app_armor->setTmpPath($this->tmp_path);  // TODO: move to services.yml or remove entirely
+      $this->app_armor->setTmpPath($this->mysqld_tmp_path);  // TODO: move to services.yml or remove entirely
       if (!$this->app_armor->isConfigured()) {
         $this->app_armor->configure();
       }
     }
 
     if (!$this->isRunning()) {
-      $this->initializeDatabase();
-      $this->runCommand("{$this->getMySQLDBaseCommand()} > {$this->tmp_path}/mysql-drupal-test.log 2>&1 &");
+      $this->runCommand($this->createInitializationCommand());
+      $this->runCommand($this->createLaunchCommand());
       $i = 0;
-      if (!file_exists($this->mysql_socket_path) or $i > 9) {
+      if (!file_exists($this->mysqld_socket_path) or $i > 9) {
         $i++;
         sleep(1);
       }
       if ($i == 9) {
-        throw new \Exception("There was a problem starting the MySQLRAM server. We expect to see a socket file at {$this->mysql_socket_path} but it hasn't appeared after 10 waiting seconds.");
+        throw new \Exception("There was a problem starting the MySQLRAM server. We expect to see a socket file at {$this->mysqld_socket_path} but it hasn't appeared after 10 waiting seconds.");
       }
 
       // Probably new DB files
@@ -61,7 +69,7 @@ class MySQLRAMServer extends MySQL {
       while ($i < 9) {
         $i++;
         try {
-          $this->runCommand("mysqladmin --socket={$this->mysql_socket_path} --user=root --password='' password '{$this->mysql_admin_password}'");
+          $this->runCommand($this->createPasswordCommand());
           break;
         }
         catch (\Exception $e) {
@@ -88,8 +96,8 @@ class MySQLRAMServer extends MySQL {
     $datasource = new Datasource();
     $datasource->setDriver($this->adminDatasource->getDriver());
     $datasource->setHost('127.0.0.1');
-    $datasource->setPort($this->port);
-    $datasource->setSocketPath($this->mysql_socket_path);
+    $datasource->setPort($this->mysqld_port);
+    $datasource->setSocketPath($this->mysqld_socket_path);
     $datasource->setUsername($user);
     $datasource->setPassword($pass);
     $datasource->setDatabase($user);
@@ -113,35 +121,20 @@ class MySQLRAMServer extends MySQL {
 
   public function isRunning() {
     $port_checker = new \Amp\Util\PortChecker();
-    return $port_checker->checkHostPort('localhost', $this->port);
+    return $port_checker->checkHostPort('localhost', $this->mysqld_port);
   }
 
   public function runCommand($command, $options = array()) {
     // $options['print_command'] = TRUE;
-    return \Amp\Util\Shell::run($command, $options);
+    return ($command === NULL) ? NULL : \Amp\Util\Shell::run($command, $options);
   }
 
-  public function setAdminDsn($dns) {
-    throw new \Exception("MySQLinuxRAMServer doesn't accept an admin DSN. You can set the porat with msyql_ram_server_port.");
+  public function setAdminDsn($dsn) {
+    throw new \Exception("MySQLRAMServer doesn't accept an admin DSN. You can set the port with mysqld_port.");
   }
 
-  public function setMySQLRamServerPort($port) {
-    $this->port = $port;
-    $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://{$this->mysql_admin_user}:{$this->mysql_admin_password}@127.0.0.1:{$this->port}/"));
-  }
-
-  /**
-   * @param \Amp\RamDisk\RamDiskInterface $ram_disk
-   * @void
-   */
-  public function setRamDisk($ram_disk) {
-    $this->ram_disk = $ram_disk;
-
-    Path::mkdir_p_if_not_exists($ram_disk->getPath());
-    $this->mysql_data_path = Path::join($ram_disk->getPath(), 'mysql');
-    $this->tmp_path = Path::join($ram_disk->getPath(), 'tmp');
-    $this->mysqld_pid_file_path = Path::join($this->tmp_path, 'mysqld.pid');
-    $this->mysql_socket_path = Path::join($this->tmp_path, 'mysqld.sock');
+  public function buildAdminDatasource() {
+    $this->adminDatasource = new Datasource(array('civi_dsn' => "mysql://{$this->mysqld_admin_user}:{$this->mysqld_admin_password}@127.0.0.1:{$this->mysqld_port}/"));
   }
 
   /**
@@ -166,11 +159,11 @@ class MySQLRAMServer extends MySQL {
   }
 
   public function getMySQLDBaseCommand() {
-    return "{$this->mysqld_command} --no-defaults --tmpdir={$this->tmp_path} --datadir={$this->mysql_data_path} --port={$this->port} --socket={$this->mysql_socket_path} --pid-file={$this->mysqld_pid_file_path} --innodb-file-per-table";
+    return "{$this->mysqld_bin} --no-defaults --tmpdir={$this->mysqld_tmp_path} --datadir={$this->mysqld_data_path} --port={$this->mysqld_port} --socket={$this->mysqld_socket_path} --pid-file={$this->mysqld_pid_path} --innodb-file-per-table";
   }
 
   protected function getVersion() {
-    $output = `{$this->mysqld_command}  --version`;
+    $output = `{$this->mysqld_bin}  --version`;
     if (preg_match(';mysqld(.bin)?\s+Ver ([0-9][0-9\.+\-a-zA-Z]*)\s;', $output, $matches)) {
       return $matches[2];
     }
@@ -182,14 +175,15 @@ class MySQLRAMServer extends MySQL {
   /**
    * @param bool $force
    *   Initialize database files, even files exist.
+   * @return string|NULL
    * @throws \Exception
    */
-  protected function initializeDatabase($force = FALSE) {
+  protected function createInitializationCommand($force = FALSE) {
     // FIXME: This should probably be rewritten as a wrapper for mysql_install_db
     // with options communicated by creating a custom ~/.amp/ram_disk/tmp/my.cnf
 
-    if (!$force && glob("{$this->mysql_data_path}/*")) {
-      return;
+    if (!$force && glob("{$this->mysqld_data_path}/*")) {
+      return NULL;
     }
 
     $mysqldVersion = $this->getVersion();
@@ -198,15 +192,15 @@ class MySQLRAMServer extends MySQL {
     $pipe = '';
 
     if (version_compare($mysqldVersion, '5.7.6', '<=')) {
-      Path::mkdir_p_if_not_exists(Path::join($this->mysql_data_path, 'mysql'));
-      $this->runCommand("echo \"use mysql;\" > {$this->tmp_path}/install_mysql.sql");
+      Path::mkdir_p_if_not_exists(Path::join($this->mysqld_data_path, 'mysql'));
+      $this->runCommand("echo \"use mysql;\" > {$this->mysqld_tmp_path}/install_mysql.sql");
       if ($this->getDefaultDataFiles()) {
-        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', (array) $this->getDefaultDataFiles())) . " >> {$this->tmp_path}/install_mysql.sql");
+        $this->runCommand("cat " . implode(' ', array_map('escapeshellarg', (array) $this->getDefaultDataFiles())) . " >> {$this->mysqld_tmp_path}/install_mysql.sql");
       }
       else {
         throw new \Exception("Error finding default data files");
       }
-      $pipe = "< {$this->tmp_path}/install_mysql.sql";
+      $pipe = "< {$this->mysqld_tmp_path}/install_mysql.sql";
       $options .= ' --bootstrap ';
     }
     else {
@@ -219,7 +213,35 @@ class MySQLRAMServer extends MySQL {
     $options .= ' --max_allowed_packet=8M';
     $options .= ' --net_buffer_length=16K';
 
-    $this->runCommand("{$this->getMySQLDBaseCommand()} $options $pipe");
+    return "{$this->getMySQLDBaseCommand()} $options $pipe";
+  }
+
+  /**
+   * @return string
+   */
+  protected function createLaunchCommand() {
+    return "{$this->getMySQLDBaseCommand()} > {$this->mysqld_tmp_path}/mysql-drupal-test.log 2>&1 &";
+  }
+
+  /**
+   * @return string
+   */
+  protected function createPasswordCommand() {
+    return $this->mysqladmin_bin . " --socket={$this->mysqld_socket_path} --user=root --password='' password '{$this->mysqld_admin_password}'";
+    //    $data = "[client]\n";
+    //    $data .= "socket={$this->mysql_socket_path}\n";
+    //    $data .= "user={$this->mysqld_admin_user}\n";
+    //    // $data .= "password={$this->mysqld_admin_password}\n";
+    //    $data .= "password=\n";
+    //
+    //    $file = $this->tmp_path . '/my.cnf-' . md5($data);
+    //    if (!file_exists($file)) {
+    //      if (!file_put_contents($file, $data)) {
+    //        throw new \RuntimeException("Failed to create temporary my.cnf connection file.");
+    //      }
+    //    }
+    //
+    //    return $this->mysqladmin_command . " --defaults-file=" . escapeshellarg($file) . " password '{$this->mysqld_admin_password}'";
   }
 
 }
