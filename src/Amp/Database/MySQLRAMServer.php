@@ -8,15 +8,6 @@ use Amp\Util\Shell;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MySQLRAMServer extends MySQL {
-  public $mysqladmin_bin;
-  public $mysqld_bin;
-  public $mysqld_pid_path;
-  public $mysqld_data_path;
-  public $mysqld_socket_path;
-  public $mysqld_tmp_path;
-  public $mysqld_port;
-  public $mysqld_admin_user;
-  public $mysqld_admin_password;
 
   /**
    * @var ContainerInterface
@@ -242,6 +233,19 @@ class MySQLRAMServer extends MySQL {
     //    }
     //
     //    return $this->mysqladmin_command . " --defaults-file=" . escapeshellarg($file) . " password '{$this->mysqld_admin_password}'";
+  }
+
+  public function __get($name) {
+    $passthru = array('mysqladmin_bin', 'mysqld_bin', 'mysqld_port');
+
+    if (in_array($name, $passthru)) {
+      return $this->container->getParameter($name);
+    }
+
+    $evals = array('mysqld_data_path', 'mysqld_tmp_path', 'mysqld_pid_path', 'mysqld_socket_path', 'mysqld_admin_user', 'mysqld_admin_password');
+    if (in_array($name, $evals)) {
+      return $this->container->get('expr')->getParameter($name);
+    }
   }
 
 }

@@ -14,21 +14,9 @@ class MySQLFactoryHelper {
    * @return DatabaseManagementInterface
    */
   public static function createRAMServer(ContainerInterface $container) {
-    /** @var \Amp\Util\Expr $expr */
-    $expr = $container->get('expr');
-
     $server = new MySQLRAMServer();
     $server->container = $container;
     $server->ram_disk = $container->get('ram_disk');
-    $server->mysqld_bin = $container->getParameter('mysqld_bin');
-    $server->mysqladmin_bin = $container->getParameter('mysqladmin_bin');
-    $server->mysqld_data_path = $expr->getParameter('mysqld_data_path');
-    $server->mysqld_tmp_path = $expr->getParameter('mysqld_tmp_path');
-    $server->mysqld_pid_path = $expr->getParameter('mysqld_pid_path');
-    $server->mysqld_socket_path = $expr->getParameter('mysqld_socket_path');
-    $server->mysqld_port = $expr->getParameter('mysqld_port');
-    $server->mysqld_admin_user = $expr->getParameter('mysqld_admin_user');
-    $server->mysqld_admin_password = $expr->getParameter('mysqld_admin_password');
 
     Path::mkdir_p_if_not_exists($container->get('ram_disk')->getPath());
 
