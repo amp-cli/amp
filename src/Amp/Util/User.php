@@ -46,14 +46,18 @@ class User {
    * @throws \Exception
    */
   public static function getCurrentUser() {
-    if (function_exists('posix_getpwuid')) {
+    if (strpos(PHP_OS, 'WIN') === FALSE) {
+      if (!function_exists('posix_getpwuid')) {
+        throw new \Exception('Failed to determine current user name. (Consider installing PHP module "posix".)');
+      }
       $uid = posix_geteuid();
       $pw = posix_getpwuid($uid);
       if ($pw && isset($pw['name'])) {
         return $pw['name'];
       }
     }
-    if (getenv('username')) {
+
+    if (strpos(PHP_OS, 'WIN') !== FALSE && getenv('username')) {
       // Windows
       return getenv('username');
     }
