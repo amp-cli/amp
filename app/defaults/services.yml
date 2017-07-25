@@ -137,7 +137,7 @@ services:
     class: Amp\Httpd\VhostTemplate
     calls:
       - [setTemplateEngine, ['@template.engine']]
-      - [setTemplate, ['%apache_tpl%']]
+      - [setDefaultTemplate, ['%apache_tpl%']]
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
@@ -149,7 +149,7 @@ services:
     class: Amp\Httpd\VhostTemplate
     calls:
       - [setTemplateEngine, ['@template.engine']]
-      - [setTemplate, ['%apache24_tpl%']]
+      - [setDefaultTemplate, ['%apache24_tpl%']]
       - [setDir, ['%apache_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
@@ -161,7 +161,7 @@ services:
     class: Amp\Httpd\VhostTemplate
     calls:
       - [setTemplateEngine, ['@template.engine']]
-      - [setTemplate, ['%nginx_tpl%']]
+      - [setDefaultTemplate, ['%nginx_tpl%']]
       - [setDir, ['%nginx_dir%']]
       - [setLogDir, ['%log_dir%']]
       - [setPerm, ['@perm']]
