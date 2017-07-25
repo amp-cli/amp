@@ -136,6 +136,7 @@ services:
   httpd.apache:
     class: Amp\Httpd\VhostTemplate
     calls:
+      - [setConfigKey, ['apache']]
       - [setTemplateEngine, ['@template.engine']]
       - [setDefaultTemplate, ['%apache_tpl%']]
       - [setDir, ['%apache_dir%']]
@@ -148,6 +149,7 @@ services:
   httpd.apache24:
     class: Amp\Httpd\VhostTemplate
     calls:
+      - [setConfigKey, ['apache24']]
       - [setTemplateEngine, ['@template.engine']]
       - [setDefaultTemplate, ['%apache24_tpl%']]
       - [setDir, ['%apache_dir%']]
@@ -160,6 +162,7 @@ services:
   httpd.nginx:
     class: Amp\Httpd\VhostTemplate
     calls:
+      - [setConfigKey, ['nginx']]
       - [setTemplateEngine, ['@template.engine']]
       - [setDefaultTemplate, ['%nginx_tpl%']]
       - [setDir, ['%nginx_dir%']]
