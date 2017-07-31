@@ -53,7 +53,7 @@ class InstanceRepository extends FileRepository {
 
       $this->dirty['httpd'][] = $instance;
       $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
-      $this->httpd->createVhost($instance->getRoot(), $instance->getUrl());
+      $this->httpd->createVhost($instance->getRoot(), $instance->getUrl(), $instance->getVisibility());
 
       $hostname = parse_url($instance->getUrl(), PHP_URL_HOST);
       $this->hosts->createHostname($hostname);
@@ -112,7 +112,7 @@ class InstanceRepository extends FileRepository {
    * @return Instance
    */
   public function decodeItem($array) {
-    return new Instance(@$array['name'], @$array['dsn'], @$array['root'], @$array['url']);
+    return new Instance(@$array['name'], @$array['dsn'], @$array['root'], @$array['url'], @$array['visibility']);
   }
 
   /**
@@ -125,6 +125,7 @@ class InstanceRepository extends FileRepository {
       'dsn' => $instance->getDsn(),
       'root' => $instance->getRoot(),
       'url' => $instance->getUrl(),
+      'visibility' => $instance->getVisibility(),
     );
   }
 

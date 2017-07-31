@@ -5,11 +5,18 @@
  * @var string $host - the hostname to listen for
  * @var int $port - the port to listen for
  * @var string $include_vhost_file - the local path to a related config file
+ * @var string $visibility - which interfaces the vhost is available on
  */
 ?>
 server {
   server_name <?php echo $host; ?>;
+  <?php if ($visibility === 'all'): ?>
   listen <?php echo $port ?>;
+  listen [::]:<?php echo $port ?>;
+  <?php else: ?>
+  listen 127.0.0.1:<?php echo $port ?>;
+  listen [::1]:<?php echo $port ?>;
+  <?php endif; ?>
   root <?php echo $root; ?>;
 
   <?php if (!empty($include_vhost_file)) { ?>
