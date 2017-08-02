@@ -72,7 +72,12 @@ class CreateCommand extends ContainerAwareCommand {
     }
 
     if ($input->getOption('url')) {
-      $instance->setUrl($input->getOption('url'));
+      $url = $input->getOption('url');
+      $urlScheme = parse_url($url, PHP_URL_SCHEME);
+      if(!$urlScheme){
+        $url = 'http://' . ltrim($url, '/');
+      }
+      $instance->setUrl($url);
     }
 
     $instances->create($instance, !$input->getOption('skip-url'), !$input->getOption('skip-db'), $input->getOption('perm'));
