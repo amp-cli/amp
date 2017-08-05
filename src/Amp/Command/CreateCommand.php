@@ -34,7 +34,7 @@ class CreateCommand extends ContainerAwareCommand {
       ->addOption('skip-db', NULL, InputOption::VALUE_NONE, 'Do not generate a DB')
       ->addOption('skip-url', NULL, InputOption::VALUE_NONE, 'Do not expose on the web')
       ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'Specify the preferred web URL for this service. (Omit to auto-generate)')
-      ->addOption('visibility', NULL, InputOption::VALUE_REQUIRED, 'Which interfaces the vhost should be available on ("local","all")', 'local')
+      ->addOption('visibility', NULL, InputOption::VALUE_REQUIRED, 'Which interfaces the vhost should be available on ("local","all")', '')
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/db container')
       ->addOption('perm', NULL, InputOption::VALUE_REQUIRED, 'Permission level of the DB User ("admin","super")', "admin")
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
