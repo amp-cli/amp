@@ -12,10 +12,8 @@ server {
   server_name <?php echo $host; ?>;
   <?php if ($visibility === 'all'): ?>
   listen <?php echo $port ?>;
-  listen [::]:<?php echo $port ?>;
   <?php else: ?>
   listen 127.0.0.1:<?php echo $port ?>;
-  listen [::1]:<?php echo $port ?>;
   <?php endif; ?>
   root <?php echo $root; ?>;
 

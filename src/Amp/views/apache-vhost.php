@@ -15,8 +15,6 @@
 Listen <?php echo $port ?>
 <?php else: ?>
 Listen 127.0.0.1:<?php echo $port ?>
-
-Listen [::1]:<?php echo $port ?>
 <?php endif; ?>
 
 NameVirtualHost *:<?php echo $port ?>
