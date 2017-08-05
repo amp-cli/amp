@@ -29,7 +29,7 @@ class Instance {
    */
   private $visibility;
 
-  public function __construct($name = NULL, $dsn = NULL, $root = NULL, $url = NULL, $visibility = 'local') {
+  public function __construct($name = NULL, $dsn = NULL, $root = NULL, $url = NULL, $visibility = NULL) {
     $this->setName($name);
     $this->setDsn($dsn);
     $this->setRoot($root);

@@ -72,6 +72,7 @@ services:
       - [setHosts, ['@hosts']]
       - [setHttpd, ['@httpd']]
       - [setLockWait, ['%instances_timeout%']]
+      - [setDefaultVisibility, ['%httpd_visibility%']]
 
   ## This database connection used for most environments
   # mysql.cli:

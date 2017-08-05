@@ -60,7 +60,7 @@ class VhostTemplate implements HttpdInterface {
    * @param string $url preferred public URL
    * @param string $visibility set to all to listen on all interfaces
    */
-  public function createVhost($root, $url, $visibility = 'local') {
+  public function createVhost($root, $url, $visibility) {
     $parameters = parse_url($url);
     if (!$parameters || !isset($parameters['host'])) {
       throw new \Exception("Failed to parse URL: " . $url);
