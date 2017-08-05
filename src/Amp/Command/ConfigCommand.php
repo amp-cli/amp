@@ -346,8 +346,10 @@ class ConfigCommand extends ContainerAwareCommand {
           return $dialog->select($output,
             "Enter httpd_visibility",
             array(
-              'local' => 'Virtual hosts should bind to localhost',
-              'all' => 'Virtual hosts should bind to all available IP addresses',
+              'local' => "Virtual hosts should bind to localhost.\n"
+                . '         Recommended to avoid exposing local development instances.',
+              'all' => "Virtual hosts should bind to all available IP addresses.\n"
+                . '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
             ),
             $default
           );
