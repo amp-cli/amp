@@ -7,6 +7,7 @@ parameters:
   # my_cnf_dir: '%app_dir%/my.cnf.d'
 
   httpd_type: 'apache'
+  httpd_visibility: 'all'
   httpd_shared_ports: '80'
   httpd_restart_wait: 1
   httpd_restart_command: ''
@@ -71,6 +72,7 @@ services:
       - [setHosts, ['@hosts']]
       - [setHttpd, ['@httpd']]
       - [setLockWait, ['%instances_timeout%']]
+      - [setDefaultVisibility, ['%httpd_visibility%']]
 
   ## This database connection used for most environments
   # mysql.cli:

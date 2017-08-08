@@ -9,8 +9,9 @@ class None implements HttpdInterface {
   /**
    * @param string $root local path to document root
    * @param string $url preferred public URL
+   * @param string $visibility set to all to listen on all interfaces
    */
-  public function createVhost($root, $url) {
+  public function createVhost($root, $url, $visibility) {
     file_put_contents('php://stderr', "\n**** Please create the vhost for $url in $root ****\n\n", FILE_APPEND);
     $this->dirty = 1;
   }

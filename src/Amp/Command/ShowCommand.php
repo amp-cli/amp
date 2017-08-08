@@ -31,6 +31,7 @@ class ShowCommand extends ContainerAwareCommand {
         $rows[] = array('name', $instance->getName());
         $rows[] = array('dsn', $instance->getDsn());
         $rows[] = array('url', $instance->getUrl());
+        $rows[] = array('visibility', $instance->getVisibility());
         $rows[] = array('', '');
       }
 
@@ -48,12 +49,13 @@ class ShowCommand extends ContainerAwareCommand {
           $instance->getName(),
           $instance->getDsn() ? 'y' : '',
           $instance->getUrl() ? 'y' : '',
+          $instance->getVisibility(),
         );
       }
 
       /** @var $table \Symfony\Component\Console\Helper\TableHelper */
       $table = $this->getApplication()->getHelperSet()->get('table');
-      $table->setHeaders(array('Root', 'Name', 'DB', 'Web'));
+      $table->setHeaders(array('Root', 'Name', 'DB', 'Web', 'Visibility'));
       $table->setRows($rows);
       $table->render($output);
       $output->writeln('For more detailed info, use "amp show -v" or "amp export [--root=X] [---name=X]');
