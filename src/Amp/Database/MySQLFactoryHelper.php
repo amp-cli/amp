@@ -33,6 +33,14 @@ class MySQLFactoryHelper {
 
     $filesets = array();
 
+    if (preg_match(';^/nix/;', $mysqldBin)) {
+      $dir = dirname(dirname($mysqldBin));
+      $filesets['debian'] = array(
+        $dir . '/share/mysql/mysql_system_tables.sql',
+        $dir . '/share/mysql/mysql_system_tables_data.sql',
+      );
+    }
+
     if (preg_match(';MAMP;', $mysqldBin)) {
       $filesets['mamp'] = array(
         '/Applications/MAMP/Library/share/mysql_system_tables.sql',
