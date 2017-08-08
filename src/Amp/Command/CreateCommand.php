@@ -95,7 +95,7 @@ Or by creating a file in the web-root (or its parent):
     if ($input->getOption('url')) {
       $url = $input->getOption('url');
       $urlScheme = parse_url($url, PHP_URL_SCHEME);
-      if(!$urlScheme){
+      if (!$urlScheme) {
         $url = 'http://' . ltrim($url, '/');
       }
       $instance->setUrl($url);
