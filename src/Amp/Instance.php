@@ -24,11 +24,17 @@ class Instance {
    */
   private $url;
 
-  public function __construct($name = NULL, $dsn = NULL, $root = NULL, $url = NULL) {
+  /**
+   * @var string which interfaces vhost should be available on (local or all)
+   */
+  private $visibility;
+
+  public function __construct($name = NULL, $dsn = NULL, $root = NULL, $url = NULL, $visibility = NULL) {
     $this->setName($name);
     $this->setDsn($dsn);
     $this->setRoot($root);
     $this->setUrl($url);
+    $this->setVisibility($visibility);
   }
 
   /**
@@ -107,6 +113,20 @@ class Instance {
    */
   public function getUrl() {
     return $this->url;
+  }
+
+  /**
+   * @param string $visibility
+   */
+  public function setVisibility($visibility) {
+    $this->visibility = $visibility;
+  }
+
+  /**
+   * @return string
+   */
+  public function getVisibility() {
+    return $this->visibility;
   }
 
   public function getId() {

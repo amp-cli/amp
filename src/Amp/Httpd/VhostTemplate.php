@@ -58,8 +58,9 @@ class VhostTemplate implements HttpdInterface {
   /**
    * @param string $root local path to document root
    * @param string $url preferred public URL
+   * @param string $visibility set to all to listen on all interfaces
    */
-  public function createVhost($root, $url) {
+  public function createVhost($root, $url, $visibility) {
     $parameters = parse_url($url);
     if (!$parameters || !isset($parameters['host'])) {
       throw new \Exception("Failed to parse URL: " . $url);
@@ -72,6 +73,7 @@ class VhostTemplate implements HttpdInterface {
     $parameters['url'] = $url;
     $parameters['include_vhost_file'] = '';
     $parameters['log_dir'] = $this->getLogDir();
+    $parameters['visibility'] = $visibility;
     $content = $this->getTemplateEngine()->render($this->getTemplate(), $parameters);
     $this->fs->dumpFile($this->createFilePath($root, $url), $content);
 

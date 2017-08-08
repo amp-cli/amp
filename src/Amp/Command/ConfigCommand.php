@@ -117,6 +117,7 @@ class ConfigCommand extends ContainerAwareCommand {
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure HTTPD ]=============================</info>");
     $this->askHttpdType()->execute($input, $output, $dialog);
+    $this->askHttpdVisibility()->execute($input, $output, $dialog);
 
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
@@ -331,6 +332,24 @@ class ConfigCommand extends ContainerAwareCommand {
               'apache24' => 'Apache 2.4 or later',
               'nginx' => 'nginx (WIP)',
               'none' => 'None (Note: You must configure any vhosts manually.)',
+            ),
+            $default
+          );
+        }
+      );
+  }
+
+  protected function askHttpdVisibility() {
+    return $this->createPrompt('httpd_visibility')
+      ->setAsk(
+        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+          return $dialog->select($output,
+            "Enter httpd_visibility",
+            array(
+              'local' => "Virtual hosts should bind to localhost.\n"
+                . '         Recommended to avoid exposing local development instances.',
+              'all' => "Virtual hosts should bind to all available IP addresses.\n"
+                . '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
             ),
             $default
           );

@@ -21,6 +21,12 @@ class InstanceRepository extends FileRepository {
   private $httpd;
 
   /**
+   * @var string
+   *   ex: 'local', 'all'.
+   */
+  private $defaultVisibility;
+
+  /**
    * @var array
    *   Ex: Array('httpd' => array(Instance)).
    */
@@ -53,7 +59,8 @@ class InstanceRepository extends FileRepository {
 
       $this->dirty['httpd'][] = $instance;
       $this->httpd->dropVhost($instance->getRoot(), $instance->getUrl());
-      $this->httpd->createVhost($instance->getRoot(), $instance->getUrl());
+      $visibility = $instance->getVisibility() ? $instance->getVisibility() : $this->getDefaultVisibility();
+      $this->httpd->createVhost($instance->getRoot(), $instance->getUrl(), $visibility);
 
       $hostname = parse_url($instance->getUrl(), PHP_URL_HOST);
       $this->hosts->createHostname($hostname);
@@ -112,7 +119,7 @@ class InstanceRepository extends FileRepository {
    * @return Instance
    */
   public function decodeItem($array) {
-    return new Instance(@$array['name'], @$array['dsn'], @$array['root'], @$array['url']);
+    return new Instance(@$array['name'], @$array['dsn'], @$array['root'], @$array['url'], @$array['visibility']);
   }
 
   /**
@@ -125,6 +132,7 @@ class InstanceRepository extends FileRepository {
       'dsn' => $instance->getDsn(),
       'root' => $instance->getRoot(),
       'url' => $instance->getUrl(),
+      'visibility' => $instance->getVisibility(),
     );
   }
 
@@ -170,6 +178,20 @@ class InstanceRepository extends FileRepository {
    */
   public function getHttpd() {
     return $this->httpd;
+  }
+
+  /**
+   * @return string
+   */
+  public function getDefaultVisibility() {
+    return $this->defaultVisibility;
+  }
+
+  /**
+   * @param string $defaultVisibility
+   */
+  public function setDefaultVisibility($defaultVisibility) {
+    $this->defaultVisibility = $defaultVisibility;
   }
 
 }
