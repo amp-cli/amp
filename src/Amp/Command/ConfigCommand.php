@@ -45,7 +45,7 @@ class ConfigCommand extends ContainerAwareCommand {
     );
 
     $output->writeln("");
-    $output->writeln("<info>=============================[ Configure Database ]=============================</info>");
+    $output->writeln("<info>===========================[ Configure Database ]===========================</info>");
     $output->writeln("");
     $output->writeln("<info>"
       . "Amp creates a unique database user for each generated instance.\n"
@@ -68,7 +68,7 @@ class ConfigCommand extends ContainerAwareCommand {
     }
 
     $output->writeln("");
-    $output->writeln("<info>=======================[ Configure File Permissions ]========================</info>");
+    $output->writeln("<info>=======================[ Configure File Permissions ]=======================</info>");
     $output->writeln("");
     $currentUser = \Amp\Util\User::getCurrentUser();
     $output->writeln("<info>"
@@ -98,7 +98,8 @@ class ConfigCommand extends ContainerAwareCommand {
     }
 
     $output->writeln("");
-    $output->writeln("<info>=============================[ Configure Hostnames ]=============================</info>");
+    $output->writeln("<info>==========================[ Configure Hostnames ]===========================</info>");
+    $output->writeln("");
     $output->writeln("<info>"
       . "When defining a new vhost (e.g. \"http://example-1.localhost\"), the hostname must\n"
       . "be mapped to an IP address.\n"
@@ -115,7 +116,7 @@ class ConfigCommand extends ContainerAwareCommand {
     )->execute($input, $output, $dialog);
 
     $output->writeln("");
-    $output->writeln("<info>=============================[ Configure HTTPD ]=============================</info>");
+    $output->writeln("<info>=============================[ Configure HTTPD ]============================</info>");
     $this->askHttpdType()->execute($input, $output, $dialog);
     $this->askHttpdVisibility()->execute($input, $output, $dialog);
 
@@ -137,6 +138,13 @@ class ConfigCommand extends ContainerAwareCommand {
 
     }
 
+    $output->writeln("");
+    $output->writeln("<info>----------------------------------------------------------------------------</info>");
+    $output->writeln("");
+    $output->writeln("<info>For new virtual-hosts, amp will create vhost files, and the webserver\n" .
+      "configuration will need to include those files.</info>");
+    $output->writeln("");
+
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
       case 'apache24':
@@ -144,49 +152,57 @@ class ConfigCommand extends ContainerAwareCommand {
           ? 'IncludeOptional'
           : 'Include';
         $configPath = $this->getContainer()->getParameter('apache_dir');
-        $output->writeln("");
-        $output->writeln("<comment>Note</comment>: Please add this line to the httpd.conf or apache2.conf:");
-        $output->writeln("");
-        $output->writeln("  <comment>$include {$configPath}/*.conf</comment>");
         $configFiles = $this->findApacheConfigFiles();
         if ($configFiles) {
-          $output->writeln("");
-          $output->writeln("The location of httpd.conf varies, but it may be:");
+          $output->writeln("<info>The location of the webserver configuration varies. Based on\n" .
+            "examining your system, it is probably ONE of these files:</info>");
           $output->writeln("");
           foreach ($configFiles as $configFile) {
             $output->writeln("  <comment>$configFile</comment>");
           }
         }
+        else {
+          $output->writeln("<info>Find the Apache configuration file (eg <comment>apache.conf</comment> or <comment>httpd.conf</comment>).</info>");
+        }
+
         $output->writeln("");
-        $output->writeln("You will need to restart Apache after adding the directive -- and again");
-        $output->writeln("after creating any new sites.");
+        $output->writeln("<info>You will need to include this line to the Apache configuration file:</info>");
+        $output->writeln("");
+        $output->writeln("  <comment>$include {$configPath}/*.conf</comment>");
+        $output->writeln("");
         break;
 
       case 'nginx':
         $configPath = $this->getContainer()->getParameter('nginx_dir');
-        $output->writeln("");
-        $output->writeln("<comment>Note</comment>: Please ensure that nginx.conf includes this directive:");
-        $output->writeln("");
-        $output->writeln("  <comment>include {$configPath}/*.conf;</comment>");
         $configFiles = $this->findNginxConfigFiles();
         if ($configFiles) {
-          $output->writeln("");
-          $output->writeln("The location of nginx.conf varies, but it may be:");
+          $output->writeln("<info>The location of the HTTP configuration could not be determined automatically.</info>");
           $output->writeln("");
           foreach ($configFiles as $configFile) {
             $output->writeln("  <comment>$configFile</comment>");
           }
         }
+        else {
+          $output->writeln("<info>Find the nginx configuration file (eg <comment>nginx.conf</comment>).</info>");
+          $output->writeln("");
+        }
+        $output->writeln("<info>You will need to include this line to the nginx configuration file.</info>");
+        $output->writeln("");
+        $output->writeln("  <comment>include {$configPath}/*.conf;</comment>");
         $output->writeln("");
         $output->writeln("You will need to restart nginx after adding the directive -- and again");
         $output->writeln("after creating any new sites.");
+        $output->writeln("");
         break;
 
       default:
     }
 
+    $output->writeln("<info>Press <comment>ENTER</comment> once you have added or verified the line.</info>");
     $output->writeln("");
-    $output->writeln("<info>===================================[ Test ]==================================</info>");
+    $dialog->askHiddenResponse($output, '', FALSE);
+
+    $output->writeln("<info>==================================[ Test ]==================================</info>");
     $output->writeln("");
     $output->writeln("To ensure that amp is correctly configured, you may create a test site by running:");
     $output->writeln("");
@@ -241,8 +257,8 @@ class ConfigCommand extends ContainerAwareCommand {
           $options = array(
             'none' => "\"none\": Do not set any special permissions for the web user",
             'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)\n"
-              . "         In some distros+filesystems, this requires extra configuration.\n"
-              . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
+            . "         In some distros+filesystems, this requires extra configuration.\n"
+            . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
             'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
             'custom' => '"custom": Set permissions with a custom command',
             'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
@@ -347,9 +363,9 @@ class ConfigCommand extends ContainerAwareCommand {
             "Enter httpd_visibility",
             array(
               'local' => "Virtual hosts should bind to localhost.\n"
-                . '         Recommended to avoid exposing local development instances.',
+              . '         Recommended to avoid exposing local development instances.',
               'all' => "Virtual hosts should bind to all available IP addresses.\n"
-                . '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
+              . '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
             ),
             $default
           );
@@ -374,7 +390,6 @@ class ConfigCommand extends ContainerAwareCommand {
         }
       );
   }
-
 
   /**
    * @param string $dsn
