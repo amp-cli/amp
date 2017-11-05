@@ -38,7 +38,27 @@ class CreateCommand extends ContainerAwareCommand {
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any pre-existing httpd/db container')
       ->addOption('perm', NULL, InputOption::VALUE_REQUIRED, 'Permission level of the DB User ("admin","super")', "admin")
       ->addOption('prefix', NULL, InputOption::VALUE_REQUIRED, 'Prefix to place in front of each outputted variable', 'AMP_')
-      ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Output environment variables to file instead of stdout');
+      ->addOption('output-file', 'o', InputOption::VALUE_REQUIRED, 'Output environment variables to file instead of stdout')
+      ->setHelp('
+Create a SQL database and HTTP virtual host.
+
+The database credentials and HTTP configuration are determined by
+the current configuration. For more, see "amp config".
+
+Note: Some applications may require custom HTTP configurations,
+especially if deployed on nginx. You can override the default
+HTTP template by setting an environment variable:
+
+ * NGINX_VHOST_TPL=/path/to/my-template.php
+ * APACHE_VHOST_TPL=/path/to/my-template.php
+ * APACHE24_VHOST_TPL=/path/to/my-template.php
+
+Or by creating a file in the web-root (or its parent):
+
+ * .amp/nginx-vhost.php
+ * .amp/apache-vhost.php
+ * .amp/apache24-vhost.php
+');
   }
 
   protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -75,7 +95,7 @@ class CreateCommand extends ContainerAwareCommand {
     if ($input->getOption('url')) {
       $url = $input->getOption('url');
       $urlScheme = parse_url($url, PHP_URL_SCHEME);
-      if(!$urlScheme){
+      if (!$urlScheme) {
         $url = 'http://' . ltrim($url, '/');
       }
       $instance->setUrl($url);

@@ -28,12 +28,19 @@ class VhostTemplate implements HttpdInterface {
   /**
    * @var string, name of the template file
    */
-  private $template;
+  private $defaultTemplate;
 
   /**
    * @var EngineInterface
    */
   private $templateEngine;
+
+  /**
+   * @var string, a symbolic name for the template to lookup
+   *
+   * Ex: `nginx`, `apache24`.
+   */
+  private $configKey;
 
   /**
    * @var string
@@ -74,7 +81,7 @@ class VhostTemplate implements HttpdInterface {
     $parameters['include_vhost_file'] = '';
     $parameters['log_dir'] = $this->getLogDir();
     $parameters['visibility'] = $visibility;
-    $content = $this->getTemplateEngine()->render($this->getTemplate(), $parameters);
+    $content = $this->getTemplateEngine()->render($this->pickTemplate($root, $url), $parameters);
     $this->fs->dumpFile($this->createFilePath($root, $url), $content);
 
     $this->setupLogDir();
@@ -91,6 +98,38 @@ class VhostTemplate implements HttpdInterface {
    */
   public function dropVhost($root, $url) {
     $this->fs->remove($this->createFilePath($root, $url));
+  }
+
+  /**
+   * Pick the most salient template for this build.
+   *
+   * For example, suppose we're searching on key `nginx`:
+   *  - If the env has variable NGINX_VHOST_TPL, use that.
+   *  - If the web-root or any parent has ".amp/nginx-vhost.php", use that.
+   *  - Otherwise, use the defaultTemplate.
+   *
+   * @param string $root local path to document root
+   * @param string $url preferred public URL
+   * @return string
+   */
+  public function pickTemplate($root, $url) {
+    $configKey = $this->getConfigKey();
+    $envVar = strtoupper($configKey) . '_VHOST_TPL';
+    if (getenv($envVar)) {
+      return getenv($envVar);
+    }
+
+    do {
+      $dir = !isset($dir) ? $root : dirname($dir);
+      $dotFile = $dir . DIRECTORY_SEPARATOR . '.amp'
+        . DIRECTORY_SEPARATOR . $configKey . '-vhost.php';
+      echo "check [$dotFile]\n";
+      if (file_exists($dotFile)) {
+        return $dotFile;
+      }
+    } while ($dir && $dir !== dirname($dir));
+
+    return $this->getDefaultTemplate();
   }
 
   public function restart() {
@@ -117,6 +156,20 @@ class VhostTemplate implements HttpdInterface {
       $parameters['port'] = 80;
     }
     return $this->getDir() . DIRECTORY_SEPARATOR . $parameters['host'] . '_' . $parameters['port'] . '.conf';
+  }
+
+  /**
+   * @return string
+   */
+  public function getConfigKey() {
+    return $this->configKey;
+  }
+
+  /**
+   * @param string $configKey
+   */
+  public function setConfigKey($configKey) {
+    $this->configKey = $configKey;
   }
 
   /**
@@ -214,19 +267,18 @@ class VhostTemplate implements HttpdInterface {
     $this->httpd_shared_ports = $httpd_shared_ports;
   }
 
-
   /**
    * @param string $template
    */
-  public function setTemplate($template) {
-    $this->template = $template;
+  public function setDefaultTemplate($template) {
+    $this->defaultTemplate = $template;
   }
 
   /**
    * @return string
    */
-  public function getTemplate() {
-    return $this->template;
+  public function getDefaultTemplate() {
+    return $this->defaultTemplate;
   }
 
   /**
