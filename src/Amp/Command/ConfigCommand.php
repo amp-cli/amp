@@ -105,6 +105,7 @@ class ConfigCommand extends ContainerAwareCommand {
       . "be mapped to an IP address.\n"
       . "\n"
       . "amp can attempt to register hostnames automatically in the /etc/hosts file.\n"
+      . "\n"
       . "However, if you use wildcard DNS, dnsmasq, or manually manage hostnames, then\n"
       . "this feature can be disabled.\n"
       . "</info>"
@@ -166,7 +167,7 @@ class ConfigCommand extends ContainerAwareCommand {
         }
 
         $output->writeln("");
-        $output->writeln("<info>You will need to include this line to the Apache configuration file:</info>");
+        $output->writeln("<info>You will need to include this line in the Apache configuration file:</info>");
         $output->writeln("");
         $output->writeln("  <comment>$include {$configPath}/*.conf</comment>");
         $output->writeln("");
@@ -186,7 +187,7 @@ class ConfigCommand extends ContainerAwareCommand {
           $output->writeln("<info>Find the nginx configuration file (eg <comment>nginx.conf</comment>).</info>");
           $output->writeln("");
         }
-        $output->writeln("<info>You will need to include this line to the nginx configuration file.</info>");
+        $output->writeln("<info>You will need to include this line in the nginx configuration file:</info>");
         $output->writeln("");
         $output->writeln("  <comment>include {$configPath}/*.conf;</comment>");
         $output->writeln("");
