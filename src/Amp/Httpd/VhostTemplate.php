@@ -123,7 +123,6 @@ class VhostTemplate implements HttpdInterface {
       $dir = !isset($dir) ? $root : dirname($dir);
       $dotFile = $dir . DIRECTORY_SEPARATOR . '.amp'
         . DIRECTORY_SEPARATOR . $configKey . '-vhost.php';
-      echo "check [$dotFile]\n";
       if (file_exists($dotFile)) {
         return $dotFile;
       }
