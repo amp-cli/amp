@@ -20,9 +20,12 @@ class MySQLFactoryHelper {
 
     Path::mkdir_p_if_not_exists($container->get('ram_disk')->getPath());
 
+    $mysqldAbsCmd = sprintf("which %s", escapeshellarg($container->getParameter('mysqld_bin')));
+    $mysqldAbs = `$mysqldAbsCmd`;
+
     $server->buildAdminDatasource();
     $server->setDefaultDataFiles(self::findDataFiles($container->getParameter('mysqld_bin')));
-    if (file_exists("/etc/apparmor.d")) {
+    if (file_exists("/etc/apparmor.d") && !preg_match(';^/nix/;', $mysqldAbs)) {
       $server->setAppArmor($container->get('app_armor.mysql_ram_disk'));
     }
     return $server;
