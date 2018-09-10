@@ -180,6 +180,8 @@ class Application extends \Symfony\Component\Console\Application {
     $commands[] = new \Amp\Command\SqlDumpCommand($this, NULL);
     $commands[] = new \Amp\Command\DestroyCommand($this, NULL);
     $commands[] = new \Amp\Command\CleanupCommand($this, NULL);
+    $commands[] = new \Amp\Command\MysqlStartCommand($this, NULL);
+    $commands[] = new \Amp\Command\MysqlStopCommand($this, NULL);
     return $commands;
   }
 
