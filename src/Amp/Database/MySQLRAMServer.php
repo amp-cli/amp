@@ -150,7 +150,7 @@ class MySQLRAMServer extends MySQL {
   }
 
   public function getMySQLDBaseCommand() {
-    return "{$this->mysqld_bin} --no-defaults --tmpdir={$this->mysqld_tmp_path} --datadir={$this->mysqld_data_path} --port={$this->mysqld_port} --socket={$this->mysqld_socket_path} --pid-file={$this->mysqld_pid_path} --innodb-file-per-table";
+    return "{$this->mysqld_bin} --no-defaults --tmpdir={$this->mysqld_tmp_path} --datadir={$this->mysqld_data_path} --port={$this->mysqld_port} --socket={$this->mysqld_socket_path} --pid-file={$this->mysqld_pid_path} --innodb-file-per-table --innodb-file-format=Barracuda";
   }
 
   protected function getVersion() {
