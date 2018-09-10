@@ -58,6 +58,7 @@ class ConfigRepository {
       'nginx_tpl' => 'Nginx configuration template',
       'db_type' => 'How to connect to the database as admin [mysql_dsn,mysql_mycnf,mysql_ram_disk,mysql_osx_ram_disk,pg_dsn]',
       'mysql_dsn' => 'Administrative credentials for MySQL',
+      'mysqld_port' => '(For mysql_ram_disk) Port to listen to',
       'pg_dsn' => 'Administrative credentials for PostgreSQL',
       'perm_type' => "How to set permissions on data directories [none,custom,linuxAcl,osxAcl,worldWritable]. See https://github.com/totten/amp/blob/master/doc/perm.md",
       'perm_user' => 'Name of the web user [for linuxAcl,osxAcl]',
@@ -93,6 +94,9 @@ class ConfigRepository {
         else {
           return $dsns;
         }
+      },
+      'mysqld_port' => function () {
+        return array('3307');
       },
       'pg_dsn' => function () {
         $checker = new \Amp\Util\PortChecker();
