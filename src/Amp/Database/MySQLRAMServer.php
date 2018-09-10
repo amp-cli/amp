@@ -51,7 +51,7 @@ class MySQLRAMServer extends MySQL {
         sleep(1);
       }
       if ($i == 9) {
-        throw new \Exception("There was a problem starting the MySQLRAM server. We expect to see a socket file at {$this->mysqld_socket_path} but it hasn't appeared after 10 waiting seconds.");
+        throw new \Exception("There was a problem starting the MySQL RAM server. We expect to see a socket file at {$this->mysqld_socket_path} but it hasn't appeared after 10 waiting seconds.");
       }
 
       // Probably new DB files
