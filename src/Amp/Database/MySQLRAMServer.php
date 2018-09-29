@@ -160,6 +160,15 @@ class MySQLRAMServer extends MySQL {
     $parts[] = "--innodb-file-per-table";
     $parts[] = "--innodb-file-format=Barracuda";
 
+    $uname = function_exists('posix_uname') ? posix_uname() : NULL;
+    if ($uname && $uname['sysname'] === 'Darwin') {
+      // Mitigation for "File Descriptor n exceedeed FD_SETSIZE" when using several large builds
+      // https://gist.github.com/bbrown/73d6975ac7324141dd934d325f7cd358
+      // https://bugs.mysql.com/bug.php?id=79125
+      $parts[] = "--table-open-cache=250";
+      $parts[] = "--max-allowed-packet=256M";
+    }
+
     return "{$this->mysqld_bin} --no-defaults " . implode(' ', $parts);
   }
 
