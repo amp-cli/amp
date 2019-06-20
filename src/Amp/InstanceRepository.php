@@ -6,6 +6,14 @@ use Symfony\Component\Yaml\Yaml;
 class InstanceRepository extends FileRepository {
 
   /**
+   * @var string
+   * A list of directory names that frequently appear at the final part of
+   * a web-root. These are meaningless in terms of providing hints for
+   * DB naming.
+   */
+  private $dbHintBlacklist = 'web|www|htdocs';
+
+  /**
    * @var DatabaseManagementInterface
    */
   private $db;
@@ -45,7 +53,7 @@ class InstanceRepository extends FileRepository {
   public function create($instance, $useWeb = TRUE, $useDB = TRUE, $perm = DatabaseManagementInterface::PERM_ADMIN) {
     if ($useDB) {
       if (!$instance->getDatasource()) {
-        $instance->setDatasource($this->db->createDatasource(basename($instance->getRoot()) . $instance->getName()));
+        $instance->setDatasource($this->db->createDatasource($this->createDbHint($instance)));
       }
 
       $this->db->dropDatabase($instance->getDatasource());
@@ -192,6 +200,16 @@ class InstanceRepository extends FileRepository {
    */
   public function setDefaultVisibility($defaultVisibility) {
     $this->defaultVisibility = $defaultVisibility;
+  }
+
+  /**
+   * @param Instance $instance
+   * @return string
+   */
+  private function createDbHint($instance) {
+    $ds = '[/' . DIRECTORY_SEPARATOR . ']';
+    $root = preg_replace(";($ds)({$this->dbHintBlacklist})($ds?)\$;", '', $instance->getRoot());
+    return basename($root) . $instance->getName();
   }
 
 }
