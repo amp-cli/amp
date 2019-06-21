@@ -83,6 +83,7 @@ class MySQLRAMServer extends MySQL {
     }
     $pass = \Amp\Util\StringUtil::createRandom(16);
     $user = \Amp\Util\StringUtil::createHintedRandom($hint, 16, 5, 'abcdefghijklmnopqrstuvwxyz0123456789');
+    $db = \Amp\Util\StringUtil::createHintedRandom($hint, 32, 5, 'abcdefghijklmnopqrstuvwxyz0123456789');
 
     $datasource = new Datasource();
     $datasource->setDriver($this->adminDatasource->getDriver());
@@ -91,7 +92,7 @@ class MySQLRAMServer extends MySQL {
     $datasource->setSocketPath($this->mysqld_socket_path);
     $datasource->setUsername($user);
     $datasource->setPassword($pass);
-    $datasource->setDatabase($user);
+    $datasource->setDatabase($db);
 
     return $datasource;
   }
