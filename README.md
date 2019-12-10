@@ -106,6 +106,10 @@ echo " * Username: admin"
 echo " * Password: default"
 ```
 
+## Backlog
+
+See [doc/backlog.md](doc/backlog.md)
+
 ## FAQ ##
 
 Q: Is `amp` stable? Should I rely on it right now?
@@ -190,21 +194,3 @@ Parameters and services may be configured in amp's source-tree
 (`~/.amp/services.yml`). Parameters entered through the CLI
 (`amp config`, `amp config:set`, etc) are stored in the local
 home directory (`~/.amp/services.yml`).
-
-## Planned Features ##
-
- * Add HttpdInterface for nginx
- * Add HttpdInterface for PHP's built-in web-server
- * Callback support (eg `amp create` calls a script bundled with my-application)
- * Load per-application config values (my-application/.amp.yml); eg:
-   * Specify any callback(s)
-   * Specify the Apache vhost template
-   * Specify the nginx vhost template
-   * Specify the PHP router script (for php 5.4's built-in web-server)
-
-## Wishlist / Patch-Welcomes ##
-
- * Add DatabaseManagementInterface based on MySQL CLI
- * For `amp export` and `amp create`, add option `--format=shell,json,yml`
- * Add more heuristics/settings to work well in common dev environments
-   (Debian/Ubuntu, MAMP, XAMPP, MacPorts, etc)
