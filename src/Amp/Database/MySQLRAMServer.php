@@ -158,8 +158,6 @@ class MySQLRAMServer extends MySQL {
     $parts[] = "--port=" . escapeshellarg($this->mysqld_port);
     $parts[] = "--socket=" . escapeshellarg($this->mysqld_socket_path);
     $parts[] = "--pid-file=" . escapeshellarg($this->mysqld_pid_path);
-    $parts[] = "--innodb-file-per-table";
-    $parts[] = "--innodb-file-format=Barracuda";
 
     $uname = function_exists('posix_uname') ? posix_uname() : NULL;
     if ($uname && $uname['sysname'] === 'Darwin') {
@@ -223,6 +221,14 @@ class MySQLRAMServer extends MySQL {
     $options .= ' --default-storage-engine=innodb';
     $options .= ' --max_allowed_packet=8M';
     $options .= ' --net_buffer_length=16K';
+
+    if (version_compare($mysqldVersion, '8.0', '<')) {
+      $options .= ' --innodb-file-format=Barracuda';
+      $options .= ' --innodb-file-per-table';
+    }
+    else {
+      $options .= ' --default-authentication-plugin=mysql_native_password';
+    }
 
     return "{$this->getMySQLDBaseCommand()} $options $pipe";
   }
