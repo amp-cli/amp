@@ -84,21 +84,35 @@ class MySQL implements DatabaseManagementInterface {
     $versionParts = explode('-', $version);
     $createUserStatement = "CREATE USER";
     $authenticationStatment = "IDENTIFIED BY";
-    if (version_compare($versionParts[0], '5.6.0', '>=')) {
+    $alterUser = version_compare($versionParts[0], '5.6.0', '>=') ? TRUE : FALSE;
+    if ($alterUser) {
       $createUserStatement .= " IF NOT EXISTS";
       $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
+      $dbh->exec("$createUserStatement '$user'@'localhost'");
+      $dbh->exec("ALTER USER '$user'@'localhost' $authenticationStatment '$pass'");
+      $dbh->exec("$createUserStatement '$user'@'%'");
+      $dbh->exec("ALTER USER '$user'@'%' $authenticationStatment '$pass'");
     }
+    else {
+      $hosts = ['localhost', '%'];
+      foreach ($hosts as $host) {
+        $users = $dbh->query("SELECT User from mysql.user WHERE User = '$user' AND Host = '$host'")->fetchAll();
+        if (!empty($users)) {
+          $dbh->exec("SET PASSWORD FOR '$user'@'$host' = PASSWORD('$pass')");
+        }
+        else {
+          $dbh->exec("$createUserStatement '$user'@'$host' $authenticationStatment '$pass'");
+        }
+      }
+    }
+
     switch ($perm) {
       case DatabaseManagementInterface::PERM_SUPER:
-        $dbh->exec("$createUserStatement '$user'@'localhost' $authenticationStatment '$pass'");
-        $dbh->exec("$createUserStatement '$user'@'%' $authenticationStatment '$pass'");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'localhost' WITH GRANT OPTION");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'%' WITH GRANT OPTION");
         break;
 
       case DatabaseManagementInterface::PERM_ADMIN:
-        $dbh->exec("$createUserStatement '$user'@'localhost' $authenticationStatment '$pass'");
-        $dbh->exec("$createUserStatement '$user'@'%' $authenticationStatment '$pass'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'localhost'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'%'");
         break;
