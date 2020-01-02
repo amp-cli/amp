@@ -80,17 +80,23 @@ class MySQL implements DatabaseManagementInterface {
 
     $dbh = $this->adminDatasource->createPDO();
     $dbh->exec("CREATE DATABASE `$db`");
+    $version = $dbh->query("SELECT version()")->fetchAll()[0]['version()'];
+    $versionParts = explode('-', $version);
+    $createUserStatement = "CREATE USER";
+    if (version_compare($versionParts[0], '5.5', '>')) {
+      $createUserStatement .= " IF NOT EXISTS";
+    }
     switch ($perm) {
       case DatabaseManagementInterface::PERM_SUPER:
-        $dbh->exec("CREATE USER IF NOT EXISTS '$user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$pass'");
-        $dbh->exec("CREATE USER IF NOT EXISTS '$user'@'%' IDENTIFIED WITH mysql_native_password BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'%' IDENTIFIED WITH mysql_native_password BY '$pass'");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'localhost' WITH GRANT OPTION");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'%' WITH GRANT OPTION");
         break;
 
       case DatabaseManagementInterface::PERM_ADMIN:
-        $dbh->exec("CREATE USER IF NOT EXISTS '$user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$pass'");
-        $dbh->exec("CREATE USER IF NOT EXISTS '$user'@'%' IDENTIFIED WITH mysql_native_password BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'%' IDENTIFIED WITH mysql_native_password BY '$pass'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'localhost'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'%'");
         break;
