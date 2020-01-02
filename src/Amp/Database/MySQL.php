@@ -83,20 +83,22 @@ class MySQL implements DatabaseManagementInterface {
     $version = $dbh->query("SELECT version()")->fetchAll()[0]['version()'];
     $versionParts = explode('-', $version);
     $createUserStatement = "CREATE USER";
-    if (version_compare($versionParts[0], '5.5', '>')) {
+    $authenticationStatment = "IDENTIFIED BY";
+    if (version_compare($versionParts[0], '5.6.0', '>=')) {
       $createUserStatement .= " IF NOT EXISTS";
+      $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
     }
     switch ($perm) {
       case DatabaseManagementInterface::PERM_SUPER:
-        $dbh->exec("$createUserStatement '$user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$pass'");
-        $dbh->exec("$createUserStatement '$user'@'%' IDENTIFIED WITH mysql_native_password BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'localhost' $authenticationStatment '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'%' $authenticationStatment '$pass'");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'localhost' WITH GRANT OPTION");
         $dbh->exec("GRANT ALL ON *.* to '$user'@'%' WITH GRANT OPTION");
         break;
 
       case DatabaseManagementInterface::PERM_ADMIN:
-        $dbh->exec("$createUserStatement '$user'@'localhost' IDENTIFIED WITH mysql_native_password BY '$pass'");
-        $dbh->exec("$createUserStatement '$user'@'%' IDENTIFIED WITH mysql_native_password BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'localhost' $authenticationStatment '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'%' $authenticationStatment '$pass'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'localhost'");
         $dbh->exec("GRANT ALL ON `$db`.* to '$user'@'%'");
         break;
