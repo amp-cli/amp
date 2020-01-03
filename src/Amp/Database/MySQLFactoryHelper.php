@@ -31,10 +31,26 @@ class MySQLFactoryHelper {
     return $server;
   }
 
+  protected static function getVersion($mysqldBin) {
+    $output = `{$mysqldBin}  --version`;
+    if (preg_match(';mysqld(.bin)?\s+Ver ([0-9][0-9\.+\-a-zA-Z]*)\s;', $output, $matches)) {
+      return $matches[2];
+    }
+    else {
+      throw new \RuntimeException("Failed to determine mysqld version. (\"$output\")");
+    }
+  }
+
   public static function findDataFiles($mysqldBin) {
     $mysqldBin = Process::findExecutable($mysqldBin);
 
     $filesets = array();
+
+    $mysqlVersion = self::getVersion($mysqldBin);
+
+    if (version_compare($mysqlVersion, '6.0', '>')) {
+      return $filesets;
+    }
 
     if (preg_match(';^/nix/;', $mysqldBin)) {
       $dir = dirname(dirname($mysqldBin));
