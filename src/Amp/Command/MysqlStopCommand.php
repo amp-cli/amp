@@ -55,7 +55,7 @@ class MysqlStopCommand extends ContainerAwareCommand {
 
     $pid = trim(file_get_contents($db->mysqld_pid_path));
     $output->writeln("Killing mysqld ($pid)");
-    $result = posix_kill($pid, SIGTERM);
+    $result = posix_kill($pid, defined('SIGTERM') ? SIGTERM : 15);
     if (!$result) {
       $output->getErrorOutput()->writeln("Fasdf");
     }
