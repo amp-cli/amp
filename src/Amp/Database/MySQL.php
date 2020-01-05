@@ -88,10 +88,18 @@ class MySQL implements DatabaseManagementInterface {
     if ($alterUser) {
       $createUserStatement .= " IF NOT EXISTS";
       $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
-      $dbh->exec("$createUserStatement '$user'@'localhost'");
-      $dbh->exec("ALTER USER '$user'@'localhost' $authenticationStatment '$pass'");
-      $dbh->exec("$createUserStatement '$user'@'%'");
-      $dbh->exec("ALTER USER '$user'@'%' $authenticationStatment '$pass'");
+      if (strpos($version, 'MariaDB') !== FALSE) {
+        $dbh->exec("$createUserStatement '$user'@'localhost'");
+        $dbh->exec("ALTER USER '$user'@'localhost' IDENTIFIED BY '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'%'");
+        $dbh->exec("ALTER USER '$user'@'%' IDENTIFIED BY '$pass'");
+      }
+      else {
+        $dbh->exec("$createUserStatement '$user'@'localhost'");
+        $dbh->exec("ALTER USER '$user'@'localhost' $authenticationStatment '$pass'");
+        $dbh->exec("$createUserStatement '$user'@'%'");
+        $dbh->exec("ALTER USER '$user'@'%' $authenticationStatment '$pass'");
+      }
     }
     else {
       $hosts = ['localhost', '%'];
