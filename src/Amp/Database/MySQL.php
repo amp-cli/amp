@@ -95,6 +95,10 @@ class MySQL implements DatabaseManagementInterface {
           $dbh->exec("SET PASSWORD for '$user'@'localhost' = PASSWORD('$pass')");
           $dbh->exec("SET PASSWORD for '$user'@'%' = PASSWORD('$pass')");
         }
+        else {
+          $dbh->exec("ALTER USER '$user'@'localhost' IDENTIFIED BY '$pass'");
+          $dbh->exec("ALTER USER '$user'@'%' IDENTIFIED BY '$pass'");
+        }
       }
       else {
         $dbh->exec("$createUserStatement '$user'@'localhost'");
