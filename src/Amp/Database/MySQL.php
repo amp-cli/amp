@@ -90,9 +90,11 @@ class MySQL implements DatabaseManagementInterface {
       $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
       if (strpos($version, 'MariaDB') !== FALSE) {
         $dbh->exec("$createUserStatement '$user'@'localhost'");
-        $dbh->exec("ALTER USER '$user'@'localhost' IDENTIFIED BY '$pass'");
         $dbh->exec("$createUserStatement '$user'@'%'");
-        $dbh->exec("ALTER USER '$user'@'%' IDENTIFIED BY '$pass'");
+        if (version_compare($versionParts[0], '10.2', '<')) {
+          $dbh->exec("SET PASSWORD for '$user'@'localhost' = PASSWORD('$pass')");
+          $dbh->exec("SET PASSWORD for '$user'@'%' = PASSWORD('$pass')");
+        }
       }
       else {
         $dbh->exec("$createUserStatement '$user'@'localhost'");
