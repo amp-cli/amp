@@ -1,0 +1,37 @@
+#!/bin/bash
+
+## Create a temporary test environment for amp and run a command
+
+#######################################################################
+set -e
+
+## Determine the absolute path of the directory with the file
+## usage: absdirname <file-path>
+function absdirname() {
+  pushd $(dirname $0) >> /dev/null
+    pwd
+  popd >> /dev/null
+}
+
+BINDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$BINDIR")
+PATH="$PRJDIR/bin:$PATH"
+AMPHOME=$PRJDIR/tmp/amphome-phpunit
+export PATH AMPHOME
+
+#######################################################################
+
+if [ -d "$AMPHOME" ]; then
+  rm -rf "$AMPHOME"
+fi
+
+mkdir -p "$AMPHOME"
+
+amp config:set --db_type=mysql_ram_disk --httpd_type=none --hosts_type=none --ram_disk_type=manual --perm_type=none
+
+if [ -n "$1" ]; then
+  "$@"
+else
+  echo "WARNING: No command specified!" 1>&2
+  exit 1
+fi

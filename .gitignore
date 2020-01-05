@@ -2,3 +2,4 @@ vendor
 .idea
 *~
 amp.phar
+/tmp/
