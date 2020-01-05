@@ -1,6 +1,9 @@
 <?php
 namespace Amp\Hostname;
 
+/**
+ * @group unit
+ */
 class HostsFileTest extends \PHPUnit_Framework_TestCase {
 
   public function getCases() {

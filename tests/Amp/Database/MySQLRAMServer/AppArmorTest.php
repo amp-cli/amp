@@ -1,6 +1,9 @@
 <?php
 namespace Amp\Database\MySQLRAMServer;
 
+/**
+ * @group unit
+ */
 class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
 
   public function getCases() {

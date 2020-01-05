@@ -1,6 +1,9 @@
 <?php
 namespace Amp\Database;
 
+/**
+ * @group unit
+ */
 class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
 
   public function testCreateCandidateDatasources() {

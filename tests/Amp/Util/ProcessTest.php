@@ -1,6 +1,9 @@
 <?php
 namespace Amp\Util;
 
+/**
+ * @group unit
+ */
 class ProcessTest extends \PHPUnit_Framework_TestCase {
   public function testWellknownCommand() {
     $path = Process::findExecutable('ls');

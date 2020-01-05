@@ -1,6 +1,9 @@
 <?php
 namespace Amp\Util;
 
+/**
+ * @group unit
+ */
 class PortCheckerTest extends \PHPUnit_Framework_TestCase {
   const EXAMPLE_PORTLESS_URL = "http://www.google.com";
 
