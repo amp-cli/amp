@@ -168,6 +168,12 @@ class MySQLRAMServer extends MySQL {
       $parts[] = "--max-allowed-packet=256M";
     }
 
+    $mysqldVersion = $this->getVersion();
+    // In MySQL 8 Binary logging is turned on bydefault
+    if (version_compare($mysqldVersion, '8.0', '>=')) {
+      $parts[] = '--disable-log-bin';
+    }
+
     return "{$this->mysqld_bin} --no-defaults " . implode(' ', $parts);
   }
 
