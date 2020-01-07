@@ -18,25 +18,20 @@ php -dphar.readonly=0 `which box` build
 
 ## Test
 
-The test suite is organized into two groups:
+The test suite is written with PHPUnit and organized into two groups:
 
 * `unit`: Unit-tests focused on specific classes/utilities
 * `mysqld`: E2E tests for launching mysqld and provisioning users/databases
 
-To run the tests, you will need:
-
-* `php`
-* `phpunit`
-* `nix` package manager (for mysqld compatibility testing)
-
-To run all the tests, use `tests.sh` wrapper script, as in:
+You can these groups using different versions of `php` and `mysqld` using the
+script `tests.sh`. This script requires the `nix` package manager. Usage:
 
 ```
 git clone https://github.com/amp-cli/amp
 cd amp
 nix-shell
 composer install
-env PHPUNIT=/the/path/to/phpunit ./tests.sh
+./tests.sh
 ```
 
 ## About `amp`: Vision ##
