@@ -7,7 +7,7 @@ sudo chmod +x /usr/local/bin/amp
 
 ## Build
 
-To build a new `phar` executable, use [box](http://box-project.github.io/box2/):
+To build a new `amp.phar` executable:
 
 ```
 git clone https://github.com/amp-cli/amp
