@@ -10,10 +10,33 @@ sudo chmod +x /usr/local/bin/amp
 To build a new `phar` executable, use [box](http://box-project.github.io/box2/):
 
 ```
-git clone https://github.com/totten/amp
+git clone https://github.com/amp-cli/amp
 cd amp
 composer install
 php -dphar.readonly=0 `which box` build
+```
+
+## Test
+
+The test suite is organized into two groups:
+
+* `unit`: Unit-tests focused on specific classes/utilities
+* `mysqld`: E2E tests for launching mysqld and provisioning users/databases
+
+To run the tests, you will need:
+
+* `php`
+* `phpunit`
+* `nix` package manager (for mysqld compatibility testing)
+
+To run all the tests, use `tests.sh` wrapper script, as in:
+
+```
+git clone https://github.com/amp-cli/amp
+cd amp
+nix-shell
+composer install
+env PHPUNIT=/the/path/to/phpunit ./tests.sh
 ```
 
 ## About `amp`: Vision ##
