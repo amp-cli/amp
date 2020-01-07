@@ -30,7 +30,6 @@ script `tests.sh`. This script requires the `nix` package manager. Usage:
 git clone https://github.com/amp-cli/amp
 cd amp
 nix-shell
-composer install
 ./tests.sh
 ```
 
