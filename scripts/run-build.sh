@@ -8,10 +8,12 @@ function absdirname() {
   popd >> /dev/null
 }
 
-PRJDIR=$(absdirname "$0")
-export PATH="$PRJDIR/bin:$PATH"
+SCRIPTDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$SCRIPTDIR")
 
 set -ex
-composer install --prefer-dist --no-progress --no-suggest --no-dev
-which box
-php -d phar.readonly=0 `which box` build -v
+pushd "$PRJDIR"
+  composer install --prefer-dist --no-progress --no-suggest --no-dev
+  which box
+  php -d phar.readonly=0 `which box` build -v
+popd

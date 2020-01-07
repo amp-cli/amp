@@ -15,7 +15,8 @@ function absdirname() {
   popd >> /dev/null
 }
 
-PRJDIR=$(absdirname "$0")
+SCRIPTDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$SCRIPTDIR")
 
 ###############################################################################
 ## usage: test_ramdisk_nix <mysql-pkg-name> <nix-repo-url>

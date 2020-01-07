@@ -12,8 +12,8 @@ To build a new `phar` executable, use [box](http://box-project.github.io/box2/):
 ```
 git clone https://github.com/amp-cli/amp
 cd amp
-composer install
-php -dphar.readonly=0 `which box` build
+nix-shell
+./scripts/run-build.sh
 ```
 
 ## Test
@@ -30,7 +30,7 @@ script `tests.sh`. This script requires the `nix` package manager. Usage:
 git clone https://github.com/amp-cli/amp
 cd amp
 nix-shell
-./tests.sh
+./scripts/run-tests.sh
 ```
 
 ## About `amp`: Vision ##
