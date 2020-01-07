@@ -1,5 +1,8 @@
 vendor
 .idea
+.composer-downloads
 *~
 amp.phar
 /tmp/
+/extern/box
+/extern/phpunit

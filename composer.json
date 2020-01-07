@@ -5,6 +5,7 @@
     "license": "AGPL-3.0",
     "require": {
         "php": ">=5.3.3",
+        "civicrm/composer-downloads-plugin": "~2.1",
         "symfony/console": "~2.3",
         "symfony/config": "~2.3",
         "symfony/yaml": "~2.2",
@@ -25,6 +26,21 @@
     ],
     "config": {
         "bin-dir": "bin"
+    },
+    "extra": {
+        "downloads": {
+            "box": {
+                "url": "https://github.com/humbug/box/releases/download/3.8.3/box.phar",
+                "path": "extern/box",
+                "type": "phar"
+            },
+            "phpunit5": {
+                "version": "5.x",
+                "url": "https://phar.phpunit.de/phpunit-5.phar",
+                "path": "extern/phpunit",
+                "type": "phar"
+            }
+        }
     },
     "authors": [
         {
