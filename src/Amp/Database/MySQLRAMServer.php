@@ -150,7 +150,10 @@ class MySQLRAMServer extends MySQL {
     return $this->default_data_files;
   }
 
-  public function getMySQLDBaseCommand() {
+  public function getMySQLDBaseCommand($cmd) {
+    $mysqldVersion = $this->getVersion();
+    $isMariaDB = version_compare($mysqldVersion, '10.0', '>=');
+
     $parts = [];
 
     $parts[] = "--tmpdir=" . escapeshellarg($this->mysqld_tmp_path);
@@ -158,6 +161,10 @@ class MySQLRAMServer extends MySQL {
     $parts[] = "--port=" . escapeshellarg($this->mysqld_port);
     $parts[] = "--socket=" . escapeshellarg($this->mysqld_socket_path);
     $parts[] = "--pid-file=" . escapeshellarg($this->mysqld_pid_path);
+    if (version_compare($mysqldVersion, '8.0', '<')) {
+      $parts[] = ' --innodb-file-format=Barracuda';
+      $parts[] = ' --innodb-file-per-table';
+    }
 
     $uname = function_exists('posix_uname') ? posix_uname() : NULL;
     if ($uname && $uname['sysname'] === 'Darwin') {
@@ -168,13 +175,16 @@ class MySQLRAMServer extends MySQL {
       $parts[] = "--max-allowed-packet=256M";
     }
 
-    $mysqldVersion = $this->getVersion();
     // In MySQL 8 Binary logging is turned on bydefault
-    if (version_compare($mysqldVersion, '8.0', '>=')) {
+    if (version_compare($mysqldVersion, '8.0', '>=') && version_compare($mysqldVersion, '10.0', '<')) {
       $parts[] = '--disable-log-bin';
     }
 
-    return "{$this->mysqld_bin} --no-defaults " . implode(' ', $parts);
+    if (version_compare($mysqldVersion, '8.0', '>=') && !$isMariaDB) {
+      $parts[] = '--default-authentication-plugin=mysql_native_password';
+    }
+
+    return "$cmd --no-defaults " . implode(' ', $parts);
   }
 
   protected function getVersion() {
@@ -202,11 +212,20 @@ class MySQLRAMServer extends MySQL {
     }
 
     $mysqldVersion = $this->getVersion();
+    $isMariaDB = version_compare($mysqldVersion, '10.0', '>=');
 
     $options = '';
     $pipe = '';
 
-    if (version_compare($mysqldVersion, '5.7.6', '<=')) {
+    if ($isMariaDB) {
+      Path::mkdir_p_if_not_exists(Path::join($this->mysqld_data_path, 'mysql'));
+      $escapeMysqldPath = escapeshellarg($this->mysqld_bin);
+      $fullMysqldPath = trim(`which $escapeMysqldPath`);
+      $binDir = dirname($fullMysqldPath);
+      $baseCmd = sprintf('cd %s && ', escapeshellarg(dirname($binDir))) . $this->getMySQLDBaseCommand('./bin/mysql_install_db');
+      $options .= ' --skip-name-resolve';
+    }
+    elseif (version_compare($mysqldVersion, '5.7.6', '<=')) {
       Path::mkdir_p_if_not_exists(Path::join($this->mysqld_data_path, 'mysql'));
       $this->runCommand("echo \"use mysql;\" > {$this->mysqld_tmp_path}/install_mysql.sql");
       if ($this->getDefaultDataFiles()) {
@@ -215,35 +234,31 @@ class MySQLRAMServer extends MySQL {
       else {
         throw new \Exception("Error finding default data files");
       }
+
+      $baseCmd = $this->getMySQLDBaseCommand($this->mysqld_bin);
       $pipe = "< {$this->mysqld_tmp_path}/install_mysql.sql";
       $options .= ' --bootstrap ';
     }
     else {
+      $baseCmd = $this->getMySQLDBaseCommand($this->mysqld_bin);
       $options .= ' --initialize-insecure';
     }
 
-    $options .= version_compare($mysqldVersion, '5.7.2', '<=') ? ' --log-warnings=0' : ' --log-error-verbosity=1';
+    $options .= (version_compare($mysqldVersion, '5.7.2', '<=') || $isMariaDB) ? ' --log-warnings=0' : ' --log-error-verbosity=1';
     $options .= ' --innodb';
     $options .= ' --default-storage-engine=innodb';
     $options .= ' --max_allowed_packet=8M';
     $options .= ' --net_buffer_length=16K';
 
-    if (version_compare($mysqldVersion, '8.0', '<')) {
-      $options .= ' --innodb-file-format=Barracuda';
-      $options .= ' --innodb-file-per-table';
-    }
-    else {
-      $options .= ' --default-authentication-plugin=mysql_native_password';
-    }
-
-    return "{$this->getMySQLDBaseCommand()} $options $pipe";
+    // printf("mysql version [%s] isMaria=[%s] mysqldbin=[%s]\ninit cmd=[%s]\n", $mysqldVersion, $isMariaDB ? 'y':'n', $this->mysqld_bin, "$baseCmd $options $pipe");
+    return "$baseCmd $options $pipe";
   }
 
   /**
    * @return string
    */
   protected function createLaunchCommand() {
-    return "{$this->getMySQLDBaseCommand()} > {$this->mysqld_tmp_path}/mysql-drupal-test.log 2>&1 &";
+    return $this->getMySQLDBaseCommand($this->mysqld_bin) . " > {$this->mysqld_tmp_path}/mysql-drupal-test.log 2>&1 &";
   }
 
   /**
