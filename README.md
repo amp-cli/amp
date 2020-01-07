@@ -5,32 +5,27 @@ sudo curl -LsS https://download.civicrm.org/amp/amp.phar -o /usr/local/bin/amp
 sudo chmod +x /usr/local/bin/amp
 ```
 
-## Build
+## Build and Test
 
-To build a new `amp.phar` executable:
+The build and test processes are based on `composer`, `phpunit`, and `box`.
+
+To facilitate local development and testing with multiple versions of `php` and `mysqld` (on Linux and macOS), the repo
+includes a few helpers: `default.nix`, `./scripts/run-tests.sh`, and `./scripts/run-build.sh`. These helper scripts require
+the [nix package manager](https://nixos.org/nix/). Usage:
 
 ```
+## Get the code
 git clone https://github.com/amp-cli/amp
 cd amp
+
+## Start a shell with php+composer
 nix-shell
-./scripts/run-build.sh
-```
 
-## Test
-
-The test suite is written with PHPUnit and organized into two groups:
-
-* `unit`: Unit-tests focused on specific classes/utilities
-* `mysqld`: E2E tests for launching mysqld and provisioning users/databases
-
-You can these groups using different versions of `php` and `mysqld` using the
-script `tests.sh`. This script requires the `nix` package manager. Usage:
-
-```
-git clone https://github.com/amp-cli/amp
-cd amp
-nix-shell
+## Run the test suites
 ./scripts/run-tests.sh
+
+## Run the build, creating amp.phar
+./scripts/run-build.sh
 ```
 
 ## About `amp`: Vision ##

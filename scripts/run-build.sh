@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+## About: Generate the "amp.phar" file.
+
 ## Determine the absolute path of the directory with the file
 ## usage: absdirname <file-path>
 function absdirname() {

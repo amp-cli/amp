@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## About: Execute all the test suites... with different versions of PHP and MySQL.
+
 ## Example usage: ./tests.sh
 ## Example usage: env DEBUG=2 PHPUNIT=phpunit5 ./tests.sh
 ## Example usage: killall mysqld; env DEBUG=2 PHPUNIT=phpunit5 ./tests.sh
@@ -68,8 +70,14 @@ EXIT_CODE=0
 
 pushd "$PRJDIR"
   "$COMPOSER" install
+
+  ## Tests are organized into a few groups
+
+  ## (1) The 'unit' tests are lower-level tests for PHP classes/functions. These are executed with multiple versions of PHP.
   test_phpunit     php56   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz --group unit
   test_phpunit     php72   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group unit
+
+  ## (2) The 'mysqld' tests are higher-level integration tests for working with the DBMS. These are executed with multiple versions of MySQL.
   test_ramdisk_nix mysql55 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
