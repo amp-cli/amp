@@ -18,16 +18,18 @@ function absdirname() {
 PRJDIR=$(absdirname "$0")
 
 ###############################################################################
-## usage: test_ramdisk_nix <nix-pkg-url> <nix-pkg-name>
-## example: test_ramdisk_nix https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz mysql57
+## usage: test_ramdisk_nix <mysql-pkg-name> <nix-repo-url>
+## example: test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
 function test_ramdisk_nix() {
-  local name="Ramdisk test ($2 from $1)"
+  local pkg="$1"
+  local url="$2"
+  local name="Ramdisk test ($pkg from $url)"
   echo "[$name] Start"
 
   ## TIP: If one of these tests fails, then manually start the given daemon with:
   ## $ nix run -f <url> <pkg> -c test-amp-ramdisk amp mysql:start
 
-  if nix run -f "$1" "$2" -c test-amp-ramdisk "$PHPUNIT" --group mysqld ; then
+  if nix run -f "$url" "$pkg" -c test-amp-ramdisk "$PHPUNIT" --group mysqld ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
@@ -35,10 +37,15 @@ function test_ramdisk_nix() {
   fi
 }
 
+## usage: test_phpunit <php-pkg-name> <nix-repo-url> [phpunit-options]
+## example: test_phpunit php72 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group foobar
 function test_phpunit() {
-  local name="Unit tests"
+  local pkg="$1"
+  local url="$2"
+  shift 2
+  local name="Unit tests ($pkg from $url; $@)"
   echo "[$name] Start"
-  if $PHPUNIT "$@" ; then
+  if nix run -f "$url" "$pkg" -c php $(which "$PHPUNIT") "$@" ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
@@ -57,10 +64,11 @@ PATH="$PRJDIR/bin:$PATH"
 export PATH
 EXIT_CODE=0
 
-test_phpunit --group unit
-test_ramdisk_nix https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz                                mysql55
-test_ramdisk_nix https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz                                mysql57
-test_ramdisk_nix https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz                                mariadb
-test_ramdisk_nix https://github.com/NixOS/nixpkgs-channels/archive/d5291756487d70bc336e33512a9baf9fa1788faf.tar.gz   mysql80
+test_phpunit     php56   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz --group unit
+test_phpunit     php72   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group unit
+test_ramdisk_nix mysql55 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
+test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
+test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
+test_ramdisk_nix mysql80 https://github.com/NixOS/nixpkgs-channels/archive/d5291756487d70bc336e33512a9baf9fa1788faf.tar.gz
 
 exit $EXIT_CODE
