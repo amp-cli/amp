@@ -17,10 +17,8 @@ function absdirname() {
   popd >> /dev/null
 }
 
-SCRIPTDIR=$(absdirname "$0")
-PRJDIR=$(dirname "$SCRIPTDIR")
-
 ###############################################################################
+## Execute the mysqld integration tests using the "ramdisk" style
 ## usage: test_ramdisk_nix <mysql-pkg-name> <nix-repo-url>
 ## example: test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
 function test_ramdisk_nix() {
@@ -40,6 +38,8 @@ function test_ramdisk_nix() {
   fi
 }
 
+###############################################################################
+## Execute the PHP, unit-level tests
 ## usage: test_phpunit <php-pkg-name> <nix-repo-url> [phpunit-options]
 ## example: test_phpunit php72 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group foobar
 function test_phpunit() {
@@ -57,17 +57,21 @@ function test_phpunit() {
 }
 
 ###############################################################################
+## Main
+
+SCRIPTDIR=$(absdirname "$0")
+PRJDIR=$(dirname "$SCRIPTDIR")
+COMPOSER=${COMPOSER:-composer}
+PHPUNIT=${PHPUNIT:-phpunit}
+PATH="$PRJDIR/bin:$PATH"
+export PATH
+
 if [ ! -f "$PRJDIR/bin/amp" ]; then
   echo "Failed to determine amp source dir" 1>&2
   exit 1
 fi
 
-COMPOSER=${COMPOSER:-composer}
-PHPUNIT=${PHPUNIT:-phpunit}
-PATH="$PRJDIR/bin:$PATH"
-export PATH
 EXIT_CODE=0
-
 pushd "$PRJDIR"
   "$COMPOSER" install
 
@@ -83,5 +87,4 @@ pushd "$PRJDIR"
   test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mysql80 https://github.com/NixOS/nixpkgs-channels/archive/d5291756487d70bc336e33512a9baf9fa1788faf.tar.gz
 popd
-
 exit $EXIT_CODE
