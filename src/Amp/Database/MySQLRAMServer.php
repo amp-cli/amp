@@ -165,9 +165,6 @@ class MySQLRAMServer extends MySQL {
       $parts[] = ' --innodb-file-format=Barracuda';
       $parts[] = ' --innodb-file-per-table';
     }
-    if (version_compare($mysqldVersion, '5.7', '<')) {
-      $parts[] = ' --innodb-large-prefix=TRUE';
-    }
 
     $uname = function_exists('posix_uname') ? posix_uname() : NULL;
     if ($uname && $uname['sysname'] === 'Darwin') {
