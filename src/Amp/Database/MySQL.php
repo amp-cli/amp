@@ -84,7 +84,7 @@ class MySQL implements DatabaseManagementInterface {
     $versionParts = explode('-', $version);
     $createUserStatement = "CREATE USER";
     $authenticationStatment = "IDENTIFIED BY";
-    $alterUser = version_compare($versionParts[0], '5.6.0', '>=') ? TRUE : FALSE;
+    $alterUser = version_compare($versionParts[0], '5.7.0', '>=') ? TRUE : FALSE;
     if ($alterUser) {
       $createUserStatement .= " IF NOT EXISTS";
       $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
