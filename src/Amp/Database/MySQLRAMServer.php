@@ -166,6 +166,11 @@ class MySQLRAMServer extends MySQL {
       $parts[] = ' --innodb-file-per-table';
     }
 
+    // Enable innodb-large-prefix on MySQL 5.6 versions.
+    if (version_compare($mysqldVersion, '5.7', '<') && version_compare($mysqldVersion, '5.6', '>=')) {
+      $parts[] = ' --innodb-large-prefix=TRUE';
+    }
+
     $uname = function_exists('posix_uname') ? posix_uname() : NULL;
     if ($uname && $uname['sysname'] === 'Darwin') {
       // Mitigation for "File Descriptor n exceedeed FD_SETSIZE" when using several large builds
