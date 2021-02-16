@@ -86,6 +86,6 @@ pushd "$PRJDIR"
   test_ramdisk_nix mysql55 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
-  test_ramdisk_nix mysql80 https://github.com/NixOS/nixpkgs-channels/archive/d5291756487d70bc336e33512a9baf9fa1788faf.tar.gz
+  test_ramdisk_nix mysql80 https://github.com/NixOS/nixpkgs/archive/20.09.tar.gz
 popd
 exit $EXIT_CODE
