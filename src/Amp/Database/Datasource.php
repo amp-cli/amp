@@ -165,7 +165,7 @@ class Datasource {
 
   function toPDODSN($options = array()) {
     $pdo_dsn = "{$this->driver}:";
-    $pdo_dsn_options = array();
+    $pdo_dsn_options = array('charset=utf8mb4');
     $settings_to_pdo_options = static::$settings_to_pdo_options;
     if (isset($options['no_database']) && $options['no_database']) {
       unset($settings_to_pdo_options['database']);
