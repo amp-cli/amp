@@ -79,7 +79,7 @@ class MySQL implements DatabaseManagementInterface {
     $pass = $datasource->getPassword();
 
     $dbh = $this->adminDatasource->createPDO();
-    $dbh->exec("CREATE DATABASE `$db`");
+    $dbh->exec("CREATE DATABASE `$db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $version = $dbh->query("SELECT version()")->fetchAll()[0]['version()'];
     $versionParts = explode('-', $version);
     $createUserStatement = "CREATE USER";
