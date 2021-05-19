@@ -4,9 +4,9 @@ namespace Amp\Database;
 /**
  * @group unit
  */
-class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
+class MySQLCnfFactoryTest extends \PHPUnit\Framework\TestCase {
 
-  public function testCreateCandidateDatasources() {
+  public function testCreateCandidateDatasources(): void {
     $factory = new MySQLCnfFactory(
       array(
         __DIR__ . '/MySQLCnfFactoryTest.ex1.cnf',
@@ -37,7 +37,7 @@ class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
     $this->assertEquals($expectedDSNs, $actualDSNs);
   }
 
-  public function testCreateCandidateDatasources_none() {
+  public function testCreateCandidateDatasources_none(): void {
     $factory = new MySQLCnfFactory(
       array(
         __DIR__ . '/MySQLCnfFactoryTest.ex-invalid1.cnf',
@@ -57,14 +57,14 @@ class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
   }
 
   /*
-  public function dataPollPort() {
+  public function dataPollPort(): array {
     $cases = array();
     $cases[] = array('echo -e "Variable_name\tValue\nport\t8889\n"', 8889);
     $cases[] = array('echo -e "Variable_name\tValue\nport\t3306\n"', 3306);
     return $cases;
   }
 
-  public function dataPollPortErrors() {
+  public function dataPollPortErrors(): array {
     $cases = array();
     $cases[] = array('echo -e "Variable_name\tValue\ngarbage\t3306\n"');
     $cases[] = array('echo -e "Variable_name\tValue\n"');
@@ -78,7 +78,7 @@ class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
    * @param int $expectedPort
    * @dataProvider dataPollPort
    *
-  public function testpollPortViaCLI($command, $expectedPort) {
+  public function testpollPortViaCLI($command, $expectedPort): void {
     $actualPort = MySQLCnfFactory::pollPortViaCLI($command);
     $this->assertEquals($expectedPort, $actualPort);
   }
@@ -89,7 +89,7 @@ class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
    * @dataProvider dataPollPortErrors
    * @expectedException \Amp\Exception\ProcessException
    *
-  public function testpollPortViaCLIErrors($command) {
+  public function testpollPortViaCLIErrors($command): void {
     MySQLCnfFactory::pollPortViaCLI($command);
   }
   */

@@ -8,11 +8,11 @@ use Symfony\Component\Process\Process;
 /**
  * @group mysqld
  */
-class AutolaunchTest extends \PHPUnit_Framework_TestCase {
+class AutolaunchTest extends \PHPUnit\Framework\TestCase {
 
   const MYSQLD_URL = 'mysql://127.0.0.1:3307';
 
-  protected function setUp() {
+  protected function setUp(): void {
     $this->assertRegExp(';tmp/amphome-phpunit;', getenv('AMPHOME'), 'This test must run in a test environment. Use tempamp.');
     parent::setUp();
   }
@@ -20,7 +20,7 @@ class AutolaunchTest extends \PHPUnit_Framework_TestCase {
   /**
    * Start mysqld, connect to it, and stop it.
    */
-  public function testStartStop() {
+  public function testStartStop(): void {
     $debug = function () {
       if (getenv('DEBUG')) {
         call_user_func_array('printf', func_get_args());
@@ -92,7 +92,7 @@ class AutolaunchTest extends \PHPUnit_Framework_TestCase {
    * @return string
    *   Full path to the `amp` source tree.
    */
-  public static function getPrjDir($suffix = NULL) {
+  public static function getPrjDir($suffix = NULL): string {
     $base = dirname(dirname(dirname(dirname(__DIR__))));
     if ($suffix) {
       return "$base/$suffix";
@@ -102,16 +102,16 @@ class AutolaunchTest extends \PHPUnit_Framework_TestCase {
     }
   }
 
-  public static function getAmpHome() {
+  public static function getAmpHome(): string {
     return self::getPrjDir('tmp/amphome-phpunit');
   }
 
-  public function assertNotRunning($url, $message = '') {
+  public function assertNotRunning($url, $message = ''): void {
     $pc = new PortChecker();
     $this->assertFalse($pc->checkUrl($url), $message);
   }
 
-  public function assertRunning($url, $message = '') {
+  public function assertRunning($url, $message = ''): void {
     $pc = new PortChecker();
     $this->assertTrue($pc->checkUrl($url), $message);
   }
