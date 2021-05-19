@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fb707be35fa3dd558886a180fece7f95",
+    "content-hash": "d156a6aee5eb0f3293fd8556804bd092",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -476,20 +476,6 @@
             "support": {
                 "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.1"
             },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
             "time": "2021-01-07T16:49:33+00:00"
         },
         {
@@ -556,20 +542,6 @@
             "support": {
                 "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.1"
             },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
             "time": "2021-01-22T09:19:47+00:00"
         },
         {
@@ -767,10 +739,6 @@
                 "MIT"
             ],
             "description": "Parser for .gitignore (and sparse-checkout, and anything else using the same format) files",
-            "support": {
-                "issues": "https://github.com/TOGoS/PHPGitIgnore/issues",
-                "source": "https://github.com/TOGoS/PHPGitIgnore/tree/master"
-            },
             "time": "2019-04-19T19:16:58+00:00"
         },
         {
@@ -807,10 +775,6 @@
                 }
             ],
             "description": "Some quick sugar for working with Symfony Process",
-            "support": {
-                "issues": "https://github.com/totten/process-helper/issues",
-                "source": "https://github.com/totten/process-helper/tree/v1.0.1"
-            },
             "time": "2019-08-09T07:44:46+00:00"
         }
     ],
@@ -821,8 +785,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.3.3"
+        "php": ">=7.1"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "platform-dev": []
 }
