@@ -4,9 +4,9 @@ namespace Amp\Database\MySQLRAMServer;
 /**
  * @group unit
  */
-class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
+class MySQLCnfFactoryTest extends \PHPUnit\Framework\TestCase {
 
-  public function getCases() {
+  public function getCases(): array {
 
     $cases = array();
 
@@ -41,7 +41,7 @@ class MySQLCnfFactoryTest extends \PHPUnit_Framework_TestCase {
    * @dataProvider getCases
    */
 
-  public function testCreateNewConfig($origContent, $lines, $expectConfigured, $expectContent) {
+  public function testCreateNewConfig($origContent, $lines, $expectConfigured, $expectContent): void {
     $cfgFile = tempnam(sys_get_temp_dir(), 'test-app-armor');
     file_put_contents($cfgFile, $origContent);
 

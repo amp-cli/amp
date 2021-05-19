@@ -4,10 +4,10 @@ namespace Amp\Util;
 /**
  * @group unit
  */
-class PortCheckerTest extends \PHPUnit_Framework_TestCase {
+class PortCheckerTest extends \PHPUnit\Framework\TestCase {
   const EXAMPLE_PORTLESS_URL = "http://www.google.com";
 
-  function exampleUrls() {
+  function exampleUrls(): array {
     $cases = array();
     $cases[] = array(self::EXAMPLE_PORTLESS_URL . ':13579', 80, FALSE);
     $cases[] = array(self::EXAMPLE_PORTLESS_URL . ':13579', 13579, FALSE);
@@ -22,7 +22,7 @@ class PortCheckerTest extends \PHPUnit_Framework_TestCase {
    * @param $defaultPort
    * @param $expectedResult
    */
-  public function testCheckUrl($url, $defaultPort, $expectedResult) {
+  public function testCheckUrl($url, $defaultPort, $expectedResult): void {
     $checker = new \Amp\Util\PortChecker();
     $this->assertEquals($expectedResult, $checker->checkUrl($url, $defaultPort));
     //$this->assertEquals("foo", "bar");
@@ -34,12 +34,12 @@ class PortCheckerTest extends \PHPUnit_Framework_TestCase {
    *
    * @expectedException Exception
    */
-  public function testCheckUrlException() {
+  public function testCheckUrlException(): void {
     $checker = new \Amp\Util\PortChecker();
     $checker->checkUrl('invalidscheme://example.com');
   }
 
-  public function testFilterUrls() {
+  public function testFilterUrls(): void {
     $checker = new \Amp\Util\PortChecker();
     $input = array(
       self::EXAMPLE_PORTLESS_URL,

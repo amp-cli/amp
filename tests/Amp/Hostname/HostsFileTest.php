@@ -4,9 +4,9 @@ namespace Amp\Hostname;
 /**
  * @group unit
  */
-class HostsFileTest extends \PHPUnit_Framework_TestCase {
+class HostsFileTest extends \PHPUnit\Framework\TestCase {
 
-  public function getCases() {
+  public function getCases(): array {
 
     $cases = array();
 
@@ -60,7 +60,7 @@ class HostsFileTest extends \PHPUnit_Framework_TestCase {
    * @param $expectContent
    * @dataProvider getCases
    */
-  public function testAddHostIpScript($isGroupByIp, $origContent, $expectContent) {
+  public function testAddHostIpScript($isGroupByIp, $origContent, $expectContent): void {
     $file = tempnam(sys_get_temp_dir(), 'test-hosts');
 
     $hostsFile = new HostsFile();

@@ -78,7 +78,7 @@ pushd "$PRJDIR"
   ## Tests are organized into a few groups
 
   ## (1) The 'unit' tests are lower-level tests for PHP classes/functions. These are executed with multiple versions of PHP.
-  test_phpunit     php56   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz --group unit
+  test_phpunit     php71   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz --group unit
   test_phpunit     php72   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group unit
   test_phpunit     php74   https://github.com/NixOS/nixpkgs-channels/archive/nixos-20.03.tar.gz --group unit
 
