@@ -81,6 +81,7 @@ pushd "$PRJDIR"
   test_phpunit     php71   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.03.tar.gz --group unit
   test_phpunit     php72   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group unit
   test_phpunit     php74   https://github.com/NixOS/nixpkgs-channels/archive/nixos-20.03.tar.gz --group unit
+  test_phpunit     php80   https://github.com/nixos/nixpkgs/archive/594fbfe27905f2fd98d9431038814e497b4fcad1.tar.gz --group unit
 
   ## (2) The 'mysqld' tests are higher-level integration tests for working with the DBMS. These are executed with multiple versions of MySQL.
   test_ramdisk_nix mysql55 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz

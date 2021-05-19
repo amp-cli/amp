@@ -63,7 +63,9 @@ class PortChecker {
   public function checkHostPort($host, $port) {
     $fp = @fsockopen($host, $port, $errno, $errstr, 1);
     $result = $fp ? TRUE : FALSE;
-    @fclose($fp);
+    if ($fp !== FALSE) {
+      @fclose($fp);
+    }
     return $result;
 
   }
