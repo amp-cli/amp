@@ -2,9 +2,9 @@
 namespace Amp\Command;
 
 use Amp\ConfigRepository;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ConfigGetCommand extends ContainerAwareCommand {
@@ -42,10 +42,10 @@ class ConfigGetCommand extends ContainerAwareCommand {
       $rows[] = array($key, $this->getContainer()->getParameter($key), $this->config->getDescription($key));
     }
 
-    $table = $this->getApplication()->getHelperSet()->get('table');
+    $table = new Table($output);
     $table->setHeaders(array('Key', 'Value', 'Description'));
     $table->setRows($rows);
-    $table->render($output);
+    $table->render();
   }
 
 }
