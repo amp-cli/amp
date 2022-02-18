@@ -37,9 +37,9 @@
                 "path": "extern/box",
                 "type": "phar"
             },
-            "phpunit5": {
-                "version": "5.x",
-                "url": "https://phar.phpunit.de/phpunit-5.phar",
+            "phpunit8": {
+                "version": "8.x",
+                "url": "https://phar.phpunit.de/phpunit-8.phar",
                 "path": "extern/phpunit",
                 "type": "phar"
             }
