@@ -81,8 +81,7 @@ services:
   ## This infers the DSN based on ~/.my.cnf
   db.mysql_mycnf:
     class: Amp\Database\MySQL
-    factory_class: Amp\Database\MySQLCnfFactory
-    factory_method: get
+    factory: ['Amp\Database\MySQLCnfFactory', 'get']
 
   ## This connects to a user-supplied DSN
   db.mysql_dsn:
@@ -110,8 +109,7 @@ services:
   ## This database connection used for ephemeral, performance-oriented test environments
   db.mysql_ram_disk:
     class: Amp\Database\MySQLRAMServer
-    factory_class: Amp\Database\MySQLFactoryHelper
-    factory_method: createRAMServer
+    factory: ['Amp\Database\MySQLFactoryHelper', 'createRAMServer']
     arguments:
       - '@service_container'
 
@@ -207,8 +205,7 @@ services:
 
   ram_disk.auto:
     class: Amp\Ramdisk\RamDiskInterface
-    factory_class: Amp\RamDisk\RamDiskFactory
-    factory_method: get
+    factory: ['Amp\RamDisk\RamDiskFactory', 'get']
     arguments:
       - '@service_container'
 
@@ -232,5 +229,4 @@ services:
 
   template.engine:
     class: Symfony\Component\Templating\PhpEngine
-    factory_class: Amp\TemplateEngineFactory
-    factory_method: get
+    factory: ['Amp\TemplateEngineFactory', 'get']
