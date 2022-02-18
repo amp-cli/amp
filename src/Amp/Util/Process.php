@@ -29,6 +29,9 @@ class Process {
    * @return bool
    */
   public static function isShellScript($file) {
+    if (!file_exists($file)) {
+      return FALSE;
+    }
     $firstLine = file_get_contents($file, FALSE, NULL, 0, 120);
     list($firstLine) = explode("\n", $firstLine);
     return (bool) preg_match(';^#.*bin.*sh;', $firstLine);
