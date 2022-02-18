@@ -1,13 +1,13 @@
 ## NOTE: This file has only be used for local development shells.  It has
 ## not be tested for use as a deployment script.
 
-{pkgs ? import <nixpkgs> {
+{pkgs ? import (fetchTarball { url = "https://github.com/nixos/nixpkgs/archive/7e9b0dff974c89e070da1ad85713ff3c20b0ca97.tar.gz"; sha256 = "1ckzhh24mgz6jd1xhfgx0i9mijk6xjqxwsshnvq789xsavrmsc36"; }) {
     inherit system;
   },
   system ? builtins.currentSystem,
   noDev ? false,
-  php ? pkgs.php72,
-  phpPackages ? pkgs.php72Packages
+  php ? pkgs.php74,
+  phpPackages ? pkgs.php74Packages
   }:
 
 let
