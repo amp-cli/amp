@@ -1,9 +1,8 @@
 <?php
 namespace Amp\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ShowCommand extends ContainerAwareCommand {
@@ -35,11 +34,10 @@ class ShowCommand extends ContainerAwareCommand {
         $rows[] = array('', '');
       }
 
-      /** @var $table \Symfony\Component\Console\Helper\TableHelper */
-      $table = $this->getApplication()->getHelperSet()->get('table');
+      $table = new Table($output);
       $table->setHeaders(array('Property', 'Value'));
       $table->setRows($rows);
-      $table->render($output);
+      $table->render();
     }
     else {
       $rows = array();
@@ -53,11 +51,10 @@ class ShowCommand extends ContainerAwareCommand {
         );
       }
 
-      /** @var $table \Symfony\Component\Console\Helper\TableHelper */
-      $table = $this->getApplication()->getHelperSet()->get('table');
+      $table = new Table($output);
       $table->setHeaders(array('Root', 'Name', 'DB', 'Web', 'Visibility'));
       $table->setRows($rows);
-      $table->render($output);
+      $table->render();
       $output->writeln('For more detailed info, use "amp show -v" or "amp export [--root=X] [---name=X]');
     }
   }
