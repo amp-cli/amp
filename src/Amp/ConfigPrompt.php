@@ -1,8 +1,8 @@
 <?php
 namespace Amp;
 
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * description, example, default, etc., in a standard format.
  */
 class ConfigPrompt {
+
   /**
    * @var callable
    */
@@ -72,7 +73,7 @@ class ConfigPrompt {
     return $this;
   }
 
-  public function execute(InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
+  public function execute(InputInterface $input, OutputInterface $output, QuestionHelper $helper) {
     $default = $this->getContainer()->getParameter($this->parameter);
 
     $output->writeln("");
@@ -93,12 +94,7 @@ class ConfigPrompt {
     }
     $output->writeln("<comment>Default</comment>: {$default}");
 
-    if ($this->ask) {
-      $value = call_user_func($this->ask, $default, $input, $output, $dialog);
-    }
-    else {
-      $value = $dialog->ask($output, '>', $default);
-    }
+    $value = $helper->ask($input, $output, $this->ask);
 
     $this->config->setParameter($this->parameter, $value);
     $this->getContainer()->setParameter($this->parameter, $value);

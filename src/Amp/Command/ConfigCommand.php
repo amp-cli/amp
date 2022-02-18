@@ -2,11 +2,11 @@
 namespace Amp\Command;
 
 use Amp\ConfigRepository;
-use Symfony\Component\Console\Helper\DialogHelper;
-use Symfony\Component\Console\Input\InputArgument;
+use Amp\Util\User;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\Question;
 
 class ConfigCommand extends ContainerAwareCommand {
 
@@ -32,7 +32,7 @@ class ConfigCommand extends ContainerAwareCommand {
   }
 
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $dialog = $this->getHelperSet()->get('dialog');
+    $helper = $this->getHelper('question');
 
     $output->writeln("<info>"
       . "Welcome! amp will help setup your PHP applications by creating\n"
@@ -61,10 +61,11 @@ class ConfigCommand extends ContainerAwareCommand {
       . "</info>"
     );
 
-    $this->askDbType()->execute($input, $output, $dialog);
+
+    $this->askDbType()->execute($input, $output, $helper);
     $db_type = $this->getContainer()->getParameter('db_type');
     if (in_array($db_type, array('mysql_dsn', 'pg_dsn'))) {
-      $this->askDbDsn()->execute($input, $output, $dialog);
+      $this->askDbDsn()->execute($input, $output, $helper);
     }
 
     $output->writeln("");
@@ -82,15 +83,15 @@ class ConfigCommand extends ContainerAwareCommand {
       . "for any web-writable data directories."
       . "</info>"
     );
-    $this->askPermType()->execute($input, $output, $dialog);
+    $this->askPermType()->execute($input, $output, $helper);
     switch ($this->config->getParameter("perm_type")) {
       case 'linuxAcl':
       case 'osxAcl':
-        $this->askPermUser()->execute($input, $output, $dialog);
+        $this->askPermUser()->execute($input, $output, $helper);
         break;
 
       case 'custom':
-        $this->askPermCommand()->execute($input, $output, $dialog);
+        $this->askPermCommand($output)->execute($input, $output, $helper);
         break;
 
       default:
@@ -114,12 +115,12 @@ class ConfigCommand extends ContainerAwareCommand {
     $this->askHostsType(
       $this->getContainer()->getParameter('hosts_file'),
       $this->getContainer()->getParameter('hosts_ip')
-    )->execute($input, $output, $dialog);
+    )->execute($input, $output, $helper);
 
     $output->writeln("");
     $output->writeln("<info>=============================[ Configure HTTPD ]============================</info>");
-    $this->askHttpdType()->execute($input, $output, $dialog);
-    $this->askHttpdVisibility()->execute($input, $output, $dialog);
+    $this->askHttpdType()->execute($input, $output, $helper);
+    $this->askHttpdVisibility()->execute($input, $output, $helper);
 
     switch ($this->config->getParameter('httpd_type')) {
       case 'apache':
@@ -132,7 +133,7 @@ class ConfigCommand extends ContainerAwareCommand {
           . "NOTE: Commands based on `sudo` may require you to enter a password periodically.\n"
           . "</info>"
         );
-        $this->askHttpdRestartCommand()->execute($input, $output, $dialog);
+        $this->askHttpdRestartCommand()->execute($input, $output, $helper);
         break;
 
       default:
@@ -201,7 +202,7 @@ class ConfigCommand extends ContainerAwareCommand {
 
     $output->writeln("<info>Press <comment>ENTER</comment> once you have added or verified the line.</info>");
     $output->writeln("");
-    $dialog->askHiddenResponse($output, '', FALSE);
+    $helper->ask($input, $output, new Question(''));
 
     $output->writeln("<info>==================================[ Test ]==================================</info>");
     $output->writeln("");
@@ -215,181 +216,91 @@ class ConfigCommand extends ContainerAwareCommand {
 
   protected function askDbDsn() {
     $db_type = $this->getContainer()->getParameter('db_type');
-    return $this->createPrompt($db_type)
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          $value = $dialog->askAndValidate(
-            $output,
-            "Enter dsn> ",
-            function ($dsn) {
-              return ConfigCommand::validateDsn($dsn);
-            },
-            FALSE,
-            $default
-          );
-          return (empty($value)) ? FALSE : $value;
-        }
-      );
+    $q = new Question('Enter dsn> ', $this->getContainer()->getParameter($db_type));
+    $q->setValidator([__CLASS__, 'validateDsn']);
+    return $this->createPrompt($db_type)->setAsk($q);
   }
-
 
   protected function askDbType() {
     return $this->createPrompt('db_type')
       ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          return $dialog->select($output,
-            "Enter db_type",
-            array(
-              'mysql_dsn' => 'MySQL: Specify administrative credentials (DSN)',
-              'mysql_mycnf' => 'MySQL: Read user+password+host+port from $HOME/.my.cnf (experimental)',
-              'mysql_ram_disk' => 'MySQL: Launch new DB in a ramdisk (Linux/OSX)',
-              'pg_dsn' => 'PostgreSQL: Specify administrative credentials (DSN)',
-            ),
-            $default
-          );
-        }
+        new ChoiceQuestion(
+          'Select db_type> ',
+          [
+            'mysql_dsn' => 'MySQL: Specify administrative credentials (DSN)',
+            'mysql_mycnf' => 'MySQL: Read user+password+host+port from $HOME/.my.cnf (experimental)',
+            'mysql_ram_disk' => 'MySQL: Launch new DB in a ramdisk (Linux/OSX)',
+            'pg_dsn' => 'PostgreSQL: Specify administrative credentials (DSN)',
+          ],
+          $this->getContainer()->getParameter('db_type')
+        )
       );
   }
 
   protected function askPermType() {
-    return $this->createPrompt('perm_type')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          $options = array(
-            'none' => "\"none\": Do not set any special permissions for the web user",
-            'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)\n"
-            . "         In some distros+filesystems, this requires extra configuration.\n"
-            . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
-            'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
-            'custom' => '"custom": Set permissions with a custom command',
-            'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
-          );
-          $optionKeys = array_keys($options);
-
-          $defaultPos = array_search($default, $optionKeys);
-          if ($defaultPos === FALSE) {
-            $defaultPos = '0';
-          }
-          $selectedNum = $dialog->select($output,
-            "Enter perm_type",
-            array_values($options),
-            $defaultPos
-          );
-          return $optionKeys[$selectedNum];
-        }
-      );
+    $q = new ChoiceQuestion('Select file permission mode> ', [
+      'none' => "\"none\": Do not set any special permissions for the web user",
+      'linuxAcl' => "\"linuxAcl\": Set tight, inheritable permissions with Linux ACLs [setfacl] (recommended)\n"
+      . "         In some distros+filesystems, this requires extra configuration.\n"
+      . "         eg For Debian-based distros: https://help.ubuntu.com/community/FilePermissionsACLs",
+      'osxAcl' => '"osxAcl": Set tight, inheritable permissions with OS X ACLs [chmod +a] (recommended)',
+      'custom' => '"custom": Set permissions with a custom command',
+      'worldWritable' => '"worldWritable": Set loose, generic permissions [chmod 1777] (discouraged)',
+    ], $this->getContainer()->getParameter('perm_type'));
+    return $this->createPrompt('perm_type')->setAsk($q);
   }
 
   protected function askPermUser() {
-    return $this->createPrompt('perm_user')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          $value = $dialog->askAndValidate(
-            $output,
-            "Enter perm_user> ",
-            function ($user) {
-              return \Amp\Util\User::validateUser($user);
-            },
-            FALSE,
-            $default
-          );
-          return (empty($value)) ? FALSE : $value;
-        }
-      );
+    $q = new Question('Enter perm_user> ', $this->getContainer()->getParameter('perm_user'));
+    $q->setValidator([User::class, 'validateUser']);
+    return $this->createPrompt('perm_user')->setAsk($q);
   }
 
-  protected function askPermCommand() {
-    return $this->createPrompt('perm_custom_command')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          $value = $dialog->askAndValidate(
-            $output,
-            "Enter perm_custom_command> ",
-            function ($command) use ($output) {
-              $testDir = $this->getContainer()->getParameter('app_dir')
-                . DIRECTORY_SEPARATOR . 'tmp'
-                . DIRECTORY_SEPARATOR . \Amp\Util\StringUtil::createRandom(16);
-              $output->writeln("<info>Executing against test directory ($testDir)</info>");
-              $result = \Amp\Permission\External::validateDirCommand($testDir, $command);
-              $output->writeln("<info>OK (Executed without error)</info>");
-              return $result;
-            },
-            FALSE,
-            $default
-          );
-          return (empty($value)) ? FALSE : $value;
-        }
-      );
+  protected function askPermCommand(OutputInterface $output) {
+    $q = new Question('Enter perm_custom_command> ', $this->getContainer()->getParameter('perm_user'));
+    $q->setValidator(function ($command) use ($output) {
+      $testDir = $this->getContainer()->getParameter('app_dir')
+        . DIRECTORY_SEPARATOR . 'tmp'
+        . DIRECTORY_SEPARATOR . \Amp\Util\StringUtil::createRandom(16);
+      $output->writeln("<info>Executing against test directory ($testDir)</info>");
+      $result = \Amp\Permission\External::validateDirCommand($testDir, $command);
+      $output->writeln("<info>OK (Executed without error)</info>");
+      return $result;
+    });
+    return $this->createPrompt('perm_custom_command')->setAsk($q);
   }
 
   protected function askHostsType($file, $ip) {
-    return $this->createPrompt('hosts_type')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) use ($file, $ip) {
-          return $dialog->select($output,
-            "Enter hosts_type",
-            array(
-              'file' => "File-based hosts. Automatically add records to \"$file\" using IP ($ip) and sudo.",
-              'none' => 'None. Manually configure hostnames with your own tool.',
-            ),
-            $default
-          );
-        }
-      );
+    $q = new ChoiceQuestion('Select hosts_type> ', [
+      'file' => "File-based hosts. Automatically add records to \"$file\" using IP ($ip) and sudo.",
+      'none' => 'None. Manually configure hostnames with your own tool.',
+    ], $this->getContainer()->getParameter('hosts_type'));
+    return $this->createPrompt('hosts_type')->setAsk($q);
   }
 
   protected function askHttpdType() {
-    return $this->createPrompt('httpd_type')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          return $dialog->select($output,
-            "Enter httpd_type",
-            array(
-              'apache' => 'Apache 2.3 or earlier',
-              'apache24' => 'Apache 2.4 or later',
-              'nginx' => 'nginx (WIP)',
-              'none' => 'None (Note: You must configure any vhosts manually.)',
-            ),
-            $default
-          );
-        }
-      );
+    $q = new ChoiceQuestion('Select httpd_type> ', [
+      'apache' => 'Apache 2.3 or earlier',
+      'apache24' => 'Apache 2.4 or later',
+      'nginx' => 'nginx (WIP)',
+      'none' => 'None (Note: You must configure any vhosts manually.)',
+    ], $this->getContainer()->getParameter('httpd_type'));
+    return $this->createPrompt('httpd_type')->setAsk($q);
   }
 
   protected function askHttpdVisibility() {
-    return $this->createPrompt('httpd_visibility')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          return $dialog->select($output,
-            "Enter httpd_visibility",
-            array(
-              'local' => "Virtual hosts should bind to localhost.\n"
-              . '         Recommended to avoid exposing local development instances.',
-              'all' => "Virtual hosts should bind to all available IP addresses.\n"
-              . '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
-            ),
-            $default
-          );
-        }
-      );
+    $q = new ChoiceQuestion('Select httpd_visibility> ', [
+      'local' => "Virtual hosts should bind to localhost.\n" .
+        '         Recommended to avoid exposing local development instances.',
+      'all' => "Virtual hosts should bind to all available IP addresses.\n" .
+        '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
+    ], $this->getContainer()->getParameter('httpd_visibility'));
+    return $this->createPrompt('httpd_visibility')->setAsk($q);
   }
 
   protected function askHttpdRestartCommand() {
-    return $this->createPrompt('httpd_restart_command')
-      ->setAsk(
-        function ($default, InputInterface $input, OutputInterface $output, DialogHelper $dialog) {
-          $value = $dialog->askAndValidate(
-            $output,
-            "Enter httpd_restart_command> ",
-            function ($command) use ($output) {
-              return $command;
-            },
-            FALSE,
-            $default
-          );
-          return (empty($value)) ? FALSE : $value;
-        }
-      );
+    $q = new Question('Enter httpd_restart_command> ', $this->getContainer()->getParameter('httpd_restart_command'));
+    return $this->createPrompt('httpd_restart_command')->setAsk($q);
   }
 
   /**
