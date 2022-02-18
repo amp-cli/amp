@@ -31,12 +31,16 @@ class PortCheckerTest extends \PHPUnit\Framework\TestCase {
   /**
    * If calling checkPort without an explicit port or an default port,
    * throw an exception
-   *
-   * @expectedException Exception
    */
   public function testCheckUrlException(): void {
-    $checker = new \Amp\Util\PortChecker();
-    $checker->checkUrl('invalidscheme://example.com');
+    try {
+      $checker = new \Amp\Util\PortChecker();
+      $checker->checkUrl('invalidscheme://example.com');
+      $this->fail("Expected exception for invalid schema");
+    }
+    catch (\Exception $e) {
+      $this->assertRegexp(';Cannot check;', $e->getMessage());
+    }
   }
 
   public function testFilterUrls(): void {
