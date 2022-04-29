@@ -28,7 +28,10 @@
         "platform": {
             "php": "7.2"
         },
-        "bin-dir": "bin"
+        "bin-dir": "bin",
+        "allow-plugins": {
+            "civicrm/composer-downloads-plugin": true
+        }
     },
     "extra": {
         "downloads": {

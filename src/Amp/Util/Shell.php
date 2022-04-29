@@ -12,7 +12,11 @@ class Shell {
    */
   public static function fmt() {
     $args = func_get_args();
-    return implode(' ', array_map('escapeshellarg', $args));
+    return implode(' ', array_map(['Amp\Util\Shell', 'escapesArg'], $args));
+  }
+
+  private static function escapeArg($value = NULL) {
+    return escapeshellarg($value ?: '');
   }
 
   public static function run($command, $options = array()) {
