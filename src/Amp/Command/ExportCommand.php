@@ -69,7 +69,7 @@ class ExportCommand extends ContainerAwareCommand {
       "{$prefix}DB_ARGS" => $instance->getDatasource() ? $instance->getDatasource()->toMySQLArguments($this->getContainer()->getParameter('my_cnf_dir')) : '',
     );
     foreach ($envVars as $var => $value) {
-      $output->writeln($var . '=' . escapeshellarg($value));
+      $output->writeln($var . '=' . escapeshellarg($value ?: ''));
     }
     // $output->writeln('export ' . implode(' ', array_keys($envVars)));
   }
