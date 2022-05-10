@@ -17,6 +17,14 @@ function absdirname() {
   popd >> /dev/null
 }
 
+function nixrun() {
+  # nix run "$@"
+  ## ^^^ Nix 2.3? 2.4? Something like that. No longer works in 2.7.
+  # https://github.com/NixOS/nix/issues/5081 + https://discourse.nixos.org/t/error-experimental-nix-feature-nix-command-is-disabled/18089/2
+  nix --extra-experimental-features nix-command shell "$@"
+  return $?
+}
+
 ###############################################################################
 ## Execute the mysqld integration tests using the "ramdisk" style
 ## usage: test_ramdisk_nix <mysql-pkg-name> <nix-repo-url>
@@ -28,9 +36,9 @@ function test_ramdisk_nix() {
   echo "[$name] Start"
 
   ## TIP: If one of these tests fails, then manually start the given daemon with:
-  ## $ nix run -f <url> <pkg> -c test-amp-ramdisk amp mysql:start
+  ## $ nixrun -f <url> <pkg> -c test-amp-ramdisk amp mysql:start
 
-  if nix run -f "$url" "$pkg" -c test-amp-ramdisk "$PHPUNIT" --group mysqld ; then
+  if nixrun -f "$url" "$pkg" -c test-amp-ramdisk "$PHPUNIT" --group mysqld ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
@@ -48,7 +56,7 @@ function test_phpunit() {
   shift 2
   local name="Unit tests ($pkg from $url; $@)"
   echo "[$name] Start"
-  if nix run -f "$url" "$pkg" -c php $(which "$PHPUNIT") "$@" ; then
+  if nixrun -f "$url" "$pkg" -c php $(which "$PHPUNIT") "$@" ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
