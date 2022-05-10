@@ -79,6 +79,8 @@ if [ ! -f "$PRJDIR/bin/amp" ]; then
   exit 1
 fi
 
+PIN_2205="https://github.com/nixos/nixpkgs/archive/6794a2c3f67a92f374e02c52edf6442b21a52ecb.tar.gz"
+
 EXIT_CODE=0
 pushd "$PRJDIR"
   "$COMPOSER" install
@@ -87,14 +89,14 @@ pushd "$PRJDIR"
 
   ## (1) The 'unit' tests are lower-level tests for PHP classes/functions. These are executed with multiple versions of PHP.
   test_phpunit     php72   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group unit
-  test_phpunit     php74   https://github.com/NixOS/nixpkgs-channels/archive/nixos-20.03.tar.gz --group unit
-  test_phpunit     php80   https://github.com/nixos/nixpkgs/archive/594fbfe27905f2fd98d9431038814e497b4fcad1.tar.gz --group unit
-  test_phpunit     php81   https://github.com/nixos/nixpkgs/archive/6794a2c3f67a92f374e02c52edf6442b21a52ecb.tar.gz --group unit
+  test_phpunit     php74   "$PIN_2205" --group unit
+  test_phpunit     php80   "$PIN_2205" --group unit
+  test_phpunit     php81   "$PIN_2205" --group unit
 
   ## (2) The 'mysqld' tests are higher-level integration tests for working with the DBMS. These are executed with multiple versions of MySQL.
   test_ramdisk_nix mysql55 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
-  test_ramdisk_nix mysql80 https://github.com/NixOS/nixpkgs/archive/20.09.tar.gz
+  test_ramdisk_nix mysql80 "$PIN_2205"
 popd
 exit $EXIT_CODE
