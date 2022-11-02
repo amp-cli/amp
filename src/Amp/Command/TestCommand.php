@@ -24,6 +24,11 @@ class TestCommand extends ContainerAwareCommand {
   private $expectedResponse;
 
   /**
+   * @var Filesystem
+   */
+  private $fs;
+
+  /**
    * @param \Amp\Application $app
    * @param string|null $name
    */
