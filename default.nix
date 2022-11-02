@@ -1,7 +1,8 @@
 ## NOTE: This file has only be used for local development shells.  It has
 ## not be tested for use as a deployment script.
 
-{pkgs ? import (fetchTarball { url = "https://github.com/nixos/nixpkgs/archive/6794a2c3f67a92f374e02c52edf6442b21a52ecb.tar.gz"; sha256 = "05dyh9lbqijbafzzdjvha6jczcji753vrr5nkz34bbcn61anm4cw"; }) {
+## Prefer nixpkgs 22.05 (same as buildkit)
+{pkgs ? import (fetchTarball { url = "https://github.com/nixos/nixpkgs/archive/ce6aa13369b667ac2542593170993504932eb836.tar.gz"; sha256 = "0d643wp3l77hv2pmg2fi7vyxn4rwy0iyr8djcw1h5x72315ck9ik"; }) {
     inherit system;
   },
   system ? builtins.currentSystem,
