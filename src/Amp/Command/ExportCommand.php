@@ -12,6 +12,11 @@ use Symfony\Component\Console\Output\StreamOutput;
 class ExportCommand extends ContainerAwareCommand {
 
   /**
+   * @var Filesystem
+   */
+  private $fs;
+
+  /**
    * @param \Amp\Application $app
    * @param string|null $name
    */
