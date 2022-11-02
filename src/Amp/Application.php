@@ -1,9 +1,12 @@
 <?php
 namespace Amp;
+
 use Amp\Util\Process;
+use LesserEvil\ShellVerbosityIsEvil;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -195,6 +198,12 @@ class Application extends \Symfony\Component\Console\Application {
     $newArgv = array($argv[0], 'config:upgrade');
     $exitCode = $this->doRunCommand($command, new ArgvInput($newArgv), new ConsoleOutput());
     return $exitCode;
+  }
+
+  protected function configureIO(InputInterface $input, OutputInterface $output) {
+    ShellVerbosityIsEvil::doWithoutEvil(function() use ($input, $output) {
+      parent::configureIO($input, $output);
+    });
   }
 
 }

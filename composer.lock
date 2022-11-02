@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edc9ea179228529e4b9a7d4bd6fdb52e",
+    "content-hash": "5cf96ab2049669c3d0295f2aa112eced",
     "packages": [
         {
             "name": "civicrm/composer-downloads-plugin",
@@ -59,6 +59,42 @@
                 "source": "https://github.com/civicrm/composer-downloads-plugin/tree/v3.0.1"
             },
             "time": "2020-11-02T05:26:23+00:00"
+        },
+        {
+            "name": "lesser-evil/shell-verbosity-is-evil",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/totten/shell-verbosity-is-evil.git",
+                "reference": "4195bce7e3adaeda6d4747a1f3ec3c39b124f169"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/totten/shell-verbosity-is-evil/zipball/4195bce7e3adaeda6d4747a1f3ec3c39b124f169",
+                "reference": "4195bce7e3adaeda6d4747a1f3ec3c39b124f169",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "LesserEvil\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tim Otten",
+                    "email": "totten@civicrm.org"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/totten/shell-verbosity-is-evil/issues",
+                "source": "https://github.com/totten/shell-verbosity-is-evil/tree/v1.0.0"
+            },
+            "time": "2022-11-02T23:02:43+00:00"
         },
         {
             "name": "psr/container",
@@ -459,12 +495,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Ctype\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -1202,5 +1238,5 @@
     "platform-overrides": {
         "php": "7.2"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.3.0"
 }
