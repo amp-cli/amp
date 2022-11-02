@@ -24,7 +24,7 @@ nix-shell
 ## Run the test suites
 ./scripts/run-tests.sh
 
-## Run the build, creating amp.phar
+## Run the build, creating "dist/amp.phar"
 ./scripts/run-build.sh
 ```
 
