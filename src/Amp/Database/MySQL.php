@@ -1,11 +1,10 @@
 <?php
 namespace Amp\Database;
-use Amp\Database\DatabaseManagementInterface;
-use Amp\Database\Datasource;
 
 class MySQL implements DatabaseManagementInterface {
+
   /**
-   * @var Datasource
+   * @var \Amp\Database\Datasource
    */
   protected $adminDatasource = NULL;
 
@@ -13,7 +12,7 @@ class MySQL implements DatabaseManagementInterface {
    * @return bool
    */
   public function isRunning() {
-    return TRUE; // FIXME
+    return TRUE; /* FIXME */
   }
 
   /**
@@ -48,7 +47,7 @@ class MySQL implements DatabaseManagementInterface {
    * Create a datasource representing a new user and database
    *
    * @param string $hint an advisory string; ideally included in $db/$user
-   * @return Datasource;
+   * @return \Amp\Database\Datasource
    */
   public function createDatasource($hint) {
     $pass = \Amp\Util\StringUtil::createRandom(16);
@@ -70,7 +69,7 @@ class MySQL implements DatabaseManagementInterface {
   /**
    * Create a database and grant access to a (new) user
    *
-   * @param Datasource $datasource
+   * @param \Amp\Database\Datasource $datasource
    * @param string $perm PERM_SUPER, PERM_ADMIN
    */
   public function createDatabase(Datasource $datasource, $perm = DatabaseManagementInterface::PERM_ADMIN) {
@@ -139,7 +138,7 @@ class MySQL implements DatabaseManagementInterface {
   /**
    * Create a database and grant access to a (new) user
    *
-   * @param Datasource $datasource
+   * @param \Amp\Database\Datasource $datasource
    */
   public function dropDatabase($datasource) {
     $dbh = $this->adminDatasource->createPDO();
