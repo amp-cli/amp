@@ -11,4 +11,4 @@ let
 
   shells = (import ./nix/shells.nix) { inherit pkgs; };
 
-in shells.php74m80
+in shells.php82m80
