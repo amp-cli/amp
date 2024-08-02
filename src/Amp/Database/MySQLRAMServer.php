@@ -5,6 +5,7 @@ use Amp\Database\Datasource;
 use Amp\Database\MySQL;
 use Amp\Util\Path;
 use Amp\Util\Shell;
+use Amp\Util\Version;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MySQLRAMServer extends MySQL {
@@ -185,8 +186,16 @@ class MySQLRAMServer extends MySQL {
       $parts[] = '--disable-log-bin';
     }
 
-    if (version_compare($mysqldVersion, '8.0', '>=') && !$isMariaDB) {
+    if ($isMariaDB) {
+      // skip auth-plugin options
+    }
+    elseif (Version::compare('8.0', '<=', $mysqldVersion, '<', '8.4')) {
+      // Allow mysql clients running PHP 7.1-7.3 to connect as root (et al)
       $parts[] = '--default-authentication-plugin=mysql_native_password';
+    }
+    elseif (Version::compare('8.4', '<=', $mysqldVersion, '<', '9')) {
+      // Allow mysql clients running PHP 7.1-7.3 to connect as root (et al)
+      $parts[] = '--mysql-native-password=on --authentication-policy=mysql_native_password';
     }
 
     return "$cmd --no-defaults " . implode(' ', $parts);
@@ -250,7 +259,9 @@ class MySQLRAMServer extends MySQL {
     }
 
     $options .= (version_compare($mysqldVersion, '5.7.2', '<=') || $isMariaDB) ? ' --log-warnings=0' : ' --log-error-verbosity=1';
-    $options .= ' --innodb';
+    if ($isMariaDB || version_compare($mysqldVersion, '8.4', '<')) {
+      $options .= ' --innodb';
+    }
     $options .= ' --default-storage-engine=innodb';
     $options .= ' --max_allowed_packet=8M';
     $options .= ' --net_buffer_length=16K';

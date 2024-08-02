@@ -1,6 +1,8 @@
 <?php
 namespace Amp\Database;
 
+use Amp\Util\Version;
+
 class MySQL implements DatabaseManagementInterface {
 
   /**
@@ -86,7 +88,12 @@ class MySQL implements DatabaseManagementInterface {
     $alterUser = version_compare($versionParts[0], '5.7.0', '>=') ? TRUE : FALSE;
     if ($alterUser) {
       $createUserStatement .= " IF NOT EXISTS";
-      $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
+      // For mysqld 8.x with php <=7.4.3, you must set `mysql_native_password`.
+      // For mysqld 8.x with php >=7.4.4, setting `mysql_native_password` is optional. (But server or may not have it enabled.)
+      // For mysqld 9.x, you must NOT set `mysql_native_password`.
+      if (Version::compare('8.0', '<=', $versionParts[0], '<', '9')) {
+        $authenticationStatment = "IDENTIFIED WITH mysql_native_password BY";
+      }
       if (strpos($version, 'MariaDB') !== FALSE) {
         $dbh->exec("$createUserStatement '$user'@'localhost'");
         $dbh->exec("$createUserStatement '$user'@'%'");
