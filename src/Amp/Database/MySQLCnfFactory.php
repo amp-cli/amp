@@ -22,17 +22,17 @@ class MySQLCnfFactory {
   }
 
   /**
-   * @var array of string
+   * @var string[]
    */
   private $iniPaths;
 
   /**
-   * @var array of string
+   * @var string[]
    */
   private $defaultHostnames;
 
   /**
-   * @var array of int
+   * @var int[]
    */
   private $defaultPorts;
 
