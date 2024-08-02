@@ -80,6 +80,8 @@ if [ ! -f "$PRJDIR/bin/amp" ]; then
 fi
 
 PIN_2205="https://github.com/nixos/nixpkgs/archive/6794a2c3f67a92f374e02c52edf6442b21a52ecb.tar.gz"
+PIN_2405="https://github.com/nixos/nixpkgs/archive/44c8e39eb1fcc3906fcab5b0f971028d72f9e219.tar.gz"
+## ^^ Unofficial backports circa Jul 31, 2024; totten/v2405-p84m90
 
 EXIT_CODE=0
 pushd "$PRJDIR"
@@ -98,5 +100,7 @@ pushd "$PRJDIR"
   test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
   test_ramdisk_nix mysql80 "$PIN_2205"
+  test_ramdisk_nix mysql84 "$PIN_2405"
+  test_ramdisk_nix mysql90 "$PIN_2405"
 popd
 exit $EXIT_CODE
