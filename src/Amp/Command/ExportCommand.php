@@ -49,7 +49,7 @@ class ExportCommand extends ContainerAwareCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instance = $this->getContainer()->get('instances')->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
       throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));
@@ -77,6 +77,7 @@ class ExportCommand extends ContainerAwareCommand {
       $output->writeln($var . '=' . escapeshellarg($value ?: ''));
     }
     // $output->writeln('export ' . implode(' ', array_keys($envVars)));
+    return 0;
   }
 
 }

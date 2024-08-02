@@ -32,7 +32,7 @@ class MysqlStartCommand extends ContainerAwareCommand {
       ->setDescription('(For mysql_ram_disk only) Start the ramdisk and MySQL services');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
 
@@ -56,6 +56,7 @@ class MysqlStartCommand extends ContainerAwareCommand {
     }
     $pid = trim(file_get_contents($db->mysqld_pid_path));
     $output->writeln($pid, OutputInterface::OUTPUT_PLAIN);
+    return 0;
   }
 
 }

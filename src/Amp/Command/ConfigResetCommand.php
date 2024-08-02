@@ -34,7 +34,7 @@ class ConfigResetCommand extends ContainerAwareCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $found = FALSE;
     foreach ($this->config->getParameters() as $key) {
       if ($input->getOption($key) || $input->getOption('all')) {
@@ -49,6 +49,8 @@ class ConfigResetCommand extends ContainerAwareCommand {
     else {
       $output->writeln('<error>No properties specified</error>');
     }
+
+    return 0;
   }
 
 }

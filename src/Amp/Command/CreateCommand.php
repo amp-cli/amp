@@ -71,7 +71,7 @@ Or by creating a file in the web-root (or its parent):
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
 
@@ -110,6 +110,8 @@ Or by creating a file in the web-root (or its parent):
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_QUIET) {
       $this->export($instance->getRoot(), $instance->getName(), $input->getOption('prefix'), $input->getOption('output-file'), $output);
     }
+
+    return 0;
   }
 
   protected function export($root, $name, $prefix, $output_file_path, OutputInterface $output) {

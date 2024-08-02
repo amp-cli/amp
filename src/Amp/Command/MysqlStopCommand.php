@@ -32,7 +32,7 @@ class MysqlStopCommand extends ContainerAwareCommand {
       ->setDescription('(For mysql_ram_disk only) Stop the ramdisk-based MySQL service');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
 
@@ -59,6 +59,8 @@ class MysqlStopCommand extends ContainerAwareCommand {
     if (!$result) {
       $output->getErrorOutput()->writeln("Fasdf");
     }
+
+    return 0;
   }
 
 }

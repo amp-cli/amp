@@ -31,7 +31,7 @@ class ConfigCommand extends ContainerAwareCommand {
       ->setDescription('Interactively configure amp');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $helper = $this->getHelper('question');
 
     $output->writeln("<info>"
@@ -212,6 +212,8 @@ class ConfigCommand extends ContainerAwareCommand {
     // FIXME: auto-detect "amp" vs "./bin/amp" vs "./amp"
 
     $this->config->save();
+
+    return 0;
   }
 
   protected function askDbDsn() {

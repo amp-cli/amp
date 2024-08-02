@@ -48,7 +48,7 @@ class TestCommand extends ContainerAwareCommand {
   }
 
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     /** @var \Amp\InstanceRepository $instances */
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
@@ -116,6 +116,8 @@ class TestCommand extends ContainerAwareCommand {
     if (!rmdir($dataDir)) {
       $output->writeln("<error>Failed to clean up data directory: $dataDir</error>");
     }
+
+    return 0;
   }
 
   /**

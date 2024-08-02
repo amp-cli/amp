@@ -31,10 +31,10 @@ class ConfigGetCommand extends ContainerAwareCommand {
       ->addArgument('key', InputArgument::OPTIONAL, 'Name of a configuration field');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     if ($input->getArgument('key')) {
       $output->writeln($this->getContainer()->getParameter($input->getArgument('key')));
-      return;
+      return 0;
     }
 
     $rows = array();
@@ -46,6 +46,8 @@ class ConfigGetCommand extends ContainerAwareCommand {
     $table->setHeaders(array('Key', 'Value', 'Description'));
     $table->setRows($rows);
     $table->render();
+
+    return 0;
   }
 
 }

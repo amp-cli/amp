@@ -31,7 +31,7 @@ class CleanupCommand extends ContainerAwareCommand {
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Destroy ALL databases (regardless of whether the code exists)');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
     $count = 0;
@@ -49,6 +49,7 @@ class CleanupCommand extends ContainerAwareCommand {
     $output->writeln("Destroyed {$count} instance(s)");
 
     $instances->save();
+    return 0;
   }
 
 }

@@ -43,16 +43,17 @@ class DestroyCommand extends ContainerAwareCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
     $instance = $instances->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
-      return;
+      return 0;
     }
 
     $instances->remove($instance->getId());
     $instances->save();
+    return 0;
   }
 
 }

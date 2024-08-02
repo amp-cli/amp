@@ -32,7 +32,7 @@ class DatadirCommand extends ContainerAwareCommand {
       ->addArgument("path", InputArgument::IS_ARRAY | InputArgument::REQUIRED, "Path to a web-writable data-directory");
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $perm = $this->getContainer()->get('perm');
     foreach ($input->getArgument('path') as $path) {
       if (!$this->fs->exists($path)) {
@@ -45,6 +45,8 @@ class DatadirCommand extends ContainerAwareCommand {
         $perm->applyDirPermission('write', $path);
       }
     }
+
+    return 0;
   }
 
 }

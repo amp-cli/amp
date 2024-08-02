@@ -74,7 +74,7 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
       ->setDescription('Upgrade the configuration');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $startVer = $this->config->getParameter('version');
     if (empty($startVer)) {
       $startVer = 1; // Legacy file which predates versioning.
@@ -99,6 +99,7 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
       $this->config->save();
       $this->resetContainer();
     }
+    return 0;
   }
 
   protected function upgradeV1ToV2() {

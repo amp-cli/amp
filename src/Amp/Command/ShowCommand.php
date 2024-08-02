@@ -21,7 +21,7 @@ class ShowCommand extends ContainerAwareCommand {
       ->setDescription('Show a list of all containers');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     if ($output->getVerbosity() > OutputInterface::VERBOSITY_NORMAL) {
       $rows = array();
@@ -57,6 +57,7 @@ class ShowCommand extends ContainerAwareCommand {
       $table->render();
       $output->writeln('For more detailed info, use "amp show -v" or "amp export [--root=X] [---name=X]');
     }
+    return 0;
   }
 
 }
