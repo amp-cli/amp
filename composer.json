@@ -34,21 +34,6 @@
             "civicrm/composer-downloads-plugin": true
         }
     },
-    "extra": {
-        "downloads": {
-            "box": {
-                "url": "https://github.com/humbug/box/releases/download/3.16.0/box.phar",
-                "path": "extern/box",
-                "type": "phar"
-            },
-            "phpunit8": {
-                "version": "8.x",
-                "url": "https://phar.phpunit.de/phpunit-8.phar",
-                "path": "extern/phpunit",
-                "type": "phar"
-            }
-        }
-    },
     "authors": [
         {
             "name": "Tim Otten",

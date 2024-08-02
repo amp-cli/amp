@@ -17,5 +17,5 @@ set -ex
 pushd "$PRJDIR"
   composer install --prefer-dist --no-progress --no-suggest --no-dev
   which box
-  php -d phar.readonly=0 `which box` build -v
+  php -d phar.readonly=0 `which box` compile -v
 popd

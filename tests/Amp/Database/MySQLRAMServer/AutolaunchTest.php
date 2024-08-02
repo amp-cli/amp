@@ -17,6 +17,11 @@ class AutolaunchTest extends \PHPUnit\Framework\TestCase {
     parent::setUp();
   }
 
+  public function tearDown(): void {
+    PH::runOk('killall mysqld');
+    static::removeDir(static::getAmpHome());
+  }
+
   /**
    * Start mysqld, connect to it, and stop it.
    */
