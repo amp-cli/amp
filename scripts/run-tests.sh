@@ -85,7 +85,7 @@ pushd "$PRJDIR"
   test_phpunit     php73m80   --group unit        | tee "tmp/unit-php73.txt"
   test_phpunit     php74m80   --group unit        | tee "tmp/unit-php74.txt"
   test_phpunit     php80m80   --group unit        | tee "tmp/unit-php80.txt"
-  # test_phpunit     php84m80   --group unit        | tee "tmp/unit-php84.txt"
+  test_phpunit     php84m80   --group unit        | tee "tmp/unit-php84.txt"
 
   ## (2) The 'mysqld' tests are higher-level integration tests for working with the DBMS. These are executed with multiple versions of MySQL.
   DB_PROFILES="php73m55 $(echo php{73,74,83}m{57,80,84,90})"
