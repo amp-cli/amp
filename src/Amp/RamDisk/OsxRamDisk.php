@@ -15,7 +15,8 @@ class OsxRamDisk implements RamDiskInterface {
   public $size_mb;
 
   /**
-   * @var string the file which stores the name of the ramdisk block device
+   * The file which stores the name of the ramdisk block device
+   * @var string
    */
   public $dev_file;
 

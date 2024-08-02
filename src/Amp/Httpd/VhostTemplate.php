@@ -6,7 +6,8 @@ use Symfony\Component\Templating\EngineInterface;
 
 class VhostTemplate implements HttpdInterface {
   /**
-   * @var string, path to which we should write new config files
+   * Path to which we should write new config files
+   * @var string
    */
   private $dir;
 
@@ -16,7 +17,8 @@ class VhostTemplate implements HttpdInterface {
   private $fs;
 
   /**
-   * @var string absolute path to a log directory
+   * Absolute path to a log directory
+   * @var string
    */
   private $logDir;
 
@@ -26,7 +28,8 @@ class VhostTemplate implements HttpdInterface {
   private $perm;
 
   /**
-   * @var string, name of the template file
+   * Name of the template file
+   * @var string
    */
   private $defaultTemplate;
 
@@ -36,7 +39,8 @@ class VhostTemplate implements HttpdInterface {
   private $templateEngine;
 
   /**
-   * @var string, a symbolic name for the template to lookup
+   * A symbolic name for the template to lookup
+   * @var string
    *
    * Ex: `nginx`, `apache24`.
    */

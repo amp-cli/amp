@@ -19,12 +19,15 @@ use Symfony\Component\Filesystem\Filesystem;
 class Application extends \Symfony\Component\Console\Application {
 
   /**
-   * @var string the base location for writable data
+   * The base location for writable data
+   *
+   * @var string
    */
   private $appDir;
 
   /**
-   * @var array of string places to search for config files
+   * Places to search for config files
+   * @var string[]
    */
   private $configDirectories;
 

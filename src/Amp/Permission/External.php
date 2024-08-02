@@ -6,7 +6,8 @@ use Symfony\Component\Process\Process;
 class External implements PermissionInterface {
 
   /**
-   * @var array (string $perm => string $command)
+   * @var array
+   *   (string $perm => string $command)
    */
   var $dirCommands;
 

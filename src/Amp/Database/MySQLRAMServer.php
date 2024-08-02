@@ -26,7 +26,9 @@ class MySQLRAMServer extends MySQL {
   public $app_armor;
 
   /**
-   * @var array list of SQL files to load into the new database
+   * List of SQL files to load into the new database
+   *
+   * @var array
    */
   public $default_data_files;
 

@@ -3,7 +3,8 @@ namespace Amp\Util;
 class PortChecker {
 
   /**
-   * @var array (string $scheme => int $port)
+   * @var array
+   *   (string $scheme => int $port)
    */
   protected $defaultPorts;
 

@@ -18,8 +18,9 @@ class TestCommand extends ContainerAwareCommand {
   private $templateEngine;
 
   /**
-   * @var string a random value that should be returned by canary
-   * if it runs successfully
+   * A random value that should be returned by canary, if it runs successfully
+   *
+   * @var string
    */
   private $expectedResponse;
 

@@ -17,7 +17,8 @@ class ConfigRepository {
   var $descriptions;
 
   /**
-   * @var array (string $parameter => callable $callback)
+   * @var array
+   *   (string $parameter => callable $callback)
    */
   var $exampleCallbacks;
 

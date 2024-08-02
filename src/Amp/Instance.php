@@ -5,7 +5,9 @@ use Amp\Database\Datasource;
 class Instance {
 
   /**
-   * @var Datasource|NULL database credentials for the service
+   * Database credentials for the service
+   *
+   * @var Datasource|NULL
    */
   private $datasource;
 
@@ -15,17 +17,20 @@ class Instance {
   private $name;
 
   /**
-   * @var string|NULL local path to the document root
+   * Local path to the document root
+   * @var string|NULL
    */
   private $root;
 
   /**
-   * @var string|NULL public URL of the document root
+   * Public URL of the document root
+   * @var string|NULL
    */
   private $url;
 
   /**
-   * @var string which interfaces vhost should be available on (local or all)
+   * Which interfaces vhost should be available on (local or all)
+   * @var string
    */
   private $visibility;
 
