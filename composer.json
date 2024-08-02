@@ -11,7 +11,7 @@
         "symfony/yaml": "~5.4",
         "symfony/dependency-injection": "~4.4",
         "symfony/filesystem": "~5.4",
-        "symfony/templating": "~4.4",
+        "symfony/templating": "~5.4",
         "symfony/process": "~4.4",
         "totten/process-helper": "^1.0"
     },
