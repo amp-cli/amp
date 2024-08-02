@@ -1,17 +1,13 @@
 <?php
 namespace Amp\Database;
 
-use Amp\Database\Datasource;
-use Amp\Database\MySQL;
 use Amp\Util\Path;
-use Amp\Util\Shell;
 use Amp\Util\Version;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MySQLRAMServer extends MySQL {
 
   /**
-   * @var ContainerInterface
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
    */
   public $container;
 
@@ -39,7 +35,8 @@ class MySQLRAMServer extends MySQL {
     Path::mkdir_p_if_not_exists(Path::join($this->mysqld_data_path));
     Path::mkdir_p_if_not_exists($this->mysqld_tmp_path);
     if ($this->app_armor) {
-      $this->app_armor->setTmpPath($this->mysqld_tmp_path);  // TODO: move to services.yml or remove entirely
+      // TODO: move to services.yml or remove entirely
+      $this->app_armor->setTmpPath($this->mysqld_tmp_path);
       if (!$this->app_armor->isConfigured()) {
         $this->app_armor->configure();
       }
@@ -68,7 +65,8 @@ class MySQLRAMServer extends MySQL {
         }
         catch (\Exception $e) {
           if ($this->adminDatasource->isValid()) {
-            break; // may happen if user killed mysqld without resetting ramdisk
+            // may happen if user killed mysqld without resetting ramdisk
+            break;
           }
           $last_exception = $e;
         }

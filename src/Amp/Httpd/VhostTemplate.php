@@ -1,8 +1,8 @@
 <?php
 namespace Amp\Httpd;
+
 use Amp\Util\Filesystem;
 use Amp\Permission\PermissionInterface;
-use Symfony\Component\Templating\EngineInterface;
 
 class VhostTemplate implements HttpdInterface {
   /**
@@ -12,7 +12,7 @@ class VhostTemplate implements HttpdInterface {
   private $dir;
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -23,7 +23,7 @@ class VhostTemplate implements HttpdInterface {
   private $logDir;
 
   /**
-   * @var PermissionInterface
+   * @var \Amp\Permission\PermissionInterface
    */
   private $perm;
 
@@ -34,7 +34,7 @@ class VhostTemplate implements HttpdInterface {
   private $defaultTemplate;
 
   /**
-   * @var EngineInterface
+   * @var \Symfony\Component\Templating\EngineInterface
    */
   private $templateEngine;
 

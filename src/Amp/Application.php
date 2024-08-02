@@ -1,13 +1,10 @@
 <?php
 namespace Amp;
 
-use Amp\Util\Process;
 use LesserEvil\ShellVerbosityIsEvil;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;

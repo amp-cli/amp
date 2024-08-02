@@ -57,13 +57,13 @@ class OsxRamDisk implements RamDiskInterface {
     ));
   }
 
-//  public function unmount() {
-//    $device = $this->getDevice();
-//    if (!$device) throw \Exception
-//    umount "$this->getPath()"
-//    diskutil eject "$device"
-//    $this->setDevice(NULL);
-//  }
+  //  public function unmount() {
+  //    $device = $this->getDevice();
+  //    if (!$device) throw \Exception
+  //    umount "$this->getPath()"
+  //    diskutil eject "$device"
+  //    $this->setDevice(NULL);
+  //  }
 
   /**
    * @param null|string $dev the name of the OSX ram block device

@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+
 use Amp\Database\Datasource;
 
 class Instance {
@@ -7,24 +8,24 @@ class Instance {
   /**
    * Database credentials for the service
    *
-   * @var Datasource|NULL
+   * @var \Amp\Database\Datasource|null
    */
   private $datasource;
 
   /**
-   * @var string|NULL
+   * @var string|null
    */
   private $name;
 
   /**
    * Local path to the document root
-   * @var string|NULL
+   * @var string|null
    */
   private $root;
 
   /**
    * Public URL of the document root
-   * @var string|NULL
+   * @var string|null
    */
   private $url;
 
@@ -43,14 +44,14 @@ class Instance {
   }
 
   /**
-   * @param Datasource|NULL $datasource
+   * @param \Amp\Database\Datasource|NULL $datasource
    */
   public function setDatasource($datasource) {
     $this->datasource = $datasource;
   }
 
   /**
-   * @return Datasource|NULL
+   * @return \Amp\Database\Datasource|NULL
    */
   public function getDatasource() {
     return $this->datasource;

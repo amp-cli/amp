@@ -4,16 +4,14 @@ namespace Amp\Command;
 use Amp\Database\Datasource;
 use Amp\Instance;
 use Amp\Util\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Templating\EngineInterface;
 
 class TestCommand extends ContainerAwareCommand {
 
   /**
-   * @var EngineInterface
+   * @var \Symfony\Component\Templating\EngineInterface
    */
   private $templateEngine;
 
@@ -25,7 +23,7 @@ class TestCommand extends ContainerAwareCommand {
   private $expectedResponse;
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -44,10 +42,8 @@ class TestCommand extends ContainerAwareCommand {
     $this
       ->setName('test')
       ->setDescription('Test that amp is working')
-      ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'The URL at which to deploy the test app', 'http://localhost:7979')
-    ;
+      ->addOption('url', NULL, InputOption::VALUE_REQUIRED, 'The URL at which to deploy the test app', 'http://localhost:7979');
   }
-
 
   protected function execute(InputInterface $input, OutputInterface $output): int {
     /** @var \Amp\InstanceRepository $instances */
@@ -67,11 +63,13 @@ class TestCommand extends ContainerAwareCommand {
     list ($root, $dataDir) = $this->createCanaryFiles($output);
     $this->doCommand($output, OutputInterface::VERBOSITY_NORMAL, 'create', array(
       '--root' => $root,
-      '--force' => 1, // assume previous tests may have failed badly
+    // assume previous tests may have failed badly
+      '--force' => 1,
       '--url' => $defaultUrl,
     ));
     $output->writeln("");
-    $instances->load(); // force reload
+    // force reload
+    $instances->load();
     $instance = $instances->find(Instance::makeId($root, ''));
     $this->createConfigFile($instance->getRoot() . '/config.php', $instance->getDatasource(), $dataDir);
 
@@ -122,8 +120,8 @@ class TestCommand extends ContainerAwareCommand {
   }
 
   /**
-   * @param string $template path of the example canary script
-   * @return string, root path of the canary web app
+   * @param \Symfony\Component\Console\Output\OutputInterface $output
+   * @return array
    */
   protected function createCanaryFiles(OutputInterface $output) {
     // Create empty web dir
