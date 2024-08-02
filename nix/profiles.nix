@@ -38,14 +38,6 @@ let
   ## dbmsVersions = { m57=PKG, m80=PKG, r105=PKG, r106=PKG, ...}
   dbmsVersions = (rekeyRecord "mysql" "m" mysqlVersions) // (rekeyRecord "mariadb" "r" mariadbVersions);
 
-  mkShell = name: myPackages: pkgs.mkShell {
-    nativeBuildInputs = myPackages;
-    shellHook = ''
-      source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
-      PS1='\n\[\033[1;32m\][${name}:\w]\$\[\033[0m\] '
-    '';
-  };
-
   baseProfile = buildkit.profiles.base ++ [
     buildkit.pkgs.box
     buildkit.pkgs.composer
@@ -62,4 +54,4 @@ let
     ) acc (builtins.attrNames dbmsVersions)
   ) {} (builtins.attrNames phpVersions);
 
-in attrsets.mapAttrs mkShell combinations
+in combinations

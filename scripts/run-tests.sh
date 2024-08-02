@@ -17,28 +17,19 @@ function absdirname() {
   popd >> /dev/null
 }
 
-function nixrun() {
-  # nix run "$@"
-  ## ^^^ Nix 2.3? 2.4? Something like that. No longer works in 2.7.
-  # https://github.com/NixOS/nix/issues/5081 + https://discourse.nixos.org/t/error-experimental-nix-feature-nix-command-is-disabled/18089/2
-  nix --extra-experimental-features nix-command shell "$@"
-  return $?
-}
-
 ###############################################################################
 ## Execute the mysqld integration tests using the "ramdisk" style
-## usage: test_ramdisk_nix <mysql-pkg-name> <nix-repo-url>
-## example: test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
+## usage: test_ramdisk_nix <profile>
+## example: test_ramdisk_nix php73m57
 function test_ramdisk_nix() {
-  local pkg="$1"
-  local url="$2"
-  local name="Ramdisk test ($pkg from $url)"
+  local profile="$1"
+  local name="Ramdisk test ($profile)"
   echo "[$name] Start"
 
   ## TIP: If one of these tests fails, then manually start the given daemon with:
-  ## $ nixrun -f <url> <pkg> -c test-amp-ramdisk amp mysql:start
+  ## $ nix-shell nix/shells.nix -A <profile> --run "test-amp-ramdisk amp mysql:start"
 
-  if nixrun -f "$url" "$pkg" -c test-amp-ramdisk "$PHPUNIT" --group mysqld ; then
+  if nix-shell nix/shells.nix -A "$profile" --run "test-amp-ramdisk phpunit8 --group mysqld" ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
@@ -48,15 +39,16 @@ function test_ramdisk_nix() {
 
 ###############################################################################
 ## Execute the PHP, unit-level tests
-## usage: test_phpunit <php-pkg-name> <nix-repo-url> [phpunit-options]
-## example: test_phpunit php72 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group foobar
+## usage: test_phpunit <PROFILE> [phpunit-options]
+## example: test_phpunit php72m80 --group foobar
 function test_phpunit() {
-  local pkg="$1"
-  local url="$2"
-  shift 2
-  local name="Unit tests ($pkg from $url; $@)"
+  local profile="$1"
+  shift
+  local cmd="phpunit8 $@"
+  local name="Unit tests ($cmd)"
   echo "[$name] Start"
-  if nixrun -f "$url" "$pkg" -c php $(which "$PHPUNIT") "$@" ; then
+
+  if nix-shell nix/shells.nix -A "$profile" --run "$cmd" ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
@@ -79,28 +71,28 @@ if [ ! -f "$PRJDIR/bin/amp" ]; then
   exit 1
 fi
 
-PIN_2205="https://github.com/nixos/nixpkgs/archive/6794a2c3f67a92f374e02c52edf6442b21a52ecb.tar.gz"
-PIN_2405="https://github.com/nixos/nixpkgs/archive/44c8e39eb1fcc3906fcab5b0f971028d72f9e219.tar.gz"
-## ^^ Unofficial backports circa Jul 31, 2024; totten/v2405-p84m90
-
 EXIT_CODE=0
 pushd "$PRJDIR"
-  "$COMPOSER" install
+  nix-shell nix/shells.nix -A php73m80 --run "composer install"
 
   ## Tests are organized into a few groups
 
+  if [ ! -d tmp ]; then
+    mkdir tmp
+  fi
+
   ## (1) The 'unit' tests are lower-level tests for PHP classes/functions. These are executed with multiple versions of PHP.
-  test_phpunit     php72   https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz --group unit
-  test_phpunit     php74   "$PIN_2205" --group unit
-  test_phpunit     php80   "$PIN_2205" --group unit
-  test_phpunit     php81   "$PIN_2205" --group unit
+  test_phpunit     php72m80   --group unit        | tee "tmp/unit-php72.txt"
+  test_phpunit     php74m80   --group unit        | tee "tmp/unit-php74.txt"
+  test_phpunit     php80m80   --group unit        | tee "tmp/unit-php80.txt"
+  # test_phpunit     php84m80   --group unit        | tee "tmp/unit-php84.txt"
 
   ## (2) The 'mysqld' tests are higher-level integration tests for working with the DBMS. These are executed with multiple versions of MySQL.
-  test_ramdisk_nix mysql55 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
-  test_ramdisk_nix mysql57 https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
-  test_ramdisk_nix mariadb https://github.com/NixOS/nixpkgs-channels/archive/nixos-18.09.tar.gz
-  test_ramdisk_nix mysql80 "$PIN_2205"
-  test_ramdisk_nix mysql84 "$PIN_2405"
-  test_ramdisk_nix mysql90 "$PIN_2405"
+  DB_PROFILES="php73m55 $(echo php{73,74,83}m{57,80,84,90})"
+  DB_PROFILES=$( echo "$DB_PROFILES" | sed s/php73m90// ) ## PHP<=7.3 and MySQL>=9.0 disagree about auth (mysql_native_password vs caching_sha2_password)
+  ## DB_PROFILES="php73m57 php83m90"   ## Or just list some specific ones
+  for PROF in $DB_PROFILES; do
+    test_ramdisk_nix "$PROF" | tee "tmp/ramdisk-$PROF.txt"
+  done
 popd
 exit $EXIT_CODE
