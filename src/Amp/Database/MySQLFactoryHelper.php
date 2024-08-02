@@ -3,7 +3,6 @@ namespace Amp\Database;
 
 use Amp\Util\Path;
 use Amp\Util\Process;
-use Amp\Util\Shell;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 

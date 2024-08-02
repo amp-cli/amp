@@ -1,7 +1,6 @@
 <?php
 namespace Amp\Database;
 
-use Amp\Instance;
 use Amp\InstanceRepository;
 use Exception;
 
@@ -14,7 +13,7 @@ class MySQLPrecreated implements DatabaseManagementInterface {
   protected $adminDatasource = NULL;
 
   /**
-   * @var InstanceRepository
+   * @var \Amp\InstanceRepository
    */
   protected $instances;
 
@@ -66,22 +65,24 @@ class MySQLPrecreated implements DatabaseManagementInterface {
       $existing = $this->instances->findAll();
       do {
         $dsn = str_replace('{{db_seq}}', self::$db_seq++, $dsnPattern);
-        $isNumTaken = false; // does another existing DB use this data-source?
+        // does another existing DB use this data-source?
+        $isNumTaken = FALSE;
         foreach ($existing as $instance) {
-          /** @var Instance $instance */
+          /** @var \Amp\Instance $instance */
           $compare = $instance->getDatasource()->toCiviDSN();
           if ($this->stripOptions($compare) === $this->stripOptions($dsn)) {
-            $isNumTaken = true;
+            $isNumTaken = TRUE;
             break;
           }
         }
       } while ($isNumTaken);
-    } else {
+    }
+    else {
       $dsn = $dsnPattern;
     }
 
     $datasource = new Datasource(array(
-      'civi_dsn' => $dsn
+      'civi_dsn' => $dsn,
     ));
 
     return $datasource;
@@ -105,4 +106,5 @@ class MySQLPrecreated implements DatabaseManagementInterface {
   public function dropDatabase($datasource) {
     // do nothing
   }
+
 }

@@ -1,6 +1,5 @@
 <?php
 namespace Amp\Database;
-use Symfony\Component\Process\Process;
 
 class MySQLCnfFactory {
 
@@ -109,20 +108,20 @@ class MySQLCnfFactory {
 
   /*
   public static function pollPortViaCLI($command = 'echo "SHOW VARIABLES WHERE Variable_name = \'port\'" | mysql') {
-    $p = new Process($command);
-    $p->run();
-    if (!$p->isSuccessful()) {
-      throw new ProcessException($p, "Bad exit status");
-    }
-    $lines = explode("\n", trim($p->getOutput()));
-    if (count($lines) != 2) {
-      throw new ProcessException($p, "Wrong line count");
-    }
-    $parts = explode("\t", $lines[1]);
-    if (count($parts) != 2 || $parts[0] != 'port' || !is_numeric($parts[1])) {
-      throw new ProcessException($p, "Wrong column count");
-    }
-    return (int) $parts[1];
+  $p = new Process($command);
+  $p->run();
+  if (!$p->isSuccessful()) {
+  throw new ProcessException($p, "Bad exit status");
   }
-  */
+  $lines = explode("\n", trim($p->getOutput()));
+  if (count($lines) != 2) {
+  throw new ProcessException($p, "Wrong line count");
+  }
+  $parts = explode("\t", $lines[1]);
+  if (count($parts) != 2 || $parts[0] != 'port' || !is_numeric($parts[1])) {
+  throw new ProcessException($p, "Wrong column count");
+  }
+  return (int) $parts[1];
+  }
+   */
 }
