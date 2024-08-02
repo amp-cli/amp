@@ -1,5 +1,6 @@
 <?php
 namespace Amp\Hostname;
+
 use Symfony\Component\Process\PhpExecutableFinder;
 
 /**
@@ -84,7 +85,7 @@ class HostsFile implements HostnameInterface {
     }
     else {
       $newLine = $this->ip . " " . $hostname . "\n";
-      if ($content && $content[strlen($content)-1] !== "\n") {
+      if ($content && $content[strlen($content) - 1] !== "\n") {
         $newLine = "\n$newLine";
       }
       $cmd = 'file_put_contents(' . var_export($this->file, 1) . ',' . var_export($newLine, 1) . ', FILE_APPEND);';
@@ -173,6 +174,5 @@ class HostsFile implements HostnameInterface {
   public function setIp($ip) {
     $this->ip = $ip;
   }
-
 
 }

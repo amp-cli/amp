@@ -8,7 +8,7 @@ class RamDiskFactory {
   /**
    * Guess which implementation of ramdisk is most appropriate to the local system.
    *
-   * @param ContainerInterface $container
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    * @return object
    * @throws \RuntimeException
    */

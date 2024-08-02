@@ -1,5 +1,6 @@
 <?php
 namespace Amp\Util;
+
 class StringUtil {
   const ALPHANUMERIC = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
