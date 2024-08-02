@@ -11,14 +11,14 @@ use Symfony\Component\Console\Question\Question;
 class ConfigCommand extends ContainerAwareCommand {
 
   /**
-   * @var ConfigRepository
+   * @var \Amp\ConfigRepository
    */
   private $config;
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param ConfigRepository $config
+   * @param \Amp\ConfigRepository|null $config
    */
   public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
     $this->config = $config;
@@ -31,7 +31,7 @@ class ConfigCommand extends ContainerAwareCommand {
       ->setDescription('Interactively configure amp');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $helper = $this->getHelper('question');
 
     $output->writeln("<info>"
@@ -60,7 +60,6 @@ class ConfigCommand extends ContainerAwareCommand {
       . "       <fg=cyan;bg=black;option=bold>Test $ psql -U #user -W template1</fg=cyan;bg=black;option=bold>"
       . "</info>"
     );
-
 
     $this->askDbType()->execute($input, $output, $helper);
     $db_type = $this->getContainer()->getParameter('db_type');
@@ -212,6 +211,8 @@ class ConfigCommand extends ContainerAwareCommand {
     // FIXME: auto-detect "amp" vs "./bin/amp" vs "./amp"
 
     $this->config->save();
+
+    return 0;
   }
 
   protected function askDbDsn() {
@@ -291,9 +292,9 @@ class ConfigCommand extends ContainerAwareCommand {
   protected function askHttpdVisibility() {
     $q = new ChoiceQuestion('Select httpd_visibility> ', [
       'local' => "Virtual hosts should bind to localhost.\n" .
-        '         Recommended to avoid exposing local development instances.',
+      '         Recommended to avoid exposing local development instances.',
       'all' => "Virtual hosts should bind to all available IP addresses.\n" .
-        '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
+      '         <comment>Note</comment>: Instances will be publicly accessible over the network.',
     ], $this->getContainer()->getParameter('httpd_visibility'));
     return $this->createPrompt('httpd_visibility')->setAsk($q);
   }
@@ -331,16 +332,26 @@ class ConfigCommand extends ContainerAwareCommand {
 
   protected function findApacheConfigFiles() {
     $candidates = array();
-    $candidates[] = '/etc/apache2/apache2.conf'; // Debian
-    $candidates[] = '/etc/apache2/conf.d'; // Debian
-    $candidates[] = '/etc/apache2/httpd.conf'; // OS X
-    $candidates[] = '/etc/httpd/conf/httpd.conf'; // RedHat (Googled, untested)
-    $candidates[] = '/opt/local/apache2/conf/httpd.conf'; // MacPorts (Googled, untested)
-    $candidates[] = '/Applications/MAMP/conf/apache/httpd.conf'; // MAMP
-    $candidates[] = '/Applications/XAMPP/etc/httpd.conf'; // XAMPP OS X (Googled, untested)
-    $candidates[] = '/Applications/*/apache2/conf/httpd.conf'; // Bitnami OSX
-    $candidates[] = '/usr/local/etc/apache2x/httpd.conf'; // FreeBSD (Googled, untested)
-    $candidates[] = '/usr/local/etc/apache22/httpd.conf'; // FreeBSD (Googled, untested)
+    // Debian
+    $candidates[] = '/etc/apache2/apache2.conf';
+    // Debian
+    $candidates[] = '/etc/apache2/conf.d';
+    // OS X
+    $candidates[] = '/etc/apache2/httpd.conf';
+    // RedHat (Googled, untested)
+    $candidates[] = '/etc/httpd/conf/httpd.conf';
+    // MacPorts (Googled, untested)
+    $candidates[] = '/opt/local/apache2/conf/httpd.conf';
+    // MAMP
+    $candidates[] = '/Applications/MAMP/conf/apache/httpd.conf';
+    // XAMPP OS X (Googled, untested)
+    $candidates[] = '/Applications/XAMPP/etc/httpd.conf';
+    // Bitnami OSX
+    $candidates[] = '/Applications/*/apache2/conf/httpd.conf';
+    // FreeBSD (Googled, untested)
+    $candidates[] = '/usr/local/etc/apache2x/httpd.conf';
+    // FreeBSD (Googled, untested)
+    $candidates[] = '/usr/local/etc/apache22/httpd.conf';
 
     $matches = array();
     foreach ($candidates as $candidate) {
@@ -354,9 +365,12 @@ class ConfigCommand extends ContainerAwareCommand {
 
   protected function findNginxConfigFiles() {
     $candidates = array();
-    $candidates[] = '/etc/nginx/nginx.conf'; // Debian, RedHat
-    $candidates[] = '/opt/local/etc/nginx/nginx.conf'; // MacPorts (Googled, untested)
-    $candidates[] = '/usr/local/etc/nginx/nginx.conf '; // FreeBSD (Googled, untested)
+    // Debian, RedHat
+    $candidates[] = '/etc/nginx/nginx.conf';
+    // MacPorts (Googled, untested)
+    $candidates[] = '/opt/local/etc/nginx/nginx.conf';
+    // FreeBSD (Googled, untested)
+    $candidates[] = '/usr/local/etc/nginx/nginx.conf ';
 
     $matches = array();
     foreach ($candidates as $candidate) {

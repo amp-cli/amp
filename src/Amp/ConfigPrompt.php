@@ -24,7 +24,7 @@ class ConfigPrompt {
   private $config;
 
   /**
-   * @var ContainerInterface
+   * @var \Symfony\Component\DependencyInjection\ContainerInterface
    */
   private $container;
 

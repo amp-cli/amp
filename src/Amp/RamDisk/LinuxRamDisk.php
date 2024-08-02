@@ -61,7 +61,6 @@ class LinuxRamDisk implements RamDiskInterface {
     return $this->size_mb;
   }
 
-
   public function runCommand($command, $options = array()) {
     $options['print_command'] = TRUE;
     return \Amp\Util\Shell::run($command);

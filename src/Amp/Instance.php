@@ -1,31 +1,37 @@
 <?php
 namespace Amp;
+
 use Amp\Database\Datasource;
 
 class Instance {
 
   /**
-   * @var Datasource|NULL database credentials for the service
+   * Database credentials for the service
+   *
+   * @var \Amp\Database\Datasource|null
    */
   private $datasource;
 
   /**
-   * @var string|NULL
+   * @var string|null
    */
   private $name;
 
   /**
-   * @var string|NULL local path to the document root
+   * Local path to the document root
+   * @var string|null
    */
   private $root;
 
   /**
-   * @var string|NULL public URL of the document root
+   * Public URL of the document root
+   * @var string|null
    */
   private $url;
 
   /**
-   * @var string which interfaces vhost should be available on (local or all)
+   * Which interfaces vhost should be available on (local or all)
+   * @var string
    */
   private $visibility;
 
@@ -38,14 +44,14 @@ class Instance {
   }
 
   /**
-   * @param Datasource|NULL $datasource
+   * @param \Amp\Database\Datasource|NULL $datasource
    */
   public function setDatasource($datasource) {
     $this->datasource = $datasource;
   }
 
   /**
-   * @return Datasource|NULL
+   * @return \Amp\Database\Datasource|NULL
    */
   public function getDatasource() {
     return $this->datasource;

@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+
 use Amp\Database\DatabaseManagementInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -14,7 +15,7 @@ class InstanceRepository extends FileRepository {
   private $dbHintBlacklist = 'web|www|htdocs';
 
   /**
-   * @var DatabaseManagementInterface
+   * @var \Amp\Database\DatabaseManagementInterface
    */
   private $db;
 

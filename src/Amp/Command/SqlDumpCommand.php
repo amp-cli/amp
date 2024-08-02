@@ -4,16 +4,14 @@ namespace Amp\Command;
 use Amp\Instance;
 use Amp\Util\Filesystem;
 use Amp\Util\Process;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
 class SqlDumpCommand extends ContainerAwareCommand {
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -45,7 +43,7 @@ class SqlDumpCommand extends ContainerAwareCommand {
     }
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instance = $this->getContainer()->get('instances')->find(Instance::makeId($input->getOption('root'), $input->getOption('name')));
     if (!$instance) {
       throw new \Exception("Failed to locate instance: " . Instance::makeId($input->getOption('root'), $input->getOption('name')));

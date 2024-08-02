@@ -2,9 +2,8 @@
 
 namespace Amp\Util;
 
-use Amp\Util\ArrayExt;
-
 class Shell {
+
   /**
    * Format a shell command, escaping each argument
    *

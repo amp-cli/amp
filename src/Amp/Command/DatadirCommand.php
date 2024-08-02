@@ -1,18 +1,15 @@
 <?php
 namespace Amp\Command;
 
-use Amp\Instance;
 use Amp\Util\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Templating\EngineInterface;
 
 class DatadirCommand extends ContainerAwareCommand {
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -32,7 +29,7 @@ class DatadirCommand extends ContainerAwareCommand {
       ->addArgument("path", InputArgument::IS_ARRAY | InputArgument::REQUIRED, "Path to a web-writable data-directory");
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $perm = $this->getContainer()->get('perm');
     foreach ($input->getArgument('path') as $path) {
       if (!$this->fs->exists($path)) {
@@ -45,6 +42,8 @@ class DatadirCommand extends ContainerAwareCommand {
         $perm->applyDirPermission('write', $path);
       }
     }
+
+    return 0;
   }
 
 }

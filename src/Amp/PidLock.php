@@ -25,12 +25,20 @@ class PidLock {
   private $lockFile;
 
   /**
-   * @var int pid of the current process
+   * Pid of the current process
+   * @var int
    */
   private $pid;
 
-  private $minDelayUs = 10000; // 10,000 us == 10ms
-  private $maxDelayUs = 200000; // 200,000 us == 200ms == 0.2s
+  /**
+   * 10,000 us == 10ms
+   */
+  private $minDelayUs = 10000;
+
+  /**
+   * 200,000 us == 200ms == 0.2s
+   */
+  private $maxDelayUs = 200000;
 
   /**
    * @param string $file the file for which we want a lock
@@ -82,7 +90,8 @@ class PidLock {
 
     $waitUs = $wait * 1000 * 1000;
 
-    $totalDelayUs = 0; // total total spent waiting so far (microseconds)
+    // total total spent waiting so far (microseconds)
+    $totalDelayUs = 0;
     $nextDelayUs = 0;
     while ($totalDelayUs < $waitUs) {
       if ($nextDelayUs) {

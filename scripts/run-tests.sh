@@ -29,7 +29,7 @@ function test_ramdisk_nix() {
   ## TIP: If one of these tests fails, then manually start the given daemon with:
   ## $ nix-shell nix/shells.nix -A <profile> --run "test-amp-ramdisk amp mysql:start"
 
-  if nix-shell nix/shells.nix -A "$profile" --run "test-amp-ramdisk phpunit8 --group mysqld" ; then
+  if nix-shell nix/shells.nix -A "$profile" --run "test-amp-ramdisk phpunit9 --group mysqld" ; then
     echo "[$name] OK"
   else
     echo "[$name] Fail"
@@ -44,7 +44,7 @@ function test_ramdisk_nix() {
 function test_phpunit() {
   local profile="$1"
   shift
-  local cmd="phpunit8 $@"
+  local cmd="phpunit9 $@"
   local name="Unit tests ($cmd)"
   echo "[$name] Start"
 
@@ -82,7 +82,7 @@ pushd "$PRJDIR"
   fi
 
   ## (1) The 'unit' tests are lower-level tests for PHP classes/functions. These are executed with multiple versions of PHP.
-  test_phpunit     php72m80   --group unit        | tee "tmp/unit-php72.txt"
+  test_phpunit     php73m80   --group unit        | tee "tmp/unit-php73.txt"
   test_phpunit     php74m80   --group unit        | tee "tmp/unit-php74.txt"
   test_phpunit     php80m80   --group unit        | tee "tmp/unit-php80.txt"
   # test_phpunit     php84m80   --group unit        | tee "tmp/unit-php84.txt"

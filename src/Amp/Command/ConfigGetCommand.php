@@ -10,14 +10,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ConfigGetCommand extends ContainerAwareCommand {
 
   /**
-   * @var ConfigRepository
+   * @var \Amp\ConfigRepository
    */
   private $config;
 
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param ConfigRepository $config
+   * @param \Amp\ConfigRepository|null $config
    */
   public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
     $this->config = $config;
@@ -31,10 +31,10 @@ class ConfigGetCommand extends ContainerAwareCommand {
       ->addArgument('key', InputArgument::OPTIONAL, 'Name of a configuration field');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     if ($input->getArgument('key')) {
       $output->writeln($this->getContainer()->getParameter($input->getArgument('key')));
-      return;
+      return 0;
     }
 
     $rows = array();
@@ -46,6 +46,8 @@ class ConfigGetCommand extends ContainerAwareCommand {
     $table->setHeaders(array('Key', 'Value', 'Description'));
     $table->setRows($rows);
     $table->render();
+
+    return 0;
   }
 
 }

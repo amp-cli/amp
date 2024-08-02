@@ -39,7 +39,7 @@ class PortCheckerTest extends \PHPUnit\Framework\TestCase {
       $this->fail("Expected exception for invalid schema");
     }
     catch (\Exception $e) {
-      $this->assertRegexp(';Cannot check;', $e->getMessage());
+      $this->assertMatchesRegularExpression(';Cannot check;', $e->getMessage());
     }
   }
 

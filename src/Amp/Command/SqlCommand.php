@@ -4,16 +4,14 @@ namespace Amp\Command;
 use Amp\Instance;
 use Amp\Util\Filesystem;
 use Amp\Util\Process;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
 class SqlCommand extends ContainerAwareCommand {
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -103,16 +101,19 @@ The ENV expressions are prefixed to indicate their escaping rule:
     $changed = preg_replace_callback('/([#!@])ENV\[([a-zA-Z0-9_]+)\]/', function ($matches)  use ($pdo) {
       $value = getenv($matches[2]);
       switch ($matches[1]) {
-        case '!': // raw
+        // raw
+        case '!':
           return $value;
 
-        case '#': // numeric
+        // numeric
+        case '#':
           if (!is_numeric($value)) {
             throw new \RuntimeException("Environment variable " . $matches[2] . " is not numeric!");
           }
           return $value;
 
-        case '@': // string
+        // string
+        case '@':
           return $pdo->quote($value);
 
         default:

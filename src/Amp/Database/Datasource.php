@@ -1,5 +1,6 @@
 <?php
 namespace Amp\Database;
+
 use Amp\Exception\InvalidSettingException;
 
 class Datasource {
@@ -42,7 +43,7 @@ class Datasource {
   private $socket_path;
   private $username;
 
-  function __construct($options = NULL) {
+  public function __construct($options = NULL) {
     if ($options !== NULL) {
       if (isset($options['civi_dsn'])) {
         $this->loadFromCiviDSN($options['civi_dsn']);
@@ -57,7 +58,7 @@ class Datasource {
     }
   }
 
-  function loadFromCiviDSN($civi_dsn) {
+  public function loadFromCiviDSN($civi_dsn) {
     $parsed_dsn = \DB\DSN::parseDSN($civi_dsn);
     foreach (static::$cividsn_to_settings_name as $key => $value) {
       if (array_key_exists($key, $parsed_dsn)) {
@@ -67,7 +68,7 @@ class Datasource {
     $this->updateHost();
   }
 
-  function loadFromSettingsArray($settings_array) {
+  public function loadFromSettingsArray($settings_array) {
     foreach ($settings_array as $key => $value) {
       $this->$key = $value;
     }
@@ -77,7 +78,7 @@ class Datasource {
   /**
    * @return PDO
    */
-  function createPDO() {
+  public function createPDO() {
     $pdo = new \PDO($this->toPDODSN(), $this->username, $this->password);
     $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     return $pdo;
@@ -86,7 +87,7 @@ class Datasource {
   /**
    * @return bool
    */
-  function isValid() {
+  public function isValid() {
     try {
       $dbh = $this->createPDO();
       foreach ($dbh->query('SELECT 99 as value') as $row) {
@@ -101,7 +102,7 @@ class Datasource {
     return FALSE;
   }
 
-  function toCiviDSN() {
+  public function toCiviDSN() {
     $civi_dsn = "{$this->driver}://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
       $civi_dsn = "$civi_dsn:{$this->port}";
@@ -110,7 +111,7 @@ class Datasource {
     return $civi_dsn;
   }
 
-  function toDoctrineArray() {
+  public function toDoctrineArray() {
     $result = array();
     foreach (self::$settings_to_doctrine_options as $key => $value) {
       $result[$value] = $this->$key;
@@ -119,7 +120,7 @@ class Datasource {
     return $result;
   }
 
-  function toDrupalDSN() {
+  public function toDrupalDSN() {
     $drupal_dsn = "{$this->driver}://{$this->username}:{$this->password}@{$this->host}";
     if ($this->port !== NULL) {
       $drupal_dsn = "$drupal_dsn:{$this->port}";
@@ -133,7 +134,7 @@ class Datasource {
    *   A directory in which we can create temporary files.
    * @return string
    */
-  function toMySQLArguments($tmpDir) {
+  public function toMySQLArguments($tmpDir) {
     $data = "[client]\n";
     $data .= "host={$this->host}\n";
     $data .= "user={$this->username}\n";
@@ -154,7 +155,7 @@ class Datasource {
     return $args;
   }
 
-  function toPHPArrayString() {
+  public function toPHPArrayString() {
     $result = "array(\n";
     foreach (static::$attribute_names as $attribute_name) {
       $result .= "  '$attribute_name' => '{$this->$attribute_name}',\n";
@@ -163,7 +164,7 @@ class Datasource {
     return $result;
   }
 
-  function toPDODSN($options = array()) {
+  public function toPDODSN($options = array()) {
     $pdo_dsn = "{$this->driver}:";
     $pdo_dsn_options = array('charset=utf8mb4');
     $settings_to_pdo_options = static::$settings_to_pdo_options;
@@ -179,8 +180,10 @@ class Datasource {
     return $pdo_dsn;
   }
 
-  // FIXME: pg, mysql-specific
-  function updateHost() {
+  /**
+   * FIXME: pg, mysql-specific
+   */
+  public function updateHost() {
     /*
      * If you use localhost for the host, the MySQL client library will
      * use a unix socket to connect to the server and ignore the port,

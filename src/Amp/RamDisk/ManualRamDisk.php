@@ -1,9 +1,6 @@
 <?php
 namespace Amp\RamDisk;
 
-use Amp\Util\Shell;
-use Symfony\Component\Filesystem\Filesystem;
-
 /**
  * Class ManualRamDisk
  * @package Amp\RamDisk
@@ -41,7 +38,8 @@ class ManualRamDisk implements RamDiskInterface {
 
   public function mount() {
     if (self::isWriteableDir($this->getPath())) {
-      return; // Good to go!
+      // Good to go!
+      return;
     }
 
     $parent = dirname($this->getPath());

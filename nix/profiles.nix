@@ -41,7 +41,6 @@ let
   baseProfile = buildkit.profiles.base ++ [
     buildkit.pkgs.box
     buildkit.pkgs.composer
-    buildkit.pkgs.phpunit8
     buildkit.pkgs.phpunit9
     pkgs.bash-completion
   ];

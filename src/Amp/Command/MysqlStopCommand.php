@@ -1,19 +1,15 @@
 <?php
 namespace Amp\Command;
 
-use Amp\Database\DatabaseManagementInterface;
 use Amp\Database\MySQLRAMServer;
-use Amp\Instance;
 use Amp\Util\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MysqlStopCommand extends ContainerAwareCommand {
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -32,13 +28,13 @@ class MysqlStopCommand extends ContainerAwareCommand {
       ->setDescription('(For mysql_ram_disk only) Stop the ramdisk-based MySQL service');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
 
     $container = $this->getContainer();
 
-    /** @var MySQLRAMServer $db */
+    /** @var \Amp\Database\MySQLRAMServer $db */
     $db = $container->get('db');
     if (!$db instanceof MySQLRAMServer) {
       throw new \Exception("This command only applies if you use mysql_ramdisk");
@@ -59,6 +55,8 @@ class MysqlStopCommand extends ContainerAwareCommand {
     if (!$result) {
       $output->getErrorOutput()->writeln("Fasdf");
     }
+
+    return 0;
   }
 
 }

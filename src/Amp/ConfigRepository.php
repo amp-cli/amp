@@ -7,27 +7,28 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigRepository {
 
   /**
-   * @param mixed $data
+   * @var mixed
    */
-  var $data;
+  public $data;
 
   /**
    * @var array
    */
-  var $descriptions;
+  public $descriptions;
 
   /**
-   * @var array (string $parameter => callable $callback)
+   * @var array
+   *   (string $parameter => callable $callback)
    */
-  var $exampleCallbacks;
+  public $exampleCallbacks;
 
   /**
    * @var string
    */
-  var $file;
+  public $file;
 
   /**
-   * @var null|int $fileMode
+   * @var null|int
    */
   private $fileMode = 0640;
 
@@ -81,12 +82,16 @@ class ConfigRepository {
         $checker = new \Amp\Util\PortChecker();
         // Some folks report problems using "localhost"
         $dsns = $checker->filterUrls(array(
-          'mysql://user:pass@127.0.0.1:3306', // Standard port
+          // Standard port
+          'mysql://user:pass@127.0.0.1:3306',
           'mysql://user:pass@127.0.0.1:3307',
-          'mysql://user:pass@127.0.0.1:8889', // MAMP port
-          'mysql://user:pass@localhost:3306', // Standard port
+          // MAMP port
+          'mysql://user:pass@127.0.0.1:8889',
+          // Standard port
+          'mysql://user:pass@localhost:3306',
           'mysql://user:pass@localhost:3307',
-          'mysql://user:pass@localhost:8889', // MAMP port
+          // MAMP port
+          'mysql://user:pass@localhost:8889',
         ));
         if (empty($dsns)) {
           return 'mysql://user:pass@hostname:3306';
@@ -158,7 +163,7 @@ class ConfigRepository {
 
         // Add-on kits. No need for sudo
         foreach ($ADDONDIRS as $dirglob) {
-          foreach ((array)glob($dirglob) as $dir) {
+          foreach ((array) glob($dirglob) as $dir) {
             foreach ($APACHECTLS as $prog) {
               if (file_exists("$dir/$prog")) {
                 $examples[] = "$dir/$prog graceful";

@@ -1,6 +1,5 @@
 <?php
 namespace Amp\Hostname;
-use Amp\ServiceInterface;
 
 interface HostnameInterface {
 

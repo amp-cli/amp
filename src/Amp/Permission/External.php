@@ -1,17 +1,19 @@
 <?php
 namespace Amp\Permission;
+
 use Amp\Util\Filesystem;
 use Symfony\Component\Process\Process;
 
 class External implements PermissionInterface {
 
   /**
-   * @var array (string $perm => string $command)
+   * @var array
+   *   (string $perm => string $command)
    */
-  var $dirCommands;
+  public $dirCommands;
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -42,7 +44,8 @@ class External implements PermissionInterface {
     if (!$process->isSuccessful()) {
       throw new \RuntimeException($process->getErrorOutput());
     }
-    print $process->getOutput(); // REMOVE
+    // REMOVE
+    print $process->getOutput();
   }
 
   /**

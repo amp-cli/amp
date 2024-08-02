@@ -3,6 +3,7 @@
 namespace Amp\Util;
 
 class FileExt {
+
   public static function close($handle) {
     $result = @fclose($handle);
     if ($result === FALSE) {

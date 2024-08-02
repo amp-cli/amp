@@ -1,13 +1,10 @@
 <?php
 namespace Amp;
 
-use Amp\Util\Process;
 use LesserEvil\ShellVerbosityIsEvil;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Config\Loader\LoaderResolver;
@@ -19,12 +16,15 @@ use Symfony\Component\Filesystem\Filesystem;
 class Application extends \Symfony\Component\Console\Application {
 
   /**
-   * @var string the base location for writable data
+   * The base location for writable data
+   *
+   * @var string
    */
   private $appDir;
 
   /**
-   * @var array of string places to search for config files
+   * Places to search for config files
+   * @var string[]
    */
   private $configDirectories;
 

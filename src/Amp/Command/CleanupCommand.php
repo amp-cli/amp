@@ -1,9 +1,7 @@
 <?php
 namespace Amp\Command;
 
-use Amp\Instance;
 use Amp\Util\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CleanupCommand extends ContainerAwareCommand {
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
@@ -31,7 +29,7 @@ class CleanupCommand extends ContainerAwareCommand {
       ->addOption('force', 'f', InputOption::VALUE_NONE, 'Destroy ALL databases (regardless of whether the code exists)');
   }
 
-  protected function execute(InputInterface $input, OutputInterface $output) {
+  protected function execute(InputInterface $input, OutputInterface $output): int {
     $instances = $this->getContainer()->get('instances');
     $instances->lock();
     $count = 0;
@@ -49,6 +47,7 @@ class CleanupCommand extends ContainerAwareCommand {
     $output->writeln("Destroyed {$count} instance(s)");
 
     $instances->save();
+    return 0;
   }
 
 }

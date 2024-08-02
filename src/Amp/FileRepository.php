@@ -1,5 +1,6 @@
 <?php
 namespace Amp;
+
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -15,12 +16,13 @@ use Symfony\Component\Filesystem\Filesystem;
 abstract class FileRepository {
 
   /**
-   * @var string|NULL path to a config file (YAML)
+   * Path to a config file (YAML)
+   * @var string|null
    */
   private $file = NULL;
 
   /**
-   * @var null|int $fileMode
+   * @var null|int
    */
   private $fileMode = 0640;
 
@@ -32,12 +34,14 @@ abstract class FileRepository {
   private $instances = NULL;
 
   /**
-   * @var PidLock|NULL the currently-held lock (or NULL if none is held)
+   * The currently-held lock (or NULL if none is held)
+   * @var PidLock|null
    */
   private $lock;
 
   /**
-   * @var int|NULL seconds to wait for a lock; if NULL, then don't use locking
+   * Seconds to wait for a lock; if NULL, then don't use locking
+   * @var int|null
    */
   private $lockWait;
 
@@ -171,7 +175,7 @@ abstract class FileRepository {
    * @param string $string
    * @return array of array
    */
-  public abstract function decodeDocument($string);
+  abstract public function decodeDocument($string);
 
   /**
    * Convert from array to object
@@ -179,13 +183,13 @@ abstract class FileRepository {
    * @param array $array
    * @return object
    */
-  public abstract function decodeItem($array);
+  abstract public function decodeItem($array);
 
   /**
    * @param array $items a list of arrays representing items
    * @return string
    */
-  public abstract function encodeDocument($items);
+  abstract public function encodeDocument($items);
 
   /**
    * Convert from object to array
@@ -193,6 +197,6 @@ abstract class FileRepository {
    * @param $obj
    * @return array
    */
-  public abstract function encodeItem($obj);
+  abstract public function encodeItem($obj);
 
 }

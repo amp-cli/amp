@@ -1,6 +1,5 @@
 <?php
 namespace Amp\Httpd;
-use Amp\ServiceInterface;
 
 interface HttpdInterface {
 

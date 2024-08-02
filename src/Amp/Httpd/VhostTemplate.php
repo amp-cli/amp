@@ -1,42 +1,46 @@
 <?php
 namespace Amp\Httpd;
+
 use Amp\Util\Filesystem;
 use Amp\Permission\PermissionInterface;
-use Symfony\Component\Templating\EngineInterface;
 
 class VhostTemplate implements HttpdInterface {
   /**
-   * @var string, path to which we should write new config files
+   * Path to which we should write new config files
+   * @var string
    */
   private $dir;
 
   /**
-   * @var Filesystem
+   * @var \Amp\Util\Filesystem
    */
   private $fs;
 
   /**
-   * @var string absolute path to a log directory
+   * Absolute path to a log directory
+   * @var string
    */
   private $logDir;
 
   /**
-   * @var PermissionInterface
+   * @var \Amp\Permission\PermissionInterface
    */
   private $perm;
 
   /**
-   * @var string, name of the template file
+   * Name of the template file
+   * @var string
    */
   private $defaultTemplate;
 
   /**
-   * @var EngineInterface
+   * @var \Symfony\Component\Templating\EngineInterface
    */
   private $templateEngine;
 
   /**
-   * @var string, a symbolic name for the template to lookup
+   * A symbolic name for the template to lookup
+   * @var string
    *
    * Ex: `nginx`, `apache24`.
    */
