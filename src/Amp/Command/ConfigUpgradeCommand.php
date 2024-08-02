@@ -58,7 +58,7 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
    * @param string|null $name
    * @param \Amp\ConfigRepository|null $config
    */
-  public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
+  public function __construct(\Amp\Application $app, $name = NULL, ?ConfigRepository $config = NULL) {
     $this->config = $config;
     $this->app = $app;
     parent::__construct($app, $name);
