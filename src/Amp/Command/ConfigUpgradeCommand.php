@@ -3,12 +3,8 @@ namespace Amp\Command;
 
 // TODO: Clean these
 use Amp\ConfigRepository;
-use Symfony\Component\Console\Helper\DialogHelper;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 
 define('LATEST_SCHEMA_VERSION', 2);
 
@@ -22,7 +18,7 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
   private $app;
 
   /**
-   * @var ConfigRepository
+   * @var \Amp\ConfigRepository
    */
   private $config;
 
@@ -60,7 +56,7 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
   /**
    * @param \Amp\Application $app
    * @param string|null $name
-   * @param ConfigRepository $config
+   * @param \Amp\ConfigRepository|null $config
    */
   public function __construct(\Amp\Application $app, $name = NULL, ConfigRepository $config = NULL) {
     $this->config = $config;
@@ -77,7 +73,8 @@ class ConfigUpgradeCommand extends ContainerAwareCommand {
   protected function execute(InputInterface $input, OutputInterface $output): int {
     $startVer = $this->config->getParameter('version');
     if (empty($startVer)) {
-      $startVer = 1; // Legacy file which predates versioning.
+      // Legacy file which predates versioning.
+      $startVer = 1;
     }
 
     if ($startVer === 'new') {
