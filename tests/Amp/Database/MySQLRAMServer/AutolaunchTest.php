@@ -13,7 +13,7 @@ class AutolaunchTest extends \PHPUnit\Framework\TestCase {
   const MYSQLD_URL = 'mysql://127.0.0.1:3307';
 
   protected function setUp(): void {
-    $this->assertRegExp(';tmp/amphome-phpunit;', getenv('AMPHOME'), 'This test must run in a test environment. Use tempamp.');
+    $this->assertMatchesRegularExpression(';tmp/amphome-phpunit;', getenv('AMPHOME'), 'This test must run in a test environment. Use tempamp.');
     parent::setUp();
   }
 
