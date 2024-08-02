@@ -15,12 +15,13 @@ use Symfony\Component\Filesystem\Filesystem;
 abstract class FileRepository {
 
   /**
-   * @var string|NULL path to a config file (YAML)
+   * Path to a config file (YAML)
+   * @var string|NULL
    */
   private $file = NULL;
 
   /**
-   * @var null|int $fileMode
+   * @var null|int
    */
   private $fileMode = 0640;
 
@@ -32,12 +33,14 @@ abstract class FileRepository {
   private $instances = NULL;
 
   /**
-   * @var PidLock|NULL the currently-held lock (or NULL if none is held)
+   * The currently-held lock (or NULL if none is held)
+   * @var PidLock|NULL
    */
   private $lock;
 
   /**
-   * @var int|NULL seconds to wait for a lock; if NULL, then don't use locking
+   * Seconds to wait for a lock; if NULL, then don't use locking
+   * @var int|NULL
    */
   private $lockWait;
 
