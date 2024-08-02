@@ -3,6 +3,7 @@ vendor
 .composer-downloads
 *~
 amp.phar
+/bin/yaml-lint
 /tmp/
 /extern/box
 /extern/phpunit
