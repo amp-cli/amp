@@ -32,9 +32,9 @@ class AutolaunchTest extends \PHPUnit\Framework\TestCase {
         ob_flush();
       }
     };
-    $debug("\n\nmysqld is [%s]\namp bin is [%s]\namp home is [%s]\n", trim(`which mysqld`), trim(`which amp`), self::getAmpHome());
+    $debug("\n\nmysqld is [%s]\namp bin is [%s]\namp home is [%s]\n", trim(shell_exec('which mysqld')), trim(shell_exec('which amp')), self::getAmpHome());
 
-    $this->assertFileExists(trim(`which mysqld`));
+    $this->assertFileExists(trim(shell_exec('which mysqld')));
     $this->assertNotRunning(self::MYSQLD_URL, "The TCP service (" . self::MYSQLD_URL . ") is already in use. Test cannot proceed.");
 
     // PART 1: Launch mysqld
@@ -42,7 +42,7 @@ class AutolaunchTest extends \PHPUnit\Framework\TestCase {
     // FIXME: mysql:start should spawn in background. This seems to work in most contexts,
     // but when running in php70+phpunit, the child process stays around until mysqld terminates.
     // So we'll just let it stay in the background...
-    $start = new Process('amp mysql:start');
+    $start = Process::fromShellCommandline('amp mysql:start');
     $start->setTimeout(NULL);
     $start->start(function ($type, $buffer) use ($debug) {
       $debug("MYSQLD($type): $buffer");

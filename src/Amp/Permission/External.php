@@ -39,7 +39,7 @@ class External implements PermissionInterface {
     if ($dirCommand == '') {
       return;
     }
-    $process = new Process($dirCommand);
+    $process = Process::fromShellCommandline($dirCommand);
     $process->run();
     if (!$process->isSuccessful()) {
       throw new \RuntimeException($process->getErrorOutput());
