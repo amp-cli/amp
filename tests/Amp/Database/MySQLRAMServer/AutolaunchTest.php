@@ -42,7 +42,7 @@ class AutolaunchTest extends \PHPUnit\Framework\TestCase {
     // FIXME: mysql:start should spawn in background. This seems to work in most contexts,
     // but when running in php70+phpunit, the child process stays around until mysqld terminates.
     // So we'll just let it stay in the background...
-    $start = new Process('amp mysql:start');
+    $start = Process::fromShellCommandline('amp mysql:start');
     $start->setTimeout(NULL);
     $start->start(function ($type, $buffer) use ($debug) {
       $debug("MYSQLD($type): $buffer");
