@@ -73,7 +73,7 @@ fi
 
 EXIT_CODE=0
 pushd "$PRJDIR"
-  nix-shell nix/shells.nix -A php73m80 --run "composer install"
+  nix-shell nix/shells.nix -A php74m80 --run "composer install"
 
   ## Tests are organized into a few groups
 
@@ -82,13 +82,13 @@ pushd "$PRJDIR"
   fi
 
   ## (1) The 'unit' tests are lower-level tests for PHP classes/functions. These are executed with multiple versions of PHP.
-  test_phpunit     php73m80   --group unit        | tee "tmp/unit-php73.txt"
   test_phpunit     php74m80   --group unit        | tee "tmp/unit-php74.txt"
   test_phpunit     php80m80   --group unit        | tee "tmp/unit-php80.txt"
   test_phpunit     php84m80   --group unit        | tee "tmp/unit-php84.txt"
+  test_phpunit     php85m80   --group unit        | tee "tmp/unit-php84.txt"
 
   ## (2) The 'mysqld' tests are higher-level integration tests for working with the DBMS. These are executed with multiple versions of MySQL.
-  DB_PROFILES="php73m55 $(echo php{73,74,83}m{57,80,84,90})"
+  DB_PROFILES="$(echo php{74,83,85}m{57,80,84,90})"
   DB_PROFILES=$( echo "$DB_PROFILES" | sed s/php73m90// ) ## PHP<=7.3 and MySQL>=9.0 disagree about auth (mysql_native_password vs caching_sha2_password)
   ## DB_PROFILES="php73m57 php83m90"   ## Or just list some specific ones
   for PROF in $DB_PROFILES; do
