@@ -32,9 +32,9 @@ class AutolaunchTest extends \PHPUnit\Framework\TestCase {
         ob_flush();
       }
     };
-    $debug("\n\nmysqld is [%s]\namp bin is [%s]\namp home is [%s]\n", trim(`which mysqld`), trim(`which amp`), self::getAmpHome());
+    $debug("\n\nmysqld is [%s]\namp bin is [%s]\namp home is [%s]\n", trim(shell_exec('which mysqld')), trim(shell_exec('which amp')), self::getAmpHome());
 
-    $this->assertFileExists(trim(`which mysqld`));
+    $this->assertFileExists(trim(shell_exec('which mysqld')));
     $this->assertNotRunning(self::MYSQLD_URL, "The TCP service (" . self::MYSQLD_URL . ") is already in use. Test cannot proceed.");
 
     // PART 1: Launch mysqld
